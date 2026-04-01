@@ -30,11 +30,6 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'is_admin' => false,
-        ]);
 
         $couponRows = [
             ['code' => 'JETFLY500', 'discount_type' => 'flat', 'discount_value' => 500, 'valid_from' => now()->subDay(), 'valid_to' => now()->addMonths(6)],
