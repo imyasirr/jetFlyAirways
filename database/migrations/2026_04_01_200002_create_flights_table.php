@@ -1,0 +1,32 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('flights', function (Blueprint $table) {
+            $table->id();
+            $table->string('airline');
+            $table->string('flight_number')->index();
+            $table->string('from_city');
+            $table->string('to_city');
+            $table->dateTime('departure_at');
+            $table->dateTime('arrival_at');
+            $table->decimal('price', 12, 2);
+            $table->unsignedInteger('stops')->default(0);
+            $table->string('cabin_class')->default('Economy');
+            $table->unsignedInteger('seats_available')->default(0);
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('flights');
+    }
+};
