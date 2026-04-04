@@ -1,9 +1,9 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('content')
     <div class="card">
         <h1 class="section-title">Job applications</h1>
-        <div style="overflow:auto;">
+        <div class="admin-table-scroll">
             <table class="admin-table">
                 <thead>
                     <tr>
@@ -32,3 +32,4 @@
         <div style="margin-top:12px;">{{ $applications->links() }}</div>
     </div>
 @endsection
+

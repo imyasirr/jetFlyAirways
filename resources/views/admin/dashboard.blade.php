@@ -1,14 +1,15 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Dashboard')
 
 @section('content')
-    <p style="margin:0 0 20px;color:#64748b;max-width:72ch;">Overview of live inventory and recent bookings. Click a card to open that module.</p>
+    <p style="margin:0 0 18px;color:#64748b;max-width:72ch;line-height:1.5;">Use the cards below to jump to a module. Numbers reflect live rows in your database.</p>
 
     <div class="admin-card" style="margin-bottom:20px;">
         <h2 style="margin:0 0 12px;font-size:1rem;">Website &amp; customers</h2>
         <div style="display:flex;flex-wrap:wrap;gap:10px;">
             <a href="{{ route('admin.menu-items.index') }}" class="btn secondary">Header &amp; footer menu</a>
+            <a href="{{ route('admin.site-settings.edit') }}" class="btn secondary">Site header &amp; footer</a>
             <a href="{{ route('admin.pages.index') }}" class="btn secondary">CMS pages</a>
             <a href="{{ route('admin.coupons.index') }}" class="btn secondary">Coupons</a>
             <a href="{{ route('admin.users.index') }}" class="btn secondary">Users</a>
@@ -40,7 +41,7 @@
         @if($recentBookings->isEmpty())
             <p style="margin:0;color:#64748b;">No bookings yet.</p>
         @else
-            <div style="overflow:auto;">
+            <div class="admin-table-scroll">
                 <table class="admin-table">
                     <thead>
                         <tr>
@@ -71,3 +72,4 @@
         @endif
     </div>
 @endsection
+

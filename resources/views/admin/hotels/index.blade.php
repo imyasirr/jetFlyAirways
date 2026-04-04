@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('content')
     <div class="card">
@@ -11,7 +11,7 @@
             <p style="color:green;">{{ session('status') }}</p>
         @endif
 
-        <div style="overflow:auto;">
+        <div class="admin-table-scroll">
             <table style="width:100%;border-collapse:collapse;">
                 <thead>
                     <tr>
@@ -25,7 +25,7 @@
                 <tbody>
                     @forelse($hotels as $hotel)
                         <tr>
-                            <td style="padding:8px;border-bottom:1px solid #eee;">{{ $hotel->name }} ({{ $hotel->star_rating }}⭐)</td>
+                            <td style="padding:8px;border-bottom:1px solid #eee;">{{ $hotel->name }} ({{ $hotel->star_rating }}★)</td>
                             <td style="padding:8px;border-bottom:1px solid #eee;">{{ $hotel->city }} - {{ $hotel->location }}</td>
                             <td style="padding:8px;border-bottom:1px solid #eee;">Active: {{ $hotel->is_active ? 'Yes' : 'No' }}</td>
                             <td style="padding:8px;border-bottom:1px solid #eee;">Rs {{ number_format($hotel->price_per_night, 2) }}</td>
@@ -47,3 +47,4 @@
         <div style="margin-top:10px;">{{ $hotels->links() }}</div>
     </div>
 @endsection
+

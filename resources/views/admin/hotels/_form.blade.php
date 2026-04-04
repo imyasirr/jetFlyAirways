@@ -8,5 +8,12 @@
     <div><label>Amenities (comma separated)</label><input name="amenities" value="{{ old('amenities', isset($hotel) && is_array($hotel->amenities) ? implode(', ', $hotel->amenities) : '') }}"></div>
 </div>
 <div style="margin-top:10px;"><label>Description</label><textarea name="description" rows="4">{{ old('description', $hotel->description ?? '') }}</textarea></div>
-<div style="margin-top:10px;"><label><input type="checkbox" name="is_active" value="1" {{ old('is_active', $hotel->is_active ?? true) ? 'checked' : '' }}> Active</label></div>
+<div style="margin-top:14px;">
+    @include('admin.partials.toggle', [
+        'name' => 'is_active',
+        'label' => 'Active',
+        'hint' => 'Inactive hotels are hidden from public hotel search.',
+        'checked' => old('is_active', (optional($hotel)->is_active ?? true) ? '1' : '0') === '1',
+    ])
+</div>
 <button class="btn" style="margin-top:12px;">Save Hotel</button>

@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('content')
     <div class="card">
@@ -7,7 +7,7 @@
             <a class="btn" href="{{ route('admin.careers.create') }}">Add vacancy</a>
         </div>
         <p style="font-size:14px;color:#64748b;">Public listing: <a href="{{ route('jobs.index') }}" target="_blank" rel="noopener">/jobs</a></p>
-        <div style="overflow:auto;">
+        <div class="admin-table-scroll">
             <table class="admin-table">
                 <thead>
                     <tr>
@@ -39,3 +39,4 @@
         <div style="margin-top:12px;">{{ $careers->links() }}</div>
     </div>
 @endsection
+

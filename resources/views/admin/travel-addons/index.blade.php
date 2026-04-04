@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('content')
     <div class="card">
@@ -17,7 +17,7 @@
                 </select>
             </div>
         </form>
-        <div style="overflow:auto;">
+        <div class="admin-table-scroll">
             <table class="admin-table">
                 <thead>
                     <tr>
@@ -53,3 +53,4 @@
         <div style="margin-top:12px;">{{ $addons->links() }}</div>
     </div>
 @endsection
+

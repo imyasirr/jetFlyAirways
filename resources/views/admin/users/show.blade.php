@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('content')
     <div class="card" style="margin-bottom:16px;">
@@ -14,7 +14,7 @@
     </div>
     <div class="card">
         <h2 class="section-title" style="font-size:1.1rem;">Bookings (latest 50)</h2>
-        <div style="overflow:auto;">
+        <div class="admin-table-scroll">
             <table class="admin-table">
                 <thead>
                     <tr>
@@ -45,3 +45,4 @@
         <p style="margin-top:12px;"><a href="{{ route('admin.users.index') }}" class="btn secondary">← Back to users</a></p>
     </div>
 @endsection
+

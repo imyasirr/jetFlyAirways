@@ -19,6 +19,13 @@ class BlogController extends Controller
         return view('admin.blogs.index', compact('blogs'));
     }
 
+    public function show(Blog $blog): View
+    {
+        $isPublished = $blog->publish_at !== null && $blog->publish_at->lte(now());
+
+        return view('admin.blogs.show', compact('blog', 'isPublished'));
+    }
+
     public function create(): View
     {
         return view('admin.blogs.create');
@@ -27,7 +34,6 @@ class BlogController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $data = $this->validated($request, null, true);
-        $data['slug'] = $this->ensureUniqueBlogSlug($data['slug']);
         $path = PublicImageStorage::storeUpload($request->file('cover_image_file'), 'blog-covers');
         if ($path !== null) {
             $data['cover_image'] = $path;
@@ -45,7 +51,6 @@ class BlogController extends Controller
     public function update(Request $request, Blog $blog): RedirectResponse
     {
         $data = $this->validated($request, $blog, false);
-        $data['slug'] = $this->ensureUniqueBlogSlug($data['slug'], $blog->id);
         if ($request->hasFile('cover_image_file')) {
             $path = PublicImageStorage::storeUpload($request->file('cover_image_file'), 'blog-covers', $blog->cover_image);
             if ($path !== null) {
@@ -70,19 +75,12 @@ class BlogController extends Controller
      */
     private function validated(Request $request, ?Blog $blog, bool $creating): array
     {
-        if ($request->string('slug')->trim() === '') {
-            $request->merge(['slug' => Str::slug($request->string('title'))]);
-        }
-
-        $slugRule = ['required', 'string', 'max:120', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'];
-
         $coverRule = $creating
             ? ['nullable', 'image', 'mimes:jpeg,png,webp,gif', 'max:10240']
             : ['nullable', 'image', 'mimes:jpeg,png,webp,gif', 'max:10240'];
 
         $data = $request->validate([
             'title' => ['required', 'string', 'max:200'],
-            'slug' => $slugRule,
             'category' => ['nullable', 'string', 'max:80'],
             'tags' => ['nullable', 'string', 'max:500'],
             'author_name' => ['nullable', 'string', 'max:100'],
@@ -96,6 +94,12 @@ class BlogController extends Controller
 
         $data['is_featured'] = $request->boolean('is_featured');
         unset($data['cover_image_file']);
+
+        $baseSlug = Str::slug($request->string('title'));
+        if ($baseSlug === '') {
+            $baseSlug = 'post-'.Str::lower(Str::random(8));
+        }
+        $data['slug'] = $this->ensureUniqueBlogSlug($baseSlug, $blog?->id);
 
         return $data;
     }

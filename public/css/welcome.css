@@ -1,0 +1,73 @@
+/* Enterprise /welcome page blocks (was inline in welcome.blade.php) */
+.hero-welcome {
+    padding: clamp(28px, 6vw, 44px) 0 clamp(32px, 6vw, 52px);
+}
+
+.hero-welcome h1 {
+    max-width: min(18ch, 100%);
+}
+
+.hero-welcome .lead {
+    font-size: clamp(0.98rem, 2.5vw, 1.1rem);
+    max-width: min(56ch, 100%);
+    opacity: 0.95;
+    margin: 0 0 clamp(20px, 4vw, 28px);
+    line-height: 1.55;
+}
+
+.stats-strip {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 110px), 1fr));
+    gap: clamp(8px, 2vw, 12px);
+    margin-top: 8px;
+    max-width: 900px;
+}
+
+.stat-item {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 14px;
+    padding: 14px 16px;
+    text-align: center;
+}
+
+.stat-item strong {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+.stat-item span {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    opacity: 0.85;
+    margin-top: 4px;
+    display: block;
+}
+
+.why-grid {
+    display: grid;
+    gap: clamp(14px, 2.5vw, 20px);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+    margin-bottom: 8px;
+}
+
+.why-card {
+    border-left: 4px solid var(--accent);
+    padding-left: 18px;
+}
+
+.why-card h3 {
+    margin: 0 0 8px;
+    font-size: 1.05rem;
+    color: var(--primary);
+}
+
+.why-card p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.55;
+}

@@ -1,0 +1,19 @@
+/**
+ * Home / welcome landing — gradient when no hero photo is set in Site settings.
+ */
+body.page-home .home-ota:not(.home-ota--has-photo) .home-ota-bg {
+    background: linear-gradient(165deg, rgba(0, 140, 255, 0.12) 0%, #e8f4ff 22%, #f2f2f2 55%, #f2f2f2 100%);
+}
+
+body.page-home .home-ota:not(.home-ota--has-photo) .home-ota-bg::before {
+    opacity: 0.85;
+}
+
+body.page-home .home-ota-card {
+    border-radius: 10px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1), 0 0 0 1px #e7e7e7;
+}
+
+html[data-theme="dark"] body.page-home .home-ota:not(.home-ota--has-photo) .home-ota-bg {
+    background: linear-gradient(165deg, #1e3a5f 0%, #1e293b 45%, #0f172a 100%);
+}

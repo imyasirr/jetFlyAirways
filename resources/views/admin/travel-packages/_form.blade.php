@@ -11,5 +11,12 @@
 <div style="margin-top:10px;"><label>Details</label><textarea name="details" rows="4">{{ old('details', optional($package)->details) }}</textarea></div>
 <div style="margin-top:10px;"><label>Inclusions</label><textarea name="inclusions" rows="3">{{ old('inclusions', optional($package)->inclusions) }}</textarea></div>
 <div style="margin-top:10px;"><label>Exclusions</label><textarea name="exclusions" rows="3">{{ old('exclusions', optional($package)->exclusions) }}</textarea></div>
-<div style="margin-top:10px;"><label><input type="checkbox" name="is_published" value="1" {{ old('is_published', optional($package)->is_published ?? true) ? 'checked' : '' }}> Published</label></div>
+<div style="margin-top:14px;">
+    @include('admin.partials.toggle', [
+        'name' => 'is_published',
+        'label' => 'Published',
+        'hint' => 'Unpublished packages are hidden from the public holiday packages listing.',
+        'checked' => old('is_published', (optional($package)->is_published ?? true) ? '1' : '0') === '1',
+    ])
+</div>
 <button class="btn" style="margin-top:12px;">Save Package</button>

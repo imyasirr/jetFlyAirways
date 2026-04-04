@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('content')
     <div class="card">
@@ -11,7 +11,7 @@
             <p style="color:green;">{{ session('status') }}</p>
         @endif
 
-        <div style="overflow:auto;">
+        <div class="admin-table-scroll">
             <table style="width:100%;border-collapse:collapse;">
                 <thead>
                     <tr>
@@ -47,3 +47,4 @@
         <div style="margin-top:10px;">{{ $services->links() }}</div>
     </div>
 @endsection
+

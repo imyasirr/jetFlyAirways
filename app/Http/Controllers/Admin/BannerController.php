@@ -27,8 +27,10 @@ class BannerController extends Controller
     {
         $data = $request->validate([
             'title' => ['nullable', 'string', 'max:200'],
+            'description' => ['nullable', 'string', 'max:2000'],
             'image_file' => ['required', 'image', 'mimes:jpeg,png,webp,gif', 'max:10240'],
             'link' => ['nullable', 'string', 'max:500'],
+            'button_text' => ['nullable', 'string', 'max:120'],
             'sort_order' => ['nullable', 'integer', 'min:0', 'max:99999'],
             'is_active' => ['boolean'],
         ]);
@@ -55,8 +57,10 @@ class BannerController extends Controller
     {
         $data = $request->validate([
             'title' => ['nullable', 'string', 'max:200'],
+            'description' => ['nullable', 'string', 'max:2000'],
             'image_file' => ['nullable', 'image', 'mimes:jpeg,png,webp,gif', 'max:10240'],
             'link' => ['nullable', 'string', 'max:500'],
+            'button_text' => ['nullable', 'string', 'max:120'],
             'sort_order' => ['nullable', 'integer', 'min:0', 'max:99999'],
             'is_active' => ['boolean'],
         ]);

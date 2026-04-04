@@ -9,5 +9,12 @@
     <div><label>Price</label><input type="number" step="0.01" min="0" name="price" required value="{{ old('price', optional($route)->price) }}"></div>
     <div><label>Seats</label><input type="number" min="0" name="seats_available" required value="{{ old('seats_available', optional($route)->seats_available ?? 0) }}"></div>
 </div>
-<div style="margin-top:10px;"><label><input type="checkbox" name="is_active" value="1" {{ old('is_active', optional($route)->is_active ?? true) ? 'checked' : '' }}> Active</label></div>
+<div style="margin-top:14px;">
+    @include('admin.partials.toggle', [
+        'name' => 'is_active',
+        'label' => 'Active',
+        'hint' => 'Inactive routes are omitted from public train search.',
+        'checked' => old('is_active', (optional($route)->is_active ?? true) ? '1' : '0') === '1',
+    ])
+</div>
 <button class="btn" style="margin-top:12px;">Save Train Route</button>

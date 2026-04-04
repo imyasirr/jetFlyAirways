@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('content')
     <div class="card">
@@ -34,7 +34,7 @@
             </div>
         </form>
 
-        <div style="overflow:auto;">
+        <div class="admin-table-scroll">
             <table style="width:100%;border-collapse:collapse;font-size:14px;">
                 <thead>
                     <tr>
@@ -67,3 +67,4 @@
         <div style="margin-top:12px;">{{ $bookings->links() }}</div>
     </div>
 @endsection
+

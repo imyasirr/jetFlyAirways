@@ -33,13 +33,24 @@
         <label>Sort order</label>
         <input type="number" name="sort_order" value="{{ old('sort_order', $item?->sort_order ?? 0) }}" min="0" max="65535" required>
     </div>
-    <label style="display:flex;align-items:center;gap:8px;">
-        <input type="checkbox" name="is_active" value="1" @checked(old('is_active', $item?->is_active ?? true))> Active
-    </label>
-    <label style="display:flex;align-items:center;gap:8px;">
-        <input type="checkbox" name="open_new_tab" value="1" @checked(old('open_new_tab', $item?->open_new_tab ?? false))> Open in new tab
-    </label>
-    <label style="display:flex;align-items:center;gap:8px;">
-        <input type="checkbox" name="requires_auth" value="1" @checked(old('requires_auth', $item?->requires_auth ?? false))> Show only when logged in
-    </label>
+    @include('admin.partials.toggle', [
+        'name' => 'is_active',
+        'label' => 'Active',
+        'hint' => 'Inactive links are hidden from the header or footer menu.',
+        'checked' => old('is_active', ($item?->is_active ?? true) ? '1' : '0') === '1',
+    ])
+    @include('admin.partials.toggle', [
+        'name' => 'open_new_tab',
+        'label' => 'Open in new tab',
+        'hint' => 'Uses target=_blank so visitors keep your site open.',
+        'checked' => old('open_new_tab', ($item?->open_new_tab ?? false) ? '1' : '0') === '1',
+        'withHidden' => false,
+    ])
+    @include('admin.partials.toggle', [
+        'name' => 'requires_auth',
+        'label' => 'Show only when logged in',
+        'hint' => 'Link appears only for signed-in customers (e.g. My bookings).',
+        'checked' => old('requires_auth', ($item?->requires_auth ?? false) ? '1' : '0') === '1',
+        'withHidden' => false,
+    ])
 </div>

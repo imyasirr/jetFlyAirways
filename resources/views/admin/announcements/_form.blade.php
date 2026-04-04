@@ -11,8 +11,9 @@
 <label>Published at</label>
 <input type="datetime-local" name="published_at" value="{{ old('published_at', isset($announcement) && $announcement->published_at ? $announcement->published_at->timezone(config('app.timezone'))->format('Y-m-d\TH:i') : '') }}">
 
-<label style="display:flex;align-items:center;gap:8px;font-weight:600;">
-    <input type="hidden" name="is_active" value="0">
-    <input type="checkbox" name="is_active" value="1" {{ old('is_active', ($announcement->is_active ?? true) ? '1' : '0') === '1' ? 'checked' : '' }}>
-    Active
-</label>
+@include('admin.partials.toggle', [
+    'name' => 'is_active',
+    'label' => 'Active',
+    'hint' => 'Turn off to hide this announcement from site visitors.',
+    'checked' => old('is_active', ($announcement->is_active ?? true) ? '1' : '0') === '1',
+])

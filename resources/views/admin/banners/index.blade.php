@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('content')
     <div class="card">
@@ -6,7 +6,7 @@
             <h1 class="section-title" style="margin:0;">Homepage banners</h1>
             <a class="btn" href="{{ route('admin.banners.create') }}">Add banner</a>
         </div>
-        <div style="overflow:auto;">
+        <div class="admin-table-scroll">
             <table class="admin-table">
                 <thead>
                     <tr>
@@ -46,3 +46,4 @@
         <div style="margin-top:12px;">{{ $banners->links() }}</div>
     </div>
 @endsection
+

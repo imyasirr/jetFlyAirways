@@ -14,72 +14,39 @@ class MenuItemSeeder extends Seeder
         MenuItem::query()->truncate();
         Schema::enableForeignKeyConstraints();
 
-        $header = [
-            ['label' => 'Home', 'href' => '/', 'sort' => 1],
-            ['label' => 'Discover', 'href' => '/welcome', 'sort' => 2],
-        ];
-        foreach ($header as $row) {
-            MenuItem::create([
-                'location' => 'header',
-                'label' => $row['label'],
-                'href' => $row['href'],
-                'sort_order' => $row['sort'],
-                'is_active' => true,
-            ]);
-        }
-
-        $book = MenuItem::create([
+        /** Header: primary tabs + “More” mega (MMT-style; no duplicate Home / Discover / My account — logo + account CTA cover those). */
+        MenuItem::create([
             'location' => 'header',
-            'label' => 'Book',
-            'href' => null,
-            'sort_order' => 10,
+            'label' => 'Flights',
+            'href' => '/flights',
+            'sort_order' => 1,
             'is_active' => true,
         ]);
-        foreach ([
-            ['Flights', '/flights'],
-            ['Hotels', '/hotels'],
-            ['Packages', '/packages'],
-        ] as $i => $r) {
-            MenuItem::create([
-                'parent_id' => $book->id,
-                'location' => 'header',
-                'label' => $r[0],
-                'href' => $r[1],
-                'sort_order' => $i,
-                'is_active' => true,
-            ]);
-        }
-
-        $ground = MenuItem::create([
+        MenuItem::create([
             'location' => 'header',
-            'label' => 'Ground transport',
-            'href' => null,
-            'sort_order' => 20,
+            'label' => 'Hotels',
+            'href' => '/hotels',
+            'sort_order' => 2,
             'is_active' => true,
         ]);
-        foreach ([
-            ['Buses', '/buses'],
-            ['Trains', '/trains'],
-            ['Cabs', '/cabs'],
-        ] as $i => $r) {
-            MenuItem::create([
-                'parent_id' => $ground->id,
-                'location' => 'header',
-                'label' => $r[0],
-                'href' => $r[1],
-                'sort_order' => $i,
-                'is_active' => true,
-            ]);
-        }
-
+        MenuItem::create([
+            'location' => 'header',
+            'label' => 'Holidays',
+            'href' => '/packages',
+            'sort_order' => 3,
+            'is_active' => true,
+        ]);
         $more = MenuItem::create([
             'location' => 'header',
-            'label' => 'More services',
+            'label' => 'More',
             'href' => null,
-            'sort_order' => 30,
+            'sort_order' => 4,
             'is_active' => true,
         ]);
         foreach ([
+            ['Trains', '/trains'],
+            ['Buses', '/buses'],
+            ['Cabs', '/cabs'],
             ['Visa', '/visa'],
             ['Insurance', '/insurance'],
         ] as $i => $r) {
@@ -93,18 +60,9 @@ class MenuItemSeeder extends Seeder
             ]);
         }
 
-        MenuItem::create([
-            'location' => 'header',
-            'label' => 'My account',
-            'href' => '/account',
-            'sort_order' => 40,
-            'is_active' => true,
-            'requires_auth' => true,
-        ]);
-
         $footerServices = MenuItem::create([
             'location' => 'footer',
-            'label' => 'Services',
+            'label' => 'Products',
             'href' => null,
             'sort_order' => 1,
             'is_active' => true,
@@ -116,9 +74,35 @@ class MenuItemSeeder extends Seeder
             ['Buses', '/buses'],
             ['Trains', '/trains'],
             ['Cabs', '/cabs'],
+            ['Visa', '/visa'],
+            ['Insurance', '/insurance'],
         ] as $i => $r) {
             MenuItem::create([
                 'parent_id' => $footerServices->id,
+                'location' => 'footer',
+                'label' => $r[0],
+                'href' => $r[1],
+                'sort_order' => $i,
+                'is_active' => true,
+            ]);
+        }
+
+        $footerQuick = MenuItem::create([
+            'location' => 'footer',
+            'label' => 'Quick links',
+            'href' => null,
+            'sort_order' => 2,
+            'is_active' => true,
+        ]);
+        foreach ([
+            ['Search', '#search'],
+            ['Blog', '/blog'],
+            ['FAQ', '/faq'],
+            ['Jobs', '/jobs'],
+            ['Contact', '/contact-us'],
+        ] as $i => $r) {
+            MenuItem::create([
+                'parent_id' => $footerQuick->id,
                 'location' => 'footer',
                 'label' => $r[0],
                 'href' => $r[1],
@@ -131,18 +115,15 @@ class MenuItemSeeder extends Seeder
             'location' => 'footer',
             'label' => 'Company',
             'href' => null,
-            'sort_order' => 2,
+            'sort_order' => 3,
             'is_active' => true,
         ]);
         foreach ([
             ['Discover', '/welcome'],
             ['Home', '/'],
             ['About us', '/p/about'],
-            ['Blog', '/blog'],
             ['Open jobs', '/jobs'],
-            ['Careers (info)', '/p/careers'],
-            ['FAQ', '/faq'],
-            ['Contact form', '/contact-us'],
+            ['Careers', '/p/careers'],
         ] as $i => $r) {
             MenuItem::create([
                 'parent_id' => $footerCompany->id,
@@ -158,7 +139,7 @@ class MenuItemSeeder extends Seeder
             'location' => 'footer',
             'label' => 'Support & legal',
             'href' => null,
-            'sort_order' => 3,
+            'sort_order' => 4,
             'is_active' => true,
         ]);
         foreach ([

@@ -11,14 +11,26 @@ final class PublicImageStorage
 
     public static function url(?string $storedPath): ?string
     {
-        if ($storedPath === null || $storedPath === '') {
+        if ($storedPath === null || trim($storedPath) === '') {
             return null;
         }
+
+        $storedPath = str_replace('\\', '/', trim($storedPath));
+
         if (preg_match('#^https?://#i', $storedPath)) {
             return $storedPath;
         }
 
-        return asset('storage/'.ltrim($storedPath, '/'));
+        if (str_starts_with($storedPath, '/storage/')) {
+            return asset(ltrim($storedPath, '/'));
+        }
+
+        $relative = ltrim($storedPath, '/');
+        if (str_starts_with($relative, 'storage/')) {
+            return asset($relative);
+        }
+
+        return asset('storage/'.$relative);
     }
 
     public static function storeUpload(?UploadedFile $file, string $directory, ?string $deleteRelativePath = null): ?string

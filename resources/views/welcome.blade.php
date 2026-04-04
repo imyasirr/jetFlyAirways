@@ -1,32 +1,41 @@
 @extends('layouts.app')
 
+@section('body_class', 'page-home')
+
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/home.css') }}?v=2">
+<link rel="stylesheet" href="{{ asset('css/welcome.css') }}?v=1">
+@endpush
+
 @section('title', $siteSeo?->meta_title ?? 'Discover — Jet Fly Airways')
 
 @section('meta_description', $siteSeo?->meta_description ?? 'Jet Fly Airways enterprise travel platform — flights, hotels, packages, buses, trains and cabs with live inventory.')
 
-@push('styles')
-<style>
-    .hero-welcome { padding:48px 0 56px; }
-    .hero-welcome h1 { max-width:18ch; }
-    .hero-welcome .lead { font-size:1.1rem; max-width:56ch; opacity:.95; margin:0 0 28px; line-height:1.55; }
-    .stats-strip {
-        display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:12px;
-        margin-top:8px; max-width:900px;
-    }
-    .stat-item {
-        background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.2); border-radius:14px;
-        padding:14px 16px; text-align:center;
-    }
-    .stat-item strong { display:block; font-size:1.5rem; font-weight:800; letter-spacing:-.02em; }
-    .stat-item span { font-size:11px; text-transform:uppercase; letter-spacing:.06em; opacity:.85; margin-top:4px; display:block; }
-    .why-grid { display:grid; gap:20px; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); margin-bottom:8px; }
-    .why-card { border-left:4px solid var(--accent); padding-left:18px; }
-    .why-card h3 { margin:0 0 8px; font-size:1.05rem; color:var(--primary); }
-    .why-card p { margin:0; font-size:14px; color:var(--muted); line-height:1.55; }
-</style>
-@endpush
-
 @section('full')
+@php
+    $heroImgUrl = ($siteSetting ?? null)?->hero_image
+        ? \App\Support\PublicImageStorage::url($siteSetting->hero_image)
+        : null;
+@endphp
+<section class="home-ota home-ota--hero home-ota--enterprise {{ $heroImgUrl ? 'home-ota--has-photo' : '' }}" aria-label="Platform overview">
+    <div
+        class="home-ota-bg {{ $heroImgUrl ? 'home-ota-bg--photo' : '' }}"
+        aria-hidden="true"
+        @if($heroImgUrl) style="background-image:url('{{ e($heroImgUrl) }}')" @endif
+    ></div>
+    @if($heroImgUrl)
+        <div class="home-ota-scrim" aria-hidden="true"></div>
+    @endif
+    <div class="container home-ota-inner">
+        <header class="home-ota-headline">
+            <p class="home-ota-kicker">Enterprise travel stack · Live inventory</p>
+            <h1 class="home-ota-title">Where every journey meets reliability</h1>
+            <p class="home-ota-sub">Flights, hotels, packages, and ground transport — backed by admin tools, secure booking, and real-time listings.</p>
+        </header>
+        @include('partials.home-search-panel')
+    </div>
+</section>
+
 <section class="hero hero-welcome">
     <div class="container">
         <span class="pill">Enterprise-grade travel platform · Live inventory</span>
@@ -42,13 +51,7 @@
     </div>
 </section>
 
-<div class="home-banner-page">
-    <div class="container">
-        @include('partials.home-banner-slider')
-    </div>
-</div>
-
-@include('partials.home-search-panel')
+@include('partials.home-banner-slider')
 @endsection
 
 @section('content')

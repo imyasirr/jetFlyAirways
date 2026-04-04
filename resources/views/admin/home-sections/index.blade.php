@@ -2,13 +2,13 @@
 
 @section('content')
     <div class="card">
-        <h1 class="section-title">Homepage sections</h1>
-        <p style="color:var(--admin-muted);margin-top:0;">Drag order is controlled by sort order. Each block maps to a fixed layout partial on the public home page.</p>
+        <h2 class="section-title" style="font-size:1.1rem;">Section order &amp; visibility</h2>
+        <p style="color:var(--admin-muted);margin:0 0 12px;">Sort order controls display order. Each row maps to a fixed block on the public home page.</p>
 
         <form method="post" action="{{ route('admin.home-sections.update') }}">
             @csrf
             @method('PUT')
-            <div style="overflow:auto;">
+            <div class="admin-table-scroll">
                 <table class="admin-table">
                     <thead>
                         <tr>
@@ -30,8 +30,12 @@
                                     <input type="number" name="sections[{{ $loop->index }}][sort_order]" value="{{ old('sections.'.$loop->index.'.sort_order', $section->sort_order) }}" min="0" max="99999">
                                 </td>
                                 <td>
-                                    <input type="hidden" name="sections[{{ $loop->index }}][is_active]" value="0">
-                                    <input type="checkbox" name="sections[{{ $loop->index }}][is_active]" value="1" {{ old('sections.'.$loop->index.'.is_active', $section->is_active ? '1' : '0') === '1' ? 'checked' : '' }}>
+                                    @include('admin.partials.toggle', [
+                                        'name' => 'sections['.$loop->index.'][is_active]',
+                                        'label' => 'Section visible',
+                                        'checked' => old('sections.'.$loop->index.'.is_active', $section->is_active ? '1' : '0') === '1',
+                                        'compact' => true,
+                                    ])
                                 </td>
                             </tr>
                         @endforeach

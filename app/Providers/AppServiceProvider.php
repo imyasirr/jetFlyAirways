@@ -8,6 +8,7 @@ use App\Models\AnnouncementRead;
 use App\Models\MenuItem;
 use App\Models\PopupMessage;
 use App\Models\SeoMeta;
+use App\Models\SiteSetting;
 use App\Services\Gds\NullGdsBookingClient;
 use App\Services\Sms\LogSmsSender;
 use App\Services\Sms\SmsSender;
@@ -60,6 +61,12 @@ class AppServiceProvider extends ServiceProvider
                     ->first();
             }
             $view->with('siteSeo', $siteSeo);
+
+            $siteSetting = null;
+            if (Schema::hasTable('site_settings')) {
+                $siteSetting = SiteSetting::query()->first();
+            }
+            $view->with('siteSetting', $siteSetting);
 
             $unreadAnnouncements = 0;
             if (auth()->check() && Schema::hasTable('announcements') && Schema::hasTable('announcement_reads')) {

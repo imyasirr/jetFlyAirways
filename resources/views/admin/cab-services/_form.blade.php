@@ -6,5 +6,12 @@
     <div><label>Base Fare</label><input type="number" step="0.01" min="0" name="base_fare" required value="{{ old('base_fare', optional($service)->base_fare) }}"></div>
     <div><label>Per KM Rate</label><input type="number" step="0.01" min="0" name="per_km_rate" value="{{ old('per_km_rate', optional($service)->per_km_rate) }}"></div>
 </div>
-<div style="margin-top:10px;"><label><input type="checkbox" name="is_active" value="1" {{ old('is_active', optional($service)->is_active ?? true) ? 'checked' : '' }}> Active</label></div>
+<div style="margin-top:14px;">
+    @include('admin.partials.toggle', [
+        'name' => 'is_active',
+        'label' => 'Active',
+        'hint' => 'Inactive cab options are hidden from the public cab booking page.',
+        'checked' => old('is_active', (optional($service)->is_active ?? true) ? '1' : '0') === '1',
+    ])
+</div>
 <button class="btn" style="margin-top:12px;">Save Cab Service</button>

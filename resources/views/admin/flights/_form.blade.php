@@ -11,7 +11,12 @@
     <div><label>Cabin Class</label><input name="cabin_class" required value="{{ old('cabin_class', $flight->cabin_class ?? 'Economy') }}"></div>
     <div><label>Seats Available</label><input type="number" min="0" name="seats_available" required value="{{ old('seats_available', $flight->seats_available ?? 0) }}"></div>
 </div>
-<div style="margin-top:10px;">
-    <label><input type="checkbox" name="is_active" value="1" {{ old('is_active', $flight->is_active ?? true) ? 'checked' : '' }}> Active</label>
+<div style="margin-top:14px;">
+    @include('admin.partials.toggle', [
+        'name' => 'is_active',
+        'label' => 'Active',
+        'hint' => 'Turn off to hide this flight from public search and listings.',
+        'checked' => old('is_active', ($flight->is_active ?? true) ? '1' : '0') === '1',
+    ])
 </div>
 <button class="btn" style="margin-top:12px;">Save Flight</button>

@@ -1,10 +1,10 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('content')
     <div class="card">
         <h1 class="section-title">Users</h1>
         <p style="color:#64748b;font-size:14px;">Customer accounts registered on the site. Admins can see bookings linked to each user.</p>
-        <div style="overflow:auto;">
+        <div class="admin-table-scroll">
             <table class="admin-table">
                 <thead>
                     <tr>
@@ -35,3 +35,4 @@
         <div style="margin-top:12px;">{{ $users->links() }}</div>
     </div>
 @endsection
+

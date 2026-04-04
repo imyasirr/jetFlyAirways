@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 
 class MenuItem extends Model
 {
@@ -47,6 +48,9 @@ class MenuItem extends Model
         if (str_starts_with($h, 'http://') || str_starts_with($h, 'https://') || str_starts_with($h, '//')) {
             return $h;
         }
+        if (str_starts_with($h, '#')) {
+            return url('/').$h;
+        }
 
         return url($h);
     }
@@ -65,7 +69,7 @@ class MenuItem extends Model
         return $cur === $h;
     }
 
-    /** @return \Illuminate\Support\Collection<int, MenuItem> */
+    /** @return Collection<int, MenuItem> */
     public static function treeFor(string $location)
     {
         return static::query()

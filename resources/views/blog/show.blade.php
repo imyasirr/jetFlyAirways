@@ -1,20 +1,51 @@
 @extends('layouts.app')
 
+@section('body_class', 'page-blog-post')
+
 @section('title', ($blog->meta_title ?: $blog->title).' — Jet Fly Airways')
 
-@section('content')
-    <article class="card" style="max-width:800px;">
-        <p style="font-size:13px;color:#64748b;margin:0 0 8px;">{{ $blog->publish_at?->format('l, d F Y') }} @if($blog->category) · {{ $blog->category }} @endif @if($blog->author_name) · {{ $blog->author_name }} @endif</p>
-        <h1 class="section-title" style="margin-bottom:12px;">{{ $blog->title }}</h1>
-        @php $coverUrl = \App\Support\PublicImageStorage::url($blog->cover_image); @endphp
-        @if($coverUrl)
-            <div style="margin:0 0 16px;border-radius:12px;overflow:hidden;">
-                <img src="{{ $coverUrl }}" alt="" style="width:100%;display:block;">
-            </div>
-        @endif
-        <div class="blog-body" style="font-size:15px;line-height:1.65;color:#334155;">
-            {!! $blog->content !!}
+@section('meta_description', $blog->meta_description ?: \Illuminate\Support\Str::limit(strip_tags($blog->excerpt), 160))
+
+@section('full')
+@php
+    $hasCover = (bool) $blog->cover_url;
+@endphp
+<header class="blog-post-hero {{ $hasCover ? 'blog-post-hero--photo' : '' }}" aria-label="Article header">
+    @if($hasCover)
+        <img src="{{ $blog->cover_url }}" alt="" class="blog-post-hero__img" fetchpriority="high" decoding="async">
+        <div class="blog-post-hero__scrim" aria-hidden="true"></div>
+    @endif
+    <div class="container blog-post-hero__inner">
+        <nav class="blog-post-breadcrumb" aria-label="Breadcrumb">
+            <a href="{{ route('blog.index') }}">Travel blog</a>
+            @if($blog->category)
+                <span class="blog-post-breadcrumb__sep" aria-hidden="true">/</span>
+                <span>{{ $blog->category }}</span>
+            @endif
+        </nav>
+        <h1 class="blog-post-hero__title">{{ $blog->title }}</h1>
+        <div class="blog-post-hero__meta">
+            @if($blog->publish_at)
+                <span class="blog-post-meta-pill">{{ $blog->publish_at->format('d M Y') }}</span>
+            @endif
+            @if($blog->author_name)
+                <span class="blog-post-meta-pill">By {{ $blog->author_name }}</span>
+            @endif
+            @if($blog->tags)
+                <span class="blog-post-meta-pill blog-post-meta-pill--muted">{{ $blog->tags }}</span>
+            @endif
         </div>
-        <p style="margin-top:24px;"><a href="{{ route('blog.index') }}" class="btn secondary">← All posts</a></p>
-    </article>
+    </div>
+</header>
+@endsection
+
+@section('content')
+<article class="blog-post-article">
+    <div class="blog-post-prose blog-body">
+        {!! $blog->rendered_content !!}
+    </div>
+    <footer class="blog-post-footer">
+        <a href="{{ route('blog.index') }}" class="btn secondary blog-post-back">← All articles</a>
+    </footer>
+</article>
 @endsection

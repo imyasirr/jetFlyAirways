@@ -4,10 +4,10 @@ namespace Database\Seeders;
 
 use App\Models\Coupon;
 use App\Models\User;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 
 class DatabaseSeeder extends Seeder
 {
@@ -29,7 +29,6 @@ class DatabaseSeeder extends Seeder
                 'is_admin' => true,
             ]
         );
-
 
         $couponRows = [
             ['code' => 'JETFLY500', 'discount_type' => 'flat', 'discount_value' => 500, 'valid_from' => now()->subDay(), 'valid_to' => now()->addMonths(6)],
@@ -53,6 +52,10 @@ class DatabaseSeeder extends Seeder
 
         if (Schema::hasTable('cms_pages')) {
             $this->call(PageSeeder::class);
+        }
+
+        if (Schema::hasTable('site_settings')) {
+            $this->call(SiteSettingSeeder::class);
         }
 
         if (Schema::hasTable('menu_items')) {

@@ -64,7 +64,7 @@ class PageController extends Controller
         $data = $request->validate([
             'slug' => $slugRule,
             'title' => ['required', 'string', 'max:200'],
-            'body' => ['required', 'string'],
+            'body' => ['required', 'string', 'max:500000'],
             'meta_description' => ['nullable', 'string', 'max:500'],
             'is_active' => ['boolean'],
         ]);

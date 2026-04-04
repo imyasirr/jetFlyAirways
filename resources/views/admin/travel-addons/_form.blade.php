@@ -21,8 +21,9 @@
 <label>Sort order</label>
 <input type="number" name="sort_order" value="{{ old('sort_order', $addon->sort_order ?? 0) }}" min="0" max="99999">
 
-<label style="display:flex;align-items:center;gap:8px;font-weight:600;">
-    <input type="hidden" name="is_active" value="0">
-    <input type="checkbox" name="is_active" value="1" {{ old('is_active', ($addon->is_active ?? true) ? '1' : '0') === '1' ? 'checked' : '' }}>
-    Active
-</label>
+@include('admin.partials.toggle', [
+    'name' => 'is_active',
+    'label' => 'Active',
+    'hint' => 'Inactive add-ons are hidden from the visa & insurance section on the site.',
+    'checked' => old('is_active', ($addon->is_active ?? true) ? '1' : '0') === '1',
+])

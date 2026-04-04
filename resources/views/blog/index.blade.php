@@ -7,10 +7,9 @@
     <div class="grid">
         @forelse($blogs as $blog)
             <article class="card">
-                @php $coverUrl = \App\Support\PublicImageStorage::url($blog->cover_image); @endphp
-                @if($coverUrl)
-                    <div style="margin:-20px -20px 12px;border-radius:16px 16px 0 0;overflow:hidden;aspect-ratio:16/9;background:#e2e8f0;">
-                        <img src="{{ $coverUrl }}" alt="" style="width:100%;height:100%;object-fit:cover;">
+                @if($blog->cover_url)
+                    <div class="blog-card-cover">
+                        <img src="{{ $blog->cover_url }}" alt="" loading="lazy" decoding="async">
                     </div>
                 @endif
                 <p style="font-size:12px;color:#64748b;margin:0 0 6px;">{{ $blog->publish_at?->format('d M Y') }} @if($blog->category) · {{ $blog->category }} @endif</p>

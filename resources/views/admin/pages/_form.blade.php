@@ -13,11 +13,16 @@
         <label>Meta description (SEO)</label>
         <input type="text" name="meta_description" value="{{ old('meta_description', $p?->meta_description) }}" maxlength="500" placeholder="Optional — shown in search snippets">
     </div>
-    <div>
-        <label>Body (HTML allowed)</label>
-        <textarea name="body" rows="22" required style="font-family:ui-monospace,monospace;font-size:13px;">{{ old('body', $p?->body) }}</textarea>
+    <div class="cms-editor-wrap">
+        <label for="cms_page_body">Page content</label>
+        <textarea id="cms_page_body" name="body" rows="18" required>{{ old('body', $p?->body) }}</textarea>
+        <p class="cms-editor-hint">Rich text editor — paste from Word or Google Docs keeps most formatting. Use “Source code” for raw HTML. Public page uses the same colours and fonts as your site.</p>
     </div>
-    <label style="display:flex;align-items:center;gap:8px;">
-        <input type="checkbox" name="is_active" value="1" @checked(old('is_active', $p?->is_active ?? true))> Published
-    </label>
+    @include('admin.partials.toggle', [
+        'name' => 'is_active',
+        'label' => 'Published',
+        'hint' => 'Draft pages stay hidden; visitors only see published pages at /p/your-slug.',
+        'checked' => old('is_active', ($p?->is_active ?? true) ? '1' : '0') === '1',
+    ])
 </div>
+@include('admin.partials.tinymce-cms-page')
