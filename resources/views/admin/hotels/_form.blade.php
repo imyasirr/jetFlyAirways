@@ -1,5 +1,5 @@
 @csrf
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+<div class="admin-form-grid">
     <div><label>Name</label><input name="name" required value="{{ old('name', $hotel->name ?? '') }}"></div>
     <div><label>City</label><input name="city" required value="{{ old('city', $hotel->city ?? '') }}"></div>
     <div><label>Location</label><input name="location" value="{{ old('location', $hotel->location ?? '') }}"></div>
@@ -16,4 +16,6 @@
         'checked' => old('is_active', (optional($hotel)->is_active ?? true) ? '1' : '0') === '1',
     ])
 </div>
-<button class="btn" style="margin-top:12px;">Save Hotel</button>
+<div class="form-actions">
+    <button class="btn">Save Hotel</button>
+</div>

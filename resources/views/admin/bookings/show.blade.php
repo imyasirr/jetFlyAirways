@@ -9,6 +9,12 @@
         <p><strong>Travellers:</strong> {{ $booking->travellers_count }}</p>
         <p><strong>Total:</strong> Rs {{ number_format($booking->total_amount, 2) }}</p>
         <p><strong>Status:</strong> {{ $booking->status }} · <strong>Payment:</strong> {{ $booking->payment_status }}</p>
+        @if($booking->provider_service)
+            <p><strong>Provider:</strong> {{ $booking->provider_service }}</p>
+        @endif
+        @if($booking->provider_sync_status)
+            <p><strong>Provider sync:</strong> {{ $booking->provider_sync_status }}</p>
+        @endif
         @if($booking->notes)
             <p><strong>Notes:</strong> {{ $booking->notes }}</p>
         @endif

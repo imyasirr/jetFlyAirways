@@ -20,16 +20,24 @@ class Booking extends Model
         'total_amount',
         'status',
         'payment_status',
+        'provider_service',
+        'provider_sync_status',
         'notes',
         'contact_name',
         'contact_email',
         'contact_phone',
         'razorpay_order_id',
         'razorpay_payment_id',
+        'trip_type',
+        'return_date',
+        'seat_preference',
+        'meal_preference',
+        'multi_city_notes',
     ];
 
     protected $casts = [
         'travel_date' => 'date',
+        'return_date' => 'date',
         'total_amount' => 'decimal:2',
     ];
 

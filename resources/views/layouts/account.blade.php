@@ -19,6 +19,13 @@
         .acct-main { flex:1; min-width:0; display:flex; flex-direction:column; }
         .acct-top { background:#fff; border-bottom:1px solid var(--acct-border); padding:16px 24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
         .acct-top h1 { margin:0; font-size:1.2rem; color:var(--acct-primary); }
+        .acct-breadcrumbs { font-size:13px; color:var(--acct-muted); margin-top:8px; }
+        .acct-breadcrumbs ol { margin:0; padding:0; list-style:none; display:flex; flex-wrap:wrap; gap:6px 10px; }
+        .acct-breadcrumbs li { display:inline-flex; align-items:center; gap:10px; }
+        .acct-breadcrumbs li + li::before { content:"/"; color:#94a3b8; }
+        .acct-breadcrumbs a { color:#334155; font-weight:600; }
+        .acct-breadcrumbs a:hover { color:var(--acct-primary); }
+        .acct-breadcrumbs [aria-current="page"] { color:var(--acct-primary); font-weight:700; }
         .acct-top a.site-link { font-size:14px; color:var(--acct-accent); font-weight:600; }
         .acct-body { padding:24px; flex:1; }
         .acct-card { background:#fff; border-radius:14px; padding:22px; border:1px solid var(--acct-border); box-shadow:0 2px 12px rgba(13,148,136,.06); margin-bottom:20px; }
@@ -33,6 +40,8 @@
         .btn { display:inline-block; background:var(--acct-accent); color:#fff; border:none; border-radius:10px; padding:10px 18px; font-weight:700; cursor:pointer; font-size:14px; }
         .btn.outline { background:#fff; color:var(--acct-primary); border:2px solid var(--acct-border); }
         .btn.outline:hover { background:#f0fdfa; }
+        .form-actions { display:flex; align-items:center; flex-wrap:wrap; gap:10px; margin-top:12px; }
+        .form-actions .btn { margin:0; }
         label { display:block; font-size:13px; font-weight:600; color:var(--acct-muted); margin-bottom:6px; }
         input, textarea { width:100%; max-width:420px; padding:10px 12px; border:1px solid #cbd5e1; border-radius:10px; font-size:15px; margin-bottom:14px; }
         input:focus, textarea:focus { outline:2px solid var(--acct-accent); border-color:transparent; }
@@ -42,7 +51,7 @@
         .pagination { margin-top:16px; font-size:14px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
         .pagination a, .pagination span { padding:6px 12px; border-radius:8px; border:1px solid var(--acct-border); background:#fff; }
         .pagination span[aria-current="page"] { background:#ecfdf5; border-color:var(--acct-accent); color:var(--acct-primary); font-weight:700; }
-        @media (max-width:860px) { .acct-shell { flex-direction:column; } .acct-sidebar { width:100%; min-height:0; position:relative; display:flex; flex-wrap:wrap; gap:4px; padding:12px; } .acct-sidebar a { padding:8px 14px; border-radius:8px; border-left:none; } .acct-sidebar a.is-active { border:2px solid var(--acct-accent); } }
+        @media (max-width:860px) { .acct-shell { flex-direction:column; } .acct-sidebar { width:100%; min-height:0; position:relative; display:flex; flex-wrap:wrap; gap:4px; padding:12px; } .acct-sidebar a { padding:8px 14px; border-radius:8px; border-left:none; } .acct-sidebar a.is-active { border:2px solid var(--acct-accent); } .form-actions { flex-direction:column; align-items:stretch; } .form-actions .btn { width:100%; text-align:center; } }
     </style>
     @stack('styles')
 </head>
@@ -52,6 +61,8 @@
             <div class="group">Account</div>
             <a href="{{ route('account.dashboard') }}" class="{{ request()->routeIs('account.dashboard') ? 'is-active' : '' }}">Overview</a>
             <a href="{{ route('account.bookings.index') }}" class="{{ request()->routeIs('account.bookings.*') ? 'is-active' : '' }}">My bookings</a>
+            <a href="{{ route('account.saved-travellers.index') }}" class="{{ request()->routeIs('account.saved-travellers.*') ? 'is-active' : '' }}">Saved travellers</a>
+            <a href="{{ route('account.refunds.index') }}" class="{{ request()->routeIs('account.refunds.*') ? 'is-active' : '' }}">Refund tracking</a>
             <a href="{{ route('account.offers') }}" class="{{ request()->routeIs('account.offers') ? 'is-active' : '' }}">Offers &amp; discounts</a>
             <a href="{{ route('account.wishlist.index') }}" class="{{ request()->routeIs('account.wishlist.index') ? 'is-active' : '' }}">Wishlist</a>
             <a href="{{ route('account.announcements.index') }}" class="{{ request()->routeIs('account.announcements.index', 'account.announcements.read') ? 'is-active' : '' }}">Notifications</a>
@@ -61,7 +72,53 @@
         </aside>
         <div class="acct-main">
             <header class="acct-top">
-                <h1>@yield('heading', 'My account')</h1>
+                <div>
+                    @php
+                        $accountRoute = \Illuminate\Support\Facades\Route::currentRouteName() ?? '';
+                        $accountParts = explode('.', $accountRoute);
+                        $accountRes = $accountParts[1] ?? 'dashboard';
+                        $accountAct = $accountParts[2] ?? 'index';
+                        $accountLabels = [
+                            'dashboard' => 'Overview',
+                            'bookings' => 'My bookings',
+                            'wishlist' => 'Wishlist',
+                            'announcements' => 'Notifications',
+                            'profile' => 'Profile',
+                            'password' => 'Password',
+                            'offers' => 'Offers & discounts',
+                        ];
+                        $accountCrumbs = [
+                            ['label' => 'Account', 'url' => route('account.dashboard')],
+                        ];
+                        if ($accountRes !== 'dashboard') {
+                            $accountCrumbs[] = [
+                                'label' => $accountLabels[$accountRes] ?? ucwords(str_replace('-', ' ', $accountRes)),
+                                'url' => null,
+                            ];
+                            if (!in_array($accountAct, ['index', 'edit', ''], true)) {
+                                $accountCrumbs[] = [
+                                    'label' => ucwords(str_replace('-', ' ', $accountAct)),
+                                    'url' => null,
+                                ];
+                            }
+                        }
+                    @endphp
+                    <h1>@yield('heading', 'My account')</h1>
+                    <nav class="acct-breadcrumbs" aria-label="Breadcrumb">
+                        <ol>
+                            @foreach($accountCrumbs as $index => $crumb)
+                                @php $isLast = $index === count($accountCrumbs) - 1; @endphp
+                                <li>
+                                    @if(!$isLast && !empty($crumb['url']))
+                                        <a href="{{ $crumb['url'] }}">{{ $crumb['label'] }}</a>
+                                    @else
+                                        <span aria-current="page">{{ $crumb['label'] }}</span>
+                                    @endif
+                                </li>
+                            @endforeach
+                        </ol>
+                    </nav>
+                </div>
                 <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
                     <a href="{{ route('home') }}" class="site-link">← Back to website</a>
                     <form method="post" action="{{ route('logout') }}" style="margin:0;">

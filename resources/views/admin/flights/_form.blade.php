@@ -1,5 +1,5 @@
 @csrf
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+<div class="admin-form-grid">
     <div><label>Airline</label><input name="airline" required value="{{ old('airline', $flight->airline ?? '') }}"></div>
     <div><label>Flight Number</label><input name="flight_number" required value="{{ old('flight_number', $flight->flight_number ?? '') }}"></div>
     <div><label>From City</label><input name="from_city" required value="{{ old('from_city', $flight->from_city ?? '') }}"></div>
@@ -19,4 +19,6 @@
         'checked' => old('is_active', ($flight->is_active ?? true) ? '1' : '0') === '1',
     ])
 </div>
-<button class="btn" style="margin-top:12px;">Save Flight</button>
+<div class="form-actions">
+    <button class="btn">Save Flight</button>
+</div>

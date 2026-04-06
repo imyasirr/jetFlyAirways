@@ -61,6 +61,8 @@
                             <a href="{{ route('module.index', 'cabs') }}" role="menuitem" class="mm-mega-item">Cabs</a>
                             <a href="{{ route('module.index', 'visa') }}" role="menuitem" class="mm-mega-item">Visa</a>
                             <a href="{{ route('module.index', 'insurance') }}" role="menuitem" class="mm-mega-item">Insurance</a>
+                            <a href="{{ route('refer-earn') }}" role="menuitem" class="mm-mega-item">Refer &amp; Earn</a>
+                            <a href="{{ route('currency-converter') }}" role="menuitem" class="mm-mega-item">Currency Converter</a>
                         </div>
                     </div>
                 </div>
@@ -76,6 +78,8 @@
                     </summary>
                     <div class="mm-account-panel" role="menu">
                         <a href="{{ route('account.bookings.index') }}" class="mm-account-link" role="menuitem">My Trips</a>
+                        <a href="{{ route('account.saved-travellers.index') }}" class="mm-account-link" role="menuitem">Saved travellers</a>
+                        <a href="{{ route('account.refunds.index') }}" class="mm-account-link" role="menuitem">Refund tracking</a>
                         <a href="{{ route('account.wishlist.index') }}" class="mm-account-link" role="menuitem">{{ __('jetfly.wishlist') }}</a>
                         @if(($unreadAnnouncements ?? 0) > 0)
                             <a href="{{ route('account.announcements.index') }}" class="mm-account-link" role="menuitem">{{ __('jetfly.notifications') }} <span class="notif-badge">{{ $unreadAnnouncements }}</span></a>
@@ -123,10 +127,14 @@
                 <a href="{{ route('module.index', 'cabs') }}" class="mm-mobile-link mm-mobile-sublink">Cabs</a>
                 <a href="{{ route('module.index', 'visa') }}" class="mm-mobile-link mm-mobile-sublink">Visa</a>
                 <a href="{{ route('module.index', 'insurance') }}" class="mm-mobile-link mm-mobile-sublink">Insurance</a>
+                <a href="{{ route('refer-earn') }}" class="mm-mobile-link mm-mobile-sublink">Refer &amp; Earn</a>
+                <a href="{{ route('currency-converter') }}" class="mm-mobile-link mm-mobile-sublink">Currency Converter</a>
             @endforelse
             @auth
                 <p class="mm-mobile-group">Account</p>
                 <a href="{{ route('account.bookings.index') }}" class="mm-mobile-link mm-mobile-sublink">My Trips</a>
+                <a href="{{ route('account.saved-travellers.index') }}" class="mm-mobile-link mm-mobile-sublink">Saved travellers</a>
+                <a href="{{ route('account.refunds.index') }}" class="mm-mobile-link mm-mobile-sublink">Refund tracking</a>
                 <a href="{{ route('account.wishlist.index') }}" class="mm-mobile-link mm-mobile-sublink">{{ __('jetfly.wishlist') }}</a>
                 @if(auth()->user()->isAdmin())
                     <a href="{{ route('admin.dashboard') }}" class="mm-mobile-link mm-mobile-sublink">{{ __('jetfly.admin') }}</a>

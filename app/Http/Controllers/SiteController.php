@@ -12,6 +12,7 @@ use App\Models\Flight;
 use App\Models\HomeSection;
 use App\Models\Hotel;
 use App\Models\Offer;
+use App\Models\SavedTraveller;
 use App\Models\Testimonial;
 use App\Models\WishlistItem;
 use App\Models\TrainRoute;
@@ -52,6 +53,24 @@ class SiteController extends Controller
     public function welcome()
     {
         return view('welcome', $this->homePageData());
+    }
+
+    public function referEarn(): View
+    {
+        $shareUrl = null;
+        if (auth()->check() && filled(auth()->user()->referral_code)) {
+            $shareUrl = route('register', ['ref' => auth()->user()->referral_code]);
+        }
+
+        return view('refer-earn', [
+            'shareUrl' => $shareUrl,
+            'referralsCount' => auth()->check() ? auth()->user()->referredUsers()->count() : 0,
+        ]);
+    }
+
+    public function currencyConverter(): View
+    {
+        return view('currency-converter');
     }
 
     /**
@@ -216,6 +235,9 @@ class SiteController extends Controller
             'id' => $id,
             'module' => $this->modules[$slug],
             'item' => $this->mapDetailRow($slug, $model),
+            'savedTravellers' => auth()->check()
+                ? SavedTraveller::query()->where('user_id', auth()->id())->orderBy('full_name')->get()
+                : collect(),
         ]);
     }
 
@@ -227,23 +249,48 @@ class SiteController extends Controller
         $model = $this->findActiveItem($slug, $id);
         abort_if($model === null, 404);
 
-        $validated = $request->validate([
+        $rules = [
             'name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email'],
             'phone' => ['required', 'string', 'max:20'],
             'travellers' => ['required', 'integer', 'min:1', 'max:20'],
             'travel_date' => ['required', 'date'],
             'notes' => ['nullable', 'string', 'max:500'],
-        ]);
+            'save_traveller' => ['nullable', 'boolean'],
+        ];
+
+        if ($slug === 'flights') {
+            $rules['trip_type'] = ['required', 'in:one_way,round_trip,multi_city'];
+            $rules['return_date'] = ['nullable', 'date', 'after_or_equal:travel_date'];
+            $rules['seat_preference'] = ['nullable', 'string', 'max:80'];
+            $rules['meal_preference'] = ['nullable', 'string', 'max:120'];
+            $rules['multi_city_notes'] = ['nullable', 'string', 'max:2000'];
+        }
+
+        $validated = $request->validate($rules);
+
+        if ($slug === 'flights' && ($validated['trip_type'] ?? '') === 'round_trip') {
+            $validated = array_merge($validated, $request->validate([
+                'return_date' => ['required', 'date', 'after_or_equal:travel_date'],
+            ]));
+        }
 
         $unitPrice = $this->unitPrice($slug, $model);
-        $total = round($unitPrice * (int) $validated['travellers'], 2);
+        $priceMultiplier = 1.0;
+        if ($slug === 'flights') {
+            $priceMultiplier = match ($validated['trip_type'] ?? 'one_way') {
+                'round_trip' => 2.0,
+                'multi_city' => 1.5,
+                default => 1.0,
+            };
+        }
+        $total = round($unitPrice * (int) $validated['travellers'] * $priceMultiplier, 2);
 
         do {
             $bookingCode = 'JFA-'.strtoupper(Str::limit($slug, 3, '')).'-'.strtoupper(Str::random(6));
         } while (Booking::where('booking_code', $bookingCode)->exists());
 
-        $booking = Booking::create([
+        $bookingAttrs = [
             'user_id' => auth()->id(),
             'booking_code' => $bookingCode,
             'module' => $slug,
@@ -257,7 +304,30 @@ class SiteController extends Controller
             'contact_name' => $validated['name'],
             'contact_email' => $validated['email'],
             'contact_phone' => $validated['phone'],
-        ]);
+        ];
+
+        if ($slug === 'flights') {
+            $bookingAttrs['trip_type'] = $validated['trip_type'];
+            $bookingAttrs['return_date'] = $validated['return_date'] ?? null;
+            $bookingAttrs['seat_preference'] = $validated['seat_preference'] ?? null;
+            $bookingAttrs['meal_preference'] = $validated['meal_preference'] ?? null;
+            $bookingAttrs['multi_city_notes'] = $validated['multi_city_notes'] ?? null;
+        }
+
+        $booking = Booking::create($bookingAttrs);
+
+        if (auth()->check() && (bool) ($validated['save_traveller'] ?? false)) {
+            SavedTraveller::query()->updateOrCreate(
+                [
+                    'user_id' => auth()->id(),
+                    'email' => $validated['email'],
+                ],
+                [
+                    'full_name' => $validated['name'],
+                    'phone' => $validated['phone'],
+                ]
+            );
+        }
 
         $paymentCheckoutUrl = null;
         if (config('services.razorpay.key') && config('services.razorpay.secret')) {

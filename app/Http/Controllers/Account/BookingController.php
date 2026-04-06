@@ -31,4 +31,23 @@ class BookingController extends Controller
 
         return view('account.bookings.show', compact('booking', 'ticketPdfUrl'));
     }
+
+    public function cancel(Request $request, Booking $booking)
+    {
+        abort_unless($booking->user_id === $request->user()->id, 403);
+
+        if ($booking->status === 'cancelled') {
+            return back()->with('status', 'This booking is already cancelled.');
+        }
+
+        if ($booking->travel_date->isPast()) {
+            return back()->withErrors(['status' => 'Past-travel bookings cannot be cancelled online.']);
+        }
+
+        $booking->status = 'cancelled';
+        $booking->payment_status = $booking->payment_status === 'paid' ? 'refund_initiated' : 'cancelled';
+        $booking->save();
+
+        return back()->with('status', 'Booking cancelled. Refund status has been updated.');
+    }
 }

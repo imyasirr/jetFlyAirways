@@ -60,7 +60,7 @@
     @endphp
     <title>@yield('title', $defaultHeading) — Jet Fly Admin</title>
     <meta name="description" content="@yield('meta_description', $defaultPageDescription)">
-    <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v=2">
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v=5">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
     @stack('styles')
 </head>
@@ -88,12 +88,15 @@
                 <a href="{{ route('admin.bookings.index') }}" class="{{ request()->routeIs('admin.bookings.*') ? 'active' : '' }}">Bookings</a>
                 <a href="{{ route('admin.coupons.index') }}" class="{{ request()->routeIs('admin.coupons.*') ? 'active' : '' }}">Coupons</a>
                 <a href="{{ route('admin.offers.index') }}" class="{{ request()->routeIs('admin.offers.*') ? 'active' : '' }}">Offers</a>
+                <a href="{{ route('admin.reports.payments') }}" class="{{ request()->routeIs('admin.reports.payments') ? 'active' : '' }}">Payment reports</a>
+                <a href="{{ route('admin.reports.bookings') }}" class="{{ request()->routeIs('admin.reports.bookings') ? 'active' : '' }}">Booking reports</a>
 
                 <div class="nav-group">Site &amp; marketing</div>
                 <a href="{{ route('admin.menu-items.index') }}" class="{{ request()->routeIs('admin.menu-items.*') ? 'active' : '' }}">Header &amp; footer menu</a>
                 <a href="{{ route('admin.pages.index') }}" class="{{ request()->routeIs('admin.pages.*') ? 'active' : '' }}">CMS pages</a>
                 <a href="{{ route('admin.site-seo.edit') }}" class="{{ request()->routeIs('admin.site-seo.*') ? 'active' : '' }}">Site SEO</a>
                 <a href="{{ route('admin.site-settings.edit') }}" class="{{ request()->routeIs('admin.site-settings.*') ? 'active' : '' }}">Site header &amp; footer</a>
+                <a href="{{ route('admin.integrations.index') }}" class="{{ request()->routeIs('admin.integrations.*') ? 'active' : '' }}">API integrations</a>
                 <a href="{{ route('admin.banners.index') }}" class="{{ request()->routeIs('admin.banners.*') ? 'active' : '' }}">Home banners</a>
                 <a href="{{ route('admin.home-sections.index') }}" class="{{ request()->routeIs('admin.home-sections.*') ? 'active' : '' }}">Homepage sections</a>
                 <a href="{{ route('admin.popup-messages.index') }}" class="{{ request()->routeIs('admin.popup-messages.*') ? 'active' : '' }}">Welcome popups</a>
@@ -117,8 +120,43 @@
         <div class="admin-main">
             <header class="admin-topbar">
                 <div class="admin-topbar-main">
+                    @php
+                        $adminCrumbs = [
+                            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
+                        ];
+                        if ($res !== 'dashboard') {
+                            $resourceLabel = $resMeta[$res]['p'] ?? ucwords(str_replace(['-', '_'], ' ', $res));
+                            $resourceRoute = \Illuminate\Support\Facades\Route::has('admin.'.$res.'.index')
+                                ? route('admin.'.$res.'.index')
+                                : null;
+                            $adminCrumbs[] = ['label' => $resourceLabel, 'url' => $resourceRoute];
+                            if (!in_array($act, ['index', ''], true)) {
+                                $actionLabel = match ($act) {
+                                    'create' => 'Add',
+                                    'edit' => 'Edit',
+                                    'show' => 'Details',
+                                    default => ucwords(str_replace(['-', '_'], ' ', $act)),
+                                };
+                                $adminCrumbs[] = ['label' => $actionLabel, 'url' => null];
+                            }
+                        }
+                    @endphp
                     <h1>@yield('heading', $defaultHeading)</h1>
                     <p class="admin-page-description">@yield('page_description', $defaultPageDescription)</p>
+                    <nav class="admin-breadcrumbs" aria-label="Breadcrumb">
+                        <ol>
+                            @foreach($adminCrumbs as $index => $crumb)
+                                @php $isLast = $index === count($adminCrumbs) - 1; @endphp
+                                <li>
+                                    @if(!$isLast && !empty($crumb['url']))
+                                        <a href="{{ $crumb['url'] }}">{{ $crumb['label'] }}</a>
+                                    @else
+                                        <span aria-current="page">{{ $crumb['label'] }}</span>
+                                    @endif
+                                </li>
+                            @endforeach
+                        </ol>
+                    </nav>
                 </div>
                 <div class="admin-user">
                     <span class="email" title="{{ auth()->user()->email }}">{{ auth()->user()->email }}</span>

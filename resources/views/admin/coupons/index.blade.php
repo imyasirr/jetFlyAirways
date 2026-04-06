@@ -31,14 +31,14 @@
                             <td>{{ $c->valid_from?->format('Y-m-d') }} → {{ $c->valid_to?->format('Y-m-d') }}</td>
                             <td>{{ $c->used_count }} / {{ $c->max_usage ?? '∞' }}</td>
                             <td>{{ $c->is_active ? 'Yes' : 'No' }}</td>
-                            <td style="display:flex;gap:8px;">
+                            <td class="admin-table-actions"><div class="admin-table-actions__inner">
                                 <a class="btn secondary" href="{{ route('admin.coupons.edit', $c) }}">Edit</a>
                                 <form method="post" action="{{ route('admin.coupons.destroy', $c) }}" onsubmit="return confirm('Delete?');">
                                     @csrf
                                     @method('DELETE')
                                     <button class="btn" type="submit">Delete</button>
                                 </form>
-                            </td>
+                            </div></td>
                         </tr>
                     @endforeach
                 </tbody>

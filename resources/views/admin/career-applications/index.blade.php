@@ -21,9 +21,9 @@
                             <td>{{ $a->career?->job_title ?? '—' }}</td>
                             <td>{{ $a->name }}<br><small style="color:#64748b;">{{ $a->email }}</small></td>
                             <td>{{ $a->resume_path ? 'Yes' : '—' }}</td>
-                            <td style="display:flex;gap:8px;">
+                            <td class="admin-table-actions"><div class="admin-table-actions__inner">
                                 <a class="btn secondary" href="{{ route('admin.career-applications.show', $a) }}">View</a>
-                            </td>
+                            </div></td>
                         </tr>
                     @endforeach
                 </tbody>

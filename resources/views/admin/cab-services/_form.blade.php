@@ -1,5 +1,5 @@
 @csrf
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+<div class="admin-form-grid">
     <div><label>Service Type</label><input name="service_type" required value="{{ old('service_type', optional($service)->service_type) }}" placeholder="Airport / Outstation / Hourly"></div>
     <div><label>From</label><input name="from_location" required value="{{ old('from_location', optional($service)->from_location) }}"></div>
     <div><label>To</label><input name="to_location" value="{{ old('to_location', optional($service)->to_location) }}"></div>
@@ -14,4 +14,6 @@
         'checked' => old('is_active', (optional($service)->is_active ?? true) ? '1' : '0') === '1',
     ])
 </div>
-<button class="btn" style="margin-top:12px;">Save Cab Service</button>
+<div class="form-actions">
+    <button class="btn">Save Cab Service</button>
+</div>

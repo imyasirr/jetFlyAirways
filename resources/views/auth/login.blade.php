@@ -19,18 +19,23 @@
             Remember me
         </label>
 
-        <button type="submit" class="btn">Sign in</button>
+        <div class="form-actions">
+            <button type="submit" class="btn">Sign in</button>
+        </div>
     </form>
 
-    <p style="margin-top:16px;font-size:14px;text-align:center;color:var(--muted);">
-        <a href="{{ route('auth.google') }}" style="display:inline-block;width:100%;padding:10px;border-radius:12px;border:1px solid #c9d5ef;font-weight:700;color:var(--primary);">Continue with Google</a>
+    <p class="auth-sep">
+        <a href="{{ route('auth.google') }}" class="auth-social">Continue with Google</a>
     </p>
-    <p style="margin-top:10px;font-size:14px;text-align:center;">
-        <a href="{{ route('login.otp') }}" style="color:var(--primary);font-weight:700;">Sign in with phone OTP</a>
+    <p class="auth-link-center">
+        <a href="{{ route('login.otp') }}">Sign in with phone OTP</a>
+    </p>
+    <p class="auth-link-center">
+        <a href="{{ route('password.request') }}">Forgot password?</a>
     </p>
 
-    <p style="margin-top:18px;font-size:14px;text-align:center;color:var(--muted);">
-        New here? <a href="{{ route('register') }}" style="color:var(--primary);font-weight:700;">Create an account</a>
+    <p class="auth-link-center" style="margin-top:18px;color:var(--muted);">
+        New here? <a href="{{ route('register') }}">Create an account</a>
     </p>
-    <p style="font-size:13px;text-align:center;color:#94a3b8;">Staff admin? <a href="{{ route('admin.login') }}" style="color:var(--primary);">Admin sign in</a></p>
+    <p style="font-size:13px;text-align:center;color:#94a3b8;">Staff admin? <a href="{{ route('admin.login') }}" style="color:var(--primary);font-weight:600;">Admin sign in</a></p>
 @endsection

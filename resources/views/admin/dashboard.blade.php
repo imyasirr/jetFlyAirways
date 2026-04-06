@@ -13,6 +13,7 @@
             <a href="{{ route('admin.pages.index') }}" class="btn secondary">CMS pages</a>
             <a href="{{ route('admin.coupons.index') }}" class="btn secondary">Coupons</a>
             <a href="{{ route('admin.users.index') }}" class="btn secondary">Users</a>
+            <a href="{{ route('admin.integrations.index') }}" class="btn secondary">API integrations</a>
         </div>
     </div>
 

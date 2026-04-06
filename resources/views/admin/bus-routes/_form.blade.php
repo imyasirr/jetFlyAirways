@@ -1,5 +1,5 @@
 @csrf
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+<div class="admin-form-grid">
     <div><label>Operator</label><input name="operator_name" required value="{{ old('operator_name', optional($route)->operator_name) }}"></div>
     <div><label>From City</label><input name="from_city" required value="{{ old('from_city', optional($route)->from_city) }}"></div>
     <div><label>To City</label><input name="to_city" required value="{{ old('to_city', optional($route)->to_city) }}"></div>
@@ -16,4 +16,6 @@
         'checked' => old('is_active', (optional($route)->is_active ?? true) ? '1' : '0') === '1',
     ])
 </div>
-<button class="btn" style="margin-top:12px;">Save Bus Route</button>
+<div class="form-actions">
+    <button class="btn">Save Bus Route</button>
+</div>

@@ -63,6 +63,9 @@
             <label>X (Twitter)
                 <input type="url" name="social_twitter_url" value="{{ old('social_twitter_url', $setting->social_twitter_url) }}" placeholder="https://…">
             </label>
+            <label class="admin-field-full">Live chat URL (optional)
+                <input type="url" name="live_chat_url" value="{{ old('live_chat_url', $setting->live_chat_url) }}" placeholder="https://tawk.to/... or custom support URL">
+            </label>
             <div class="admin-field-full" style="margin-top:4px;">
                 <button type="submit" class="btn">Save</button>
             </div>

@@ -17,7 +17,7 @@
             <script type="application/ld+json">{!! $siteSeo->schema_markup !!}</script>
         @endif
     @endif
-    <link rel="stylesheet" href="{{ asset('css/public.css') }}?v=7">
+    <link rel="stylesheet" href="{{ asset('css/public.css') }}?v=12">
     @stack('styles')
 </head>
 <body class="@yield('body_class')">
@@ -31,6 +31,7 @@
     </main>
     @include('partials.public-footer')
     @include('partials.whatsapp-float')
+    @include('partials.live-chat-float')
     @include('partials.flash-swal', ['swalConfirmColor' => '#008cff'])
     <script>
         (function () {

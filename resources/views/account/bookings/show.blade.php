@@ -26,6 +26,12 @@
         <p><strong>Travel date:</strong> {{ $booking->travel_date->format('l, d F Y') }}</p>
         <p><strong>Travellers:</strong> {{ $booking->travellers_count }}</p>
         <p><strong>Total:</strong> ₹{{ number_format((float) $booking->total_amount, 2) }}</p>
+        @if($booking->provider_service)
+            <p><strong>Provider:</strong> {{ $booking->provider_service }}</p>
+        @endif
+        @if($booking->provider_sync_status)
+            <p><strong>Provider sync:</strong> {{ $booking->provider_sync_status }}</p>
+        @endif
         @if($booking->notes)
             <p><strong>Notes:</strong> {{ $booking->notes }}</p>
         @endif
@@ -34,6 +40,15 @@
             <p style="margin-top:14px;"><a class="btn" href="{{ $ticketPdfUrl }}">Download ticket (PDF)</a></p>
         @elseif($booking->payment_status !== 'paid')
             <p style="font-size:13px;color:var(--acct-muted);margin-top:12px;">Pay online from your booking confirmation email/link to unlock the PDF ticket.</p>
+        @endif
+        @if($booking->status !== 'cancelled' && $booking->travel_date->isFuture())
+            <form method="post" action="{{ route('account.bookings.cancel', $booking) }}" style="margin-top:12px;">
+                @csrf
+                <button type="submit" class="btn outline">Cancel booking</button>
+            </form>
+        @endif
+        @if(in_array($booking->payment_status, ['refund_initiated', 'refund_processed'], true))
+            <p style="font-size:13px;color:var(--acct-muted);margin-top:10px;">Refund status: <strong>{{ $booking->payment_status }}</strong>. Track all refunds from Refund tracking.</p>
         @endif
     </div>
 

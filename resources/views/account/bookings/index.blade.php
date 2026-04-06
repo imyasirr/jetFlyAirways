@@ -33,7 +33,15 @@
                             <td>₹{{ number_format((float) $b->total_amount, 2) }}</td>
                             <td><span class="badge">{{ $b->status }}</span></td>
                             <td>{{ $b->payment_status }}</td>
-                            <td><a href="{{ route('account.bookings.show', $b) }}" class="btn" style="padding:6px 12px;font-size:13px;">Ticket</a></td>
+                            <td style="display:flex;gap:8px;flex-wrap:wrap;">
+                                <a href="{{ route('account.bookings.show', $b) }}" class="btn" style="padding:6px 12px;font-size:13px;">Ticket</a>
+                                @if($b->status !== 'cancelled' && $b->travel_date->isFuture())
+                                    <form method="post" action="{{ route('account.bookings.cancel', $b) }}">
+                                        @csrf
+                                        <button type="submit" class="btn outline" style="padding:6px 12px;font-size:13px;">Cancel</button>
+                                    </form>
+                                @endif
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

@@ -29,14 +29,14 @@
                             <td>{{ $flight->from_city }} → {{ $flight->to_city }}</td>
                             <td>{{ $flight->departure_at }}</td>
                             <td>Rs {{ number_format($flight->price, 2) }}</td>
-                            <td style="display:flex;flex-wrap:wrap;gap:8px;">
+                            <td class="admin-table-actions"><div class="admin-table-actions__inner">
                                 <a class="btn secondary" href="{{ route('admin.flights.edit', $flight) }}">Edit</a>
                                 <form method="post" action="{{ route('admin.flights.destroy', $flight) }}">
                                     @csrf
                                     @method('DELETE')
                                     <button class="btn" type="submit">Delete</button>
                                 </form>
-                            </td>
+                            </div></td>
                         </tr>
                     @empty
                         <tr><td colspan="5">No flights added yet.</td></tr>

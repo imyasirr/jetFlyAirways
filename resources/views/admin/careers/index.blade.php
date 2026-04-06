@@ -23,14 +23,14 @@
                             <td>{{ $c->job_title }}</td>
                             <td>{{ $c->location ?? '—' }}</td>
                             <td>{{ $c->is_hiring ? 'Yes' : 'No' }}</td>
-                            <td style="display:flex;gap:8px;">
+                            <td class="admin-table-actions"><div class="admin-table-actions__inner">
                                 <a class="btn secondary" href="{{ route('admin.careers.edit', $c) }}">Edit</a>
                                 <form method="post" action="{{ route('admin.careers.destroy', $c) }}" onsubmit="return confirm('Delete?');">
                                     @csrf
                                     @method('DELETE')
                                     <button class="btn" type="submit">Delete</button>
                                 </form>
-                            </td>
+                            </div></td>
                         </tr>
                     @endforeach
                 </tbody>

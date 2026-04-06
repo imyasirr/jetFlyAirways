@@ -1,5 +1,5 @@
 @csrf
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+<div class="admin-form-grid">
     <div><label>Category</label><input name="category" required value="{{ old('category', optional($package)->category) }}" placeholder="e.g. Honeymoon, Domestic"></div>
     <div><label>Package Name</label><input name="name" required value="{{ old('name', optional($package)->name) }}"></div>
     <div><label>Destination</label><input name="destination" required value="{{ old('destination', optional($package)->destination) }}"></div>
@@ -19,4 +19,6 @@
         'checked' => old('is_published', (optional($package)->is_published ?? true) ? '1' : '0') === '1',
     ])
 </div>
-<button class="btn" style="margin-top:12px;">Save Package</button>
+<div class="form-actions">
+    <button class="btn">Save Package</button>
+</div>

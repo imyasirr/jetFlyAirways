@@ -159,6 +159,39 @@ a {
     line-height: 1.5;
     max-width: min(72ch, 100%);
 }
+.admin-breadcrumbs {
+    margin: 8px 0 0;
+    font-size: 13px;
+    color: #64748b;
+}
+.admin-breadcrumbs ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+}
+.admin-breadcrumbs li {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+.admin-breadcrumbs li + li::before {
+    content: "/";
+    color: #94a3b8;
+}
+.admin-breadcrumbs a {
+    color: #475569;
+    font-weight: 600;
+}
+.admin-breadcrumbs a:hover {
+    color: var(--admin-primary);
+}
+.admin-breadcrumbs [aria-current="page"] {
+    color: #0f172a;
+    font-weight: 700;
+}
 .admin-user {
     display: flex;
     align-items: center;
@@ -227,6 +260,9 @@ a {
     cursor: pointer;
     font-size: 14px;
 }
+.btn:hover {
+    filter: brightness(1.04);
+}
 .btn.secondary {
     background: #0ea5e9;
     color: #fff;
@@ -283,6 +319,19 @@ table.admin-table th {
 .admin-content .btn.secondary:hover {
     filter: brightness(1.05);
 }
+.admin-content .form-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+}
+.admin-content .form-actions .btn {
+    margin-top: 0 !important;
+}
+.admin-content form > .btn[style*="margin-top:12px"] {
+    margin-top: 14px !important;
+}
 .admin-content input,
 .admin-content select,
 .admin-content textarea {
@@ -307,6 +356,113 @@ table.admin-table th {
 .admin-content .card > .admin-table-scroll,
 .admin-content .card form > .admin-table-scroll {
     margin-top: 4px;
+}
+
+/* Table action cells: never use display:flex on <td> — it breaks table layout in browsers */
+.admin-table-actions {
+    white-space: nowrap;
+    text-align: right;
+    vertical-align: middle;
+    width: 1%;
+}
+.admin-table-actions__inner {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    justify-content: flex-end;
+}
+.admin-table-actions__inner form {
+    margin: 0;
+    display: inline;
+}
+
+/* Laravel pagination (Tailwind default has no CSS here — use Jet Fly markup) */
+.jetfly-pagination {
+    margin-top: 14px;
+    font-size: 14px;
+}
+.jetfly-pagination__narrow {
+    display: block;
+}
+.jetfly-pagination__wide {
+    display: none;
+}
+@media (min-width: 640px) {
+    .jetfly-pagination__narrow {
+        display: none;
+    }
+    .jetfly-pagination__wide {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+}
+.jetfly-pagination__meta {
+    margin: 0;
+    color: var(--admin-muted);
+}
+.jetfly-pagination__meta strong {
+    color: #0f172a;
+    font-weight: 700;
+}
+.jetfly-pagination__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+}
+.jetfly-pagination__list--pager {
+    justify-content: center;
+}
+.jetfly-pagination__list--pages {
+    justify-content: flex-end;
+}
+.jetfly-pagination__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.25rem;
+    padding: 0.4rem 0.65rem;
+    border-radius: 8px;
+    border: 1px solid var(--admin-border);
+    background: #fff;
+    color: var(--admin-primary);
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 14px;
+    line-height: 1.2;
+    box-sizing: border-box;
+}
+a.jetfly-pagination__link:hover {
+    border-color: #cbd5e1;
+    background: #f8fafc;
+    color: var(--admin-primary);
+}
+.jetfly-pagination__link--current {
+    background: #eff6ff;
+    border-color: #93c5fd;
+    color: var(--admin-primary);
+    cursor: default;
+}
+.jetfly-pagination__link--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.jetfly-pagination__ellipsis {
+    padding: 0 4px;
+    display: inline-flex;
+    min-width: 1.5rem;
+    justify-content: center;
+    color: var(--admin-muted);
+}
+.jetfly-pagination--simple {
+    margin-top: 12px;
 }
 .admin-content .card table:not(.admin-table) {
     width: 100%;
@@ -471,6 +627,18 @@ table.admin-table th {
     .admin-form-grid {
         grid-template-columns: 1fr;
     }
+    .admin-content [style*="grid-template-columns:1fr 1fr"] {
+        grid-template-columns: 1fr !important;
+    }
+    .admin-content .form-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .admin-content .form-actions .btn,
+    .admin-content .form-actions a.btn {
+        width: 100%;
+        text-align: center;
+    }
 }
 @media (max-width: 900px) {
     body.admin-body {
@@ -539,4 +707,22 @@ table.admin-table th {
     margin: 1em 0 0.5em;
     color: var(--admin-primary);
     font-weight: 800;
+}
+
+.drag-handle {
+    cursor: grab;
+    border: none;
+    background: var(--admin-border);
+    border-radius: 6px;
+    padding: 0.35rem 0.45rem;
+    font-size: 1rem;
+    line-height: 1;
+    color: var(--admin-muted);
+}
+.drag-handle:active {
+    cursor: grabbing;
+}
+.sortable-ghost {
+    opacity: 0.55;
+    background: #e2e8f0;
 }

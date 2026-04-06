@@ -33,6 +33,7 @@ class SiteSettingController extends Controller
             'social_instagram_url' => ['nullable', 'string', 'max:500'],
             'social_linkedin_url' => ['nullable', 'string', 'max:500'],
             'social_twitter_url' => ['nullable', 'string', 'max:500'],
+            'live_chat_url' => ['nullable', 'string', 'max:500'],
             'hero_image_file' => ['nullable', 'image', 'mimes:jpeg,png,webp,gif', 'max:10240'],
             'clear_hero_image' => ['nullable', 'boolean'],
         ]);

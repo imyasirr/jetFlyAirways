@@ -15,7 +15,9 @@
             <label>Phone <input type="text" name="phone" value="{{ old('phone') }}"></label>
             <label>Subject <input type="text" name="subject" value="{{ old('subject') }}"></label>
             <label>Message <textarea name="message" rows="6" required>{{ old('message') }}</textarea></label>
-            <button type="submit" class="btn">Send message</button>
+            <div class="form-actions">
+                <button type="submit" class="btn">Send message</button>
+            </div>
         </form>
     </div>
 @endsection

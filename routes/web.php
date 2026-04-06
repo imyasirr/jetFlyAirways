@@ -26,6 +26,9 @@ use App\Http\Controllers\Admin\MenuItemController;
 use App\Http\Controllers\Admin\OfferController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Admin\PopupMessageController;
+use App\Http\Controllers\Admin\PaymentReportController;
+use App\Http\Controllers\Admin\BookingReportController;
+use App\Http\Controllers\Admin\ApiIntegrationController;
 use App\Http\Controllers\Admin\SiteSeoController;
 use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Admin\TestimonialController;
@@ -34,6 +37,8 @@ use App\Http\Controllers\Admin\TravelAddonController;
 use App\Http\Controllers\Admin\TravelPackageController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\OtpLoginController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\SocialAuthController;
 use App\Http\Controllers\Auth\UserAuthController;
 use App\Http\Controllers\BlogController;
@@ -45,6 +50,8 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\Account\RefundController as AccountRefundController;
+use App\Http\Controllers\Account\SavedTravellerController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [SiteController::class, 'home'])->name('home');
@@ -66,6 +73,8 @@ Route::get('/jobs/{career}', [JobController::class, 'show'])->name('jobs.show');
 Route::post('/jobs/{career}/apply', [JobController::class, 'apply'])->name('jobs.apply');
 Route::get('/contact-us', [ContactFormController::class, 'create'])->name('contact.create');
 Route::post('/contact-us', [ContactFormController::class, 'store'])->name('contact.store');
+Route::get('/refer-earn', [SiteController::class, 'referEarn'])->name('refer-earn');
+Route::get('/currency-converter', [SiteController::class, 'currencyConverter'])->name('currency-converter');
 
 Route::post('/payments/verify', [PaymentController::class, 'verify'])->name('payments.verify');
 
@@ -89,6 +98,11 @@ Route::middleware('guest')->group(function () {
 
     Route::get('auth/google', [SocialAuthController::class, 'redirectToGoogle'])->name('auth.google');
     Route::get('auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+
+    Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])->name('password.request');
+    Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])->name('password.email');
+    Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
+    Route::post('reset-password', [NewPasswordController::class, 'store'])->name('password.store');
 });
 
 Route::post('logout', [UserAuthController::class, 'logout'])->middleware('auth')->name('logout');
@@ -105,6 +119,12 @@ Route::middleware('auth')->prefix('account')->name('account.')->group(function (
     Route::get('password', [ProfileController::class, 'editPassword'])->name('password.edit');
     Route::put('password', [ProfileController::class, 'updatePassword'])->name('password.update');
     Route::get('offers', [OffersController::class, 'index'])->name('offers');
+    Route::get('saved-travellers', [SavedTravellerController::class, 'index'])->name('saved-travellers.index');
+    Route::post('saved-travellers', [SavedTravellerController::class, 'store'])->name('saved-travellers.store');
+    Route::put('saved-travellers/{savedTraveller}', [SavedTravellerController::class, 'update'])->name('saved-travellers.update');
+    Route::delete('saved-travellers/{savedTraveller}', [SavedTravellerController::class, 'destroy'])->name('saved-travellers.destroy');
+    Route::post('bookings/{booking}/cancel', [AccountBookingController::class, 'cancel'])->name('bookings.cancel');
+    Route::get('refunds', [AccountRefundController::class, 'index'])->name('refunds.index');
 });
 
 Route::middleware('auth')->group(function () {
@@ -170,6 +190,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::resource('travel-addons', TravelAddonController::class)->except(['show']);
     Route::get('users', [UserController::class, 'index'])->name('users.index');
     Route::get('users/{user}', [UserController::class, 'show'])->name('users.show');
+    Route::get('reports/payments', [PaymentReportController::class, 'index'])->name('reports.payments');
+    Route::get('reports/bookings', [BookingReportController::class, 'index'])->name('reports.bookings');
+    Route::get('integrations', [ApiIntegrationController::class, 'index'])->name('integrations.index');
+    Route::put('integrations', [ApiIntegrationController::class, 'update'])->name('integrations.update');
+    Route::get('integrations/{integration}/test', [ApiIntegrationController::class, 'test'])->name('integrations.test');
 });
 
 Route::get('/{module}', [SiteController::class, 'module'])

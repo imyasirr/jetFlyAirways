@@ -32,14 +32,14 @@
                             <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;">{{ $item->href ?? '—' }}</td>
                             <td>{{ $item->sort_order }}</td>
                             <td>{{ $item->is_active ? 'Yes' : 'No' }}</td>
-                            <td style="display:flex;gap:8px;">
+                            <td class="admin-table-actions"><div class="admin-table-actions__inner">
                                 <a class="btn secondary" href="{{ route('admin.menu-items.edit', $item) }}">Edit</a>
                                 <form method="post" action="{{ route('admin.menu-items.destroy', $item) }}" onsubmit="return confirm('Delete this item?');">
                                     @csrf
                                     @method('DELETE')
                                     <button class="btn" type="submit">Delete</button>
                                 </form>
-                            </td>
+                            </div></td>
                         </tr>
                     @endforeach
                 </tbody>

@@ -16,13 +16,6 @@
         <div class="blog-post-hero__scrim" aria-hidden="true"></div>
     @endif
     <div class="container blog-post-hero__inner">
-        <nav class="blog-post-breadcrumb" aria-label="Breadcrumb">
-            <a href="{{ route('blog.index') }}">Travel blog</a>
-            @if($blog->category)
-                <span class="blog-post-breadcrumb__sep" aria-hidden="true">/</span>
-                <span>{{ $blog->category }}</span>
-            @endif
-        </nav>
         <h1 class="blog-post-hero__title">{{ $blog->title }}</h1>
         <div class="blog-post-hero__meta">
             @if($blog->publish_at)

@@ -12,31 +12,31 @@
         @endif
 
         <div class="admin-table-scroll">
-            <table style="width:100%;border-collapse:collapse;">
+            <table class="admin-table">
                 <thead>
                     <tr>
-                        <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Train</th>
-                        <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Route</th>
-                        <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Departure</th>
-                        <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Price</th>
-                        <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Actions</th>
+                        <th>Train</th>
+                        <th>Route</th>
+                        <th>Departure</th>
+                        <th>Price</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($routes as $route)
                         <tr>
-                            <td style="padding:8px;border-bottom:1px solid #eee;">{{ $route->train_name }} ({{ $route->train_number }})</td>
-                            <td style="padding:8px;border-bottom:1px solid #eee;">{{ $route->from_city }} → {{ $route->to_city }}</td>
-                            <td style="padding:8px;border-bottom:1px solid #eee;">{{ $route->departure_at }}</td>
-                            <td style="padding:8px;border-bottom:1px solid #eee;">Rs {{ number_format($route->price, 2) }}</td>
-                            <td style="padding:8px;border-bottom:1px solid #eee;display:flex;gap:8px;">
+                            <td>{{ $route->train_name }} ({{ $route->train_number }})</td>
+                            <td>{{ $route->from_city }} → {{ $route->to_city }}</td>
+                            <td>{{ $route->departure_at }}</td>
+                            <td>Rs {{ number_format($route->price, 2) }}</td>
+                            <td class="admin-table-actions"><div class="admin-table-actions__inner">
                                 <a class="btn secondary" href="{{ route('admin.train-routes.edit', $route) }}">Edit</a>
                                 <form method="post" action="{{ route('admin.train-routes.destroy', $route) }}">
                                     @csrf
                                     @method('DELETE')
                                     <button class="btn" type="submit">Delete</button>
                                 </form>
-                            </td>
+                            </div></td>
                         </tr>
                     @empty
                         <tr><td colspan="5" style="padding:10px;">No train routes yet.</td></tr>
@@ -47,4 +47,3 @@
         <div style="margin-top:10px;">{{ $routes->links() }}</div>
     </div>
 @endsection
-

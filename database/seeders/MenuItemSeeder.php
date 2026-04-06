@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Schema;
 
 class MenuItemSeeder extends Seeder
 {
+    /**
+     * Testing: full replace of menu rows (truncate). Use migrate:fresh --seed for a clean DB.
+     */
     public function run(): void
     {
         Schema::disableForeignKeyConstraints();
@@ -44,6 +47,8 @@ class MenuItemSeeder extends Seeder
             'is_active' => true,
         ]);
         foreach ([
+            ['Destination guide', '/p/destination-guide'],
+            ['Top deals', '/p/top-deals'],
             ['Trains', '/trains'],
             ['Buses', '/buses'],
             ['Cabs', '/cabs'],
@@ -135,11 +140,35 @@ class MenuItemSeeder extends Seeder
             ]);
         }
 
+        $footerGuides = MenuItem::create([
+            'location' => 'footer',
+            'label' => 'Guides & deals',
+            'href' => null,
+            'sort_order' => 4,
+            'is_active' => true,
+        ]);
+        foreach ([
+            ['Destination guide', '/p/destination-guide'],
+            ['Top deals', '/p/top-deals'],
+            ['Student travel', '/p/student-travel'],
+            ['Corporate travel', '/p/corporate-travel'],
+            ['Group booking', '/p/group-booking'],
+        ] as $i => $r) {
+            MenuItem::create([
+                'parent_id' => $footerGuides->id,
+                'location' => 'footer',
+                'label' => $r[0],
+                'href' => $r[1],
+                'sort_order' => $i,
+                'is_active' => true,
+            ]);
+        }
+
         $footerLegal = MenuItem::create([
             'location' => 'footer',
             'label' => 'Support & legal',
             'href' => null,
-            'sort_order' => 4,
+            'sort_order' => 5,
             'is_active' => true,
         ]);
         foreach ([
@@ -151,6 +180,28 @@ class MenuItemSeeder extends Seeder
         ] as $i => $r) {
             MenuItem::create([
                 'parent_id' => $footerLegal->id,
+                'location' => 'footer',
+                'label' => $r[0],
+                'href' => $r[1],
+                'sort_order' => $i,
+                'is_active' => true,
+            ]);
+        }
+
+        $footerNews = MenuItem::create([
+            'location' => 'footer',
+            'label' => 'News',
+            'href' => null,
+            'sort_order' => 6,
+            'is_active' => true,
+        ]);
+        foreach ([
+            ['Blog', '/blog'],
+            ['Press releases', '/p/press-release'],
+            ['Travel news', '/p/travel-news'],
+        ] as $i => $r) {
+            MenuItem::create([
+                'parent_id' => $footerNews->id,
                 'location' => 'footer',
                 'label' => $r[0],
                 'href' => $r[1],

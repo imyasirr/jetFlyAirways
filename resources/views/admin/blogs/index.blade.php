@@ -24,7 +24,7 @@
                             <td><code style="font-size:12px;">{{ $b->slug }}</code></td>
                             <td>{{ $b->publish_at?->format('Y-m-d H:i') ?? '—' }}</td>
                             <td>{{ $b->is_featured ? 'Yes' : 'No' }}</td>
-                            <td style="display:flex;flex-wrap:wrap;gap:8px;">
+                            <td class="admin-table-actions"><div class="admin-table-actions__inner">
                                 <a class="btn secondary" href="{{ route('admin.blogs.show', $b) }}">Show</a>
                                 <a class="btn secondary" href="{{ route('admin.blogs.edit', $b) }}">Edit</a>
                                 <form method="post" action="{{ route('admin.blogs.destroy', $b) }}" onsubmit="return confirm('Delete?');">
@@ -32,7 +32,7 @@
                                     @method('DELETE')
                                     <button class="btn" type="submit">Delete</button>
                                 </form>
-                            </td>
+                            </div></td>
                         </tr>
                     @endforeach
                 </tbody>

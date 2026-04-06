@@ -12,33 +12,33 @@
         @endif
 
         <div class="admin-table-scroll">
-            <table style="width:100%;border-collapse:collapse;">
+            <table class="admin-table">
                 <thead>
                     <tr>
-                        <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Name</th>
-                        <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Category</th>
-                        <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Destination</th>
-                        <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Days</th>
-                        <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Price</th>
-                        <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Actions</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Destination</th>
+                        <th>Days</th>
+                        <th>Price</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($packages as $package)
                         <tr>
-                            <td style="padding:8px;border-bottom:1px solid #eee;">{{ $package->name }}</td>
-                            <td style="padding:8px;border-bottom:1px solid #eee;">{{ $package->category }}</td>
-                            <td style="padding:8px;border-bottom:1px solid #eee;">{{ $package->destination }}</td>
-                            <td style="padding:8px;border-bottom:1px solid #eee;">{{ $package->duration_days }}</td>
-                            <td style="padding:8px;border-bottom:1px solid #eee;">Rs {{ number_format($package->price, 2) }}</td>
-                            <td style="padding:8px;border-bottom:1px solid #eee;display:flex;gap:8px;">
+                            <td>{{ $package->name }}</td>
+                            <td>{{ $package->category }}</td>
+                            <td>{{ $package->destination }}</td>
+                            <td>{{ $package->duration_days }}</td>
+                            <td>Rs {{ number_format($package->price, 2) }}</td>
+                            <td class="admin-table-actions"><div class="admin-table-actions__inner">
                                 <a class="btn secondary" href="{{ route('admin.travel-packages.edit', $package) }}">Edit</a>
                                 <form method="post" action="{{ route('admin.travel-packages.destroy', $package) }}">
                                     @csrf
                                     @method('DELETE')
                                     <button class="btn" type="submit">Delete</button>
                                 </form>
-                            </td>
+                            </div></td>
                         </tr>
                     @empty
                         <tr><td colspan="6" style="padding:10px;">No packages yet.</td></tr>
@@ -49,4 +49,3 @@
         <div style="margin-top:10px;">{{ $packages->links() }}</div>
     </div>
 @endsection
-

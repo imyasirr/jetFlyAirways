@@ -20,5 +20,6 @@ class SiteSetting extends Model
         'social_linkedin_url',
         'social_twitter_url',
         'hero_image',
+        'live_chat_url',
     ];
 }

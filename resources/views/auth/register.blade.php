@@ -24,14 +24,16 @@
         <label for="password_confirmation">Confirm password</label>
         <input id="password_confirmation" type="password" name="password_confirmation" required autocomplete="new-password">
 
-        <button type="submit" class="btn">Register</button>
+        <div class="form-actions">
+            <button type="submit" class="btn">Register</button>
+        </div>
     </form>
 
-    <p style="margin-top:16px;font-size:14px;text-align:center;color:var(--muted);">
-        <a href="{{ route('auth.google') }}" style="display:inline-block;width:100%;padding:10px;border-radius:12px;border:1px solid #c9d5ef;font-weight:700;color:var(--primary);">Continue with Google</a>
+    <p class="auth-sep">
+        <a href="{{ route('auth.google') }}" class="auth-social">Continue with Google</a>
     </p>
 
-    <p style="margin-top:18px;font-size:14px;text-align:center;color:var(--muted);">
-        Already have an account? <a href="{{ route('login') }}" style="color:var(--primary);font-weight:700;">Sign in</a>
+    <p class="auth-link-center" style="margin-top:18px;color:var(--muted);">
+        Already have an account? <a href="{{ route('login') }}">Sign in</a>
     </p>
 @endsection

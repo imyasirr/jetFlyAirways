@@ -79,21 +79,6 @@
     </div>
 @endif
 
-<h2 class="home-section-heading">All travel services</h2>
-<div class="home-deals-grid home-services-grid">
-    @foreach($modules as $slug => $module)
-        <div class="card">
-            <h3 class="card-title-lg">{{ $module['icon'] }} {{ $module['title'] }}</h3>
-            <ul class="card-list">
-                @foreach(array_slice($module['features'], 0, 3) as $feature)
-                    <li>{{ $feature }}</li>
-                @endforeach
-            </ul>
-            <a class="btn btn-block" href="{{ route('module.index', $slug) }}">Explore</a>
-        </div>
-    @endforeach
-</div>
-
 <div class="feature-row feature-row-spaced home-trust-cards">
     <div class="card"><h3>Secure payments</h3><p>Checkout flow ready for gateway integration (Razorpay, UPI, cards).</p></div>
     <div class="card"><h3>Best-value fares</h3><p>Admin-managed inventory with live listing on the website.</p></div>

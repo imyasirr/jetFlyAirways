@@ -22,14 +22,14 @@
                             <td>{{ \Illuminate\Support\Str::limit($a->title, 60) }}</td>
                             <td>{{ $a->published_at?->format('Y-m-d H:i') ?? '—' }}</td>
                             <td>{{ $a->is_active ? 'Yes' : 'No' }}</td>
-                            <td style="display:flex;gap:8px;flex-wrap:wrap;">
+                            <td class="admin-table-actions"><div class="admin-table-actions__inner">
                                 <a class="btn secondary" href="{{ route('admin.announcements.edit', $a) }}">Edit</a>
                                 <form method="post" action="{{ route('admin.announcements.destroy', $a) }}" onsubmit="return confirm('Delete?');">
                                     @csrf
                                     @method('DELETE')
                                     <button class="btn" type="submit">Delete</button>
                                 </form>
-                            </td>
+                            </div></td>
                         </tr>
                     @endforeach
                 </tbody>

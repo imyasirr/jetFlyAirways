@@ -9,10 +9,12 @@ use App\Models\MenuItem;
 use App\Models\PopupMessage;
 use App\Models\SeoMeta;
 use App\Models\SiteSetting;
+use App\Services\Gds\IntegrationAwareGdsBookingClient;
 use App\Services\Gds\NullGdsBookingClient;
 use App\Services\Sms\LogSmsSender;
 use App\Services\Sms\SmsSender;
 use App\Services\Sms\TwilioSmsSender;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -24,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(GdsBookingClient::class, NullGdsBookingClient::class);
+        $this->app->bind(GdsBookingClient::class, IntegrationAwareGdsBookingClient::class);
         $this->app->bind(SmsSender::class, function () {
             return match (config('jetfly.sms.driver')) {
                 'twilio' => new TwilioSmsSender,
@@ -38,6 +40,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Paginator::defaultView('pagination.jetfly');
+        Paginator::defaultSimpleView('pagination.jetfly-simple');
+
         View::composer('layouts.app', function ($view) {
             if (! Schema::hasTable('menu_items')) {
                 $view->with('headerMenu', collect());

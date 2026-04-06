@@ -31,7 +31,9 @@
             <label>Phone <input type="text" name="phone" value="{{ old('phone') }}"></label>
             <label>Cover letter <textarea name="cover_letter" rows="5">{{ old('cover_letter') }}</textarea></label>
             <label>Resume (PDF / DOC, max 5MB) <input type="file" name="resume" accept=".pdf,.doc,.docx"></label>
-            <button type="submit" class="btn">Submit application</button>
+            <div class="form-actions">
+                <button type="submit" class="btn">Submit application</button>
+            </div>
         </form>
     </div>
 @endsection

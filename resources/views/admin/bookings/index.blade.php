@@ -35,28 +35,28 @@
         </form>
 
         <div class="admin-table-scroll">
-            <table style="width:100%;border-collapse:collapse;font-size:14px;">
+            <table class="admin-table">
                 <thead>
                     <tr>
-                        <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Code</th>
-                        <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Module</th>
-                        <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Travel</th>
-                        <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Guests</th>
-                        <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Amount</th>
-                        <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;">Payment</th>
-                        <th style="text-align:left;padding:8px;border-bottom:1px solid #ddd;"></th>
+                        <th>Code</th>
+                        <th>Module</th>
+                        <th>Travel</th>
+                        <th>Guests</th>
+                        <th>Amount</th>
+                        <th>Payment</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($bookings as $b)
                         <tr>
-                            <td style="padding:8px;border-bottom:1px solid #eee;">{{ $b->booking_code }}</td>
-                            <td style="padding:8px;border-bottom:1px solid #eee;">{{ $b->module }}</td>
-                            <td style="padding:8px;border-bottom:1px solid #eee;">{{ $b->travel_date?->format('d M Y') }}</td>
-                            <td style="padding:8px;border-bottom:1px solid #eee;">{{ $b->travellers_count }}</td>
-                            <td style="padding:8px;border-bottom:1px solid #eee;">Rs {{ number_format($b->total_amount, 2) }}</td>
-                            <td style="padding:8px;border-bottom:1px solid #eee;">{{ $b->payment_status }}</td>
-                            <td style="padding:8px;border-bottom:1px solid #eee;"><a class="btn secondary" href="{{ route('admin.bookings.show', $b) }}">View</a></td>
+                            <td>{{ $b->booking_code }}</td>
+                            <td>{{ $b->module }}</td>
+                            <td>{{ $b->travel_date?->format('d M Y') }}</td>
+                            <td>{{ $b->travellers_count }}</td>
+                            <td>Rs {{ number_format($b->total_amount, 2) }}</td>
+                            <td>{{ $b->payment_status }}</td>
+                            <td class="admin-table-actions"><div class="admin-table-actions__inner"><a class="btn secondary" href="{{ route('admin.bookings.show', $b) }}">View</a></div></td>
                         </tr>
                     @empty
                         <tr><td colspan="7" style="padding:12px;">No bookings yet.</td></tr>
