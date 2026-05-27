@@ -28,7 +28,8 @@ class BannerController extends Controller
         $data = $request->validate([
             'title' => ['nullable', 'string', 'max:200'],
             'description' => ['nullable', 'string', 'max:2000'],
-            'image_file' => ['required', 'image', 'mimes:jpeg,png,webp,gif', 'max:10240'],
+            'image_files' => ['required', 'array', 'min:1'],
+            'image_files.*' => ['required', 'image', 'mimes:jpeg,png,webp,gif', 'max:10240'],
             'link' => ['nullable', 'string', 'max:500'],
             'button_text' => ['nullable', 'string', 'max:120'],
             'sort_order' => ['nullable', 'integer', 'min:0', 'max:99999'],
@@ -37,15 +38,20 @@ class BannerController extends Controller
         $data['is_active'] = $request->boolean('is_active');
         $data['sort_order'] = $data['sort_order'] ?? 0;
 
-        $path = PublicImageStorage::storeUpload($request->file('image_file'), 'banners');
-        abort_if($path === null, 500, 'Image upload failed.');
+        $files = $request->file('image_files', []);
+        unset($data['image_files']);
 
-        unset($data['image_file']);
-        $data['image'] = $path;
+        foreach ($files as $index => $file) {
+            $path = PublicImageStorage::storeUpload($file, 'banners');
+            abort_if($path === null, 500, 'Image upload failed.');
 
-        Banner::create($data);
+            Banner::create(array_merge($data, [
+                'image' => $path,
+                'sort_order' => ((int) $data['sort_order']) + $index,
+            ]));
+        }
 
-        return redirect()->route('admin.banners.index')->with('status', 'Banner created.');
+        return redirect()->route('admin.banners.index')->with('status', count($files) > 1 ? 'Banners created.' : 'Banner created.');
     }
 
     public function edit(Banner $banner): View
