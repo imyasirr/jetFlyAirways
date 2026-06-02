@@ -7,9 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class CabService extends Model
 {
+    use Concerns\HasInventorySlug;
     use HasFactory;
 
     protected $fillable = [
+        'slug',
         'service_type',
         'from_location',
         'to_location',

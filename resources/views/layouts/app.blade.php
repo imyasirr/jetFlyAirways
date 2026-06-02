@@ -17,7 +17,7 @@
             <script type="application/ld+json">{!! $siteSeo->schema_markup !!}</script>
         @endif
     @endif
-    <link rel="stylesheet" href="{{ asset('css/public.css') }}?v=12">
+    <link rel="stylesheet" href="{{ asset('css/public.css') }}?v=15">
     @stack('styles')
 </head>
 <body class="@yield('body_class')">

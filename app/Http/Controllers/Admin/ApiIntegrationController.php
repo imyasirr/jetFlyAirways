@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\UpdateApiIntegrationsRequest;
 use App\Models\ApiIntegration;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -46,20 +47,9 @@ class ApiIntegrationController extends Controller
         return view('admin.integrations.index', compact('integrations', 'endpointTemplates', 'samplePayloads'));
     }
 
-    public function update(Request $request): RedirectResponse
+    public function update(UpdateApiIntegrationsRequest $request): RedirectResponse
     {
-        $payload = $request->validate([
-            'integrations' => ['required', 'array'],
-            'integrations.*.service' => ['required', 'string'],
-            'integrations.*.display_name' => ['required', 'string', 'max:120'],
-            'integrations.*.base_url' => ['nullable', 'string', 'max:500'],
-            'integrations.*.api_key' => ['nullable', 'string', 'max:500'],
-            'integrations.*.api_secret' => ['nullable', 'string', 'max:500'],
-            'integrations.*.notes' => ['nullable', 'string', 'max:5000'],
-            'integrations.*.is_active' => ['nullable', 'boolean'],
-        ]);
-
-        foreach ($payload['integrations'] as $item) {
+        foreach ($request->validated('integrations') as $item) {
             if (! array_key_exists($item['service'], self::SERVICES)) {
                 continue;
             }
@@ -182,4 +172,3 @@ class ApiIntegrationController extends Controller
         ];
     }
 }
-

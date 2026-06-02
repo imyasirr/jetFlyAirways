@@ -7,9 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Flight extends Model
 {
+    use Concerns\HasInventorySlug;
     use HasFactory;
 
     protected $fillable = [
+        'slug',
         'airline',
         'flight_number',
         'from_city',

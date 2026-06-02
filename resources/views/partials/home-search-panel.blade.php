@@ -24,6 +24,14 @@
             <form method="get" action="{{ route('module.index', 'flights') }}" class="home-ota-form">
                 <div class="home-ota-fields home-ota-fields--flights">
                     <div class="home-ota-field">
+                        <label for="hf-trip">Trip</label>
+                        <select id="hf-trip" name="trip_type" data-home-flight-trip>
+                            <option value="one_way" @selected(request('trip_type', 'one_way') === 'one_way')>One way</option>
+                            <option value="round_trip" @selected(request('trip_type') === 'round_trip')>Round trip</option>
+                            <option value="multi_city" @selected(request('trip_type') === 'multi_city')>Multi city</option>
+                        </select>
+                    </div>
+                    <div class="home-ota-field">
                         <label for="hf-from">From</label>
                         <input id="hf-from" name="from" type="text" placeholder="City or airport" value="{{ request('from') }}" autocomplete="off">
                     </div>
@@ -34,6 +42,24 @@
                     <div class="home-ota-field home-ota-field--date">
                         <label for="hf-date">Departure</label>
                         <input id="hf-date" name="date" type="date" value="{{ request('date') }}">
+                    </div>
+                    <div class="home-ota-field home-ota-field--date" id="hf-return-wrap" @if(request('trip_type') !== 'round_trip') hidden @endif>
+                        <label for="hf-ret">Return</label>
+                        <input id="hf-ret" name="return_date" type="date" value="{{ request('return_date') }}">
+                    </div>
+                    <div class="home-ota-field">
+                        <label for="hf-trav">Travellers</label>
+                        <input id="hf-trav" name="travellers" type="number" min="1" max="9" value="{{ request('travellers', 1) }}">
+                    </div>
+                    <div class="home-ota-field">
+                        <label for="hf-class">Class</label>
+                        <select id="hf-class" name="cabin_class">
+                            <option value="">Any</option>
+                            <option value="Economy" @selected(request('cabin_class') === 'Economy')>Economy</option>
+                            <option value="Premium Economy" @selected(request('cabin_class') === 'Premium Economy')>Premium Economy</option>
+                            <option value="Business" @selected(request('cabin_class') === 'Business')>Business</option>
+                            <option value="First" @selected(request('cabin_class') === 'First')>First</option>
+                        </select>
                     </div>
                     <div class="home-ota-field home-ota-field--submit">
                         <span class="home-ota-field-spacer" aria-hidden="true"></span>
@@ -53,6 +79,18 @@
                     <div class="home-ota-field">
                         <label for="hh-q">Hotel name (optional)</label>
                         <input id="hh-q" name="q" type="text" placeholder="Search by name" value="{{ request('q') }}">
+                    </div>
+                    <div class="home-ota-field home-ota-field--date">
+                        <label for="hh-in">Check-in</label>
+                        <input id="hh-in" name="check_in" type="date" value="{{ request('check_in') }}">
+                    </div>
+                    <div class="home-ota-field home-ota-field--date">
+                        <label for="hh-out">Check-out</label>
+                        <input id="hh-out" name="check_out" type="date" value="{{ request('check_out') }}">
+                    </div>
+                    <div class="home-ota-field">
+                        <label for="hh-guests">Guests</label>
+                        <input id="hh-guests" name="guests" type="number" min="1" max="20" value="{{ request('guests', 2) }}">
                     </div>
                     <div class="home-ota-field home-ota-field--submit">
                         <span class="home-ota-field-spacer" aria-hidden="true"></span>
@@ -110,5 +148,15 @@
             activate(tab.getAttribute('data-home-tab'));
         });
     });
+
+    var trip = document.querySelector('[data-home-flight-trip]');
+    var retWrap = document.getElementById('hf-return-wrap');
+    if (trip && retWrap) {
+        function syncTrip() {
+            retWrap.hidden = trip.value !== 'round_trip';
+        }
+        trip.addEventListener('change', syncTrip);
+        syncTrip();
+    }
 })();
 </script>

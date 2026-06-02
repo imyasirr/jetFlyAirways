@@ -3,7 +3,7 @@
 @section('body_class', 'page-home')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/home.css') }}?v=2">
+<link rel="stylesheet" href="{{ asset('css/home.css') }}?v=1">
 @endpush
 
 @section('title', $siteSeo?->meta_title ?? 'Home — Jet Fly Airways')

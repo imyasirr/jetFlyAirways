@@ -7,9 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Hotel extends Model
 {
+    use Concerns\HasInventorySlug;
     use HasFactory;
 
     protected $fillable = [
+        'slug',
         'name',
         'city',
         'location',

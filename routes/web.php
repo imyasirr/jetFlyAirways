@@ -201,14 +201,20 @@ Route::get('/{module}', [SiteController::class, 'module'])
     ->whereIn('module', ['flights', 'hotels', 'packages', 'buses', 'trains', 'cabs', 'visa', 'insurance'])
     ->name('module.index');
 
-Route::get('/{module}/{id}', [SiteController::class, 'moduleDetail'])
-    ->whereNumber('id')
-    ->name('module.show');
+$inventoryModules = ['flights', 'hotels', 'packages', 'buses', 'trains', 'cabs', 'visa', 'insurance'];
+$itemSlug = '[a-z0-9]+(?:-[a-z0-9]+)*';
 
-Route::get('/{module}/{id}/book', [SiteController::class, 'bookingForm'])
-    ->whereNumber('id')
+Route::get('/{module}/{item}/book', [SiteController::class, 'bookingForm'])
+    ->whereIn('module', $inventoryModules)
+    ->where('item', $itemSlug)
     ->name('booking.form');
 
-Route::post('/{module}/{id}/book', [SiteController::class, 'bookingSubmit'])
-    ->whereNumber('id')
+Route::post('/{module}/{item}/book', [SiteController::class, 'bookingSubmit'])
+    ->whereIn('module', $inventoryModules)
+    ->where('item', $itemSlug)
     ->name('booking.submit');
+
+Route::get('/{module}/{item}', [SiteController::class, 'moduleDetail'])
+    ->whereIn('module', $inventoryModules)
+    ->where('item', $itemSlug)
+    ->name('module.show');

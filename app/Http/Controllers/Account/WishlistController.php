@@ -56,7 +56,9 @@ class WishlistController extends Controller
         $url = null;
 
         if ($model !== null) {
-            $url = route('module.show', ['module' => $w->module, 'id' => $w->module_item_id]);
+            $url = $model->slug
+                ? route('module.show', ['module' => $w->module, 'item' => $model->slug])
+                : null;
             $title = match ($w->module) {
                 'flights' => $model->airline.' '.$model->flight_number,
                 'hotels' => $model->name,

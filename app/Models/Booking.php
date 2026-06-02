@@ -18,6 +18,9 @@ class Booking extends Model
         'travel_date',
         'travellers_count',
         'total_amount',
+        'subtotal_amount',
+        'discount_amount',
+        'coupon_code',
         'status',
         'payment_status',
         'provider_service',
@@ -39,6 +42,8 @@ class Booking extends Model
         'travel_date' => 'date',
         'return_date' => 'date',
         'total_amount' => 'decimal:2',
+        'subtotal_amount' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
     ];
 
     public function user(): BelongsTo

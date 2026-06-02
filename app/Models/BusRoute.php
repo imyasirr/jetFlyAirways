@@ -7,9 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class BusRoute extends Model
 {
+    use Concerns\HasInventorySlug;
     use HasFactory;
 
     protected $fillable = [
+        'slug',
         'operator_name',
         'from_city',
         'to_city',

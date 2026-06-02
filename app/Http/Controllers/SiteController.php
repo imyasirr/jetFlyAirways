@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Contracts\GdsBookingClient;
+use App\Http\Requests\StoreBookingRequest;
 use App\Mail\BookingPlacedMail;
 use App\Models\Banner;
 use App\Models\Booking;
@@ -18,6 +19,7 @@ use App\Models\WishlistItem;
 use App\Models\TrainRoute;
 use App\Models\TravelAddon;
 use App\Models\TravelPackage;
+use App\Services\Bookings\CouponDiscountCalculator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
@@ -155,6 +157,7 @@ class SiteController extends Controller
             $items = $paginator->through(function (TravelAddon $m) {
                 return [
                     'id' => $m->id,
+                    'slug' => $m->slug,
                     'title' => $m->name,
                     'subtitle' => Str::limit((string) ($m->summary ?? ''), 140),
                     'price' => (float) $m->price,
@@ -185,16 +188,49 @@ class SiteController extends Controller
         $paginator = $query->paginate(12)->withQueryString();
         $items = $paginator->through(fn ($model) => $this->mapListingRow($slug, $model));
 
+        $trainPnrResult = null;
+        if ($slug === 'trains' && $request->filled('pnr')) {
+            $trainPnrResult = $this->demoTrainPnrLookup($request->string('pnr')->toString());
+        }
+
         return view('module', [
             'slug' => $slug,
             'module' => $this->modules[$slug],
             'items' => $items,
             'staticModule' => false,
             'addonCatalog' => false,
+            'trainPnrResult' => $trainPnrResult,
         ]);
     }
 
-    public function moduleDetail(string $slug, int $id)
+    /**
+     * Demo-only PNR lookup (no live rail API). Shown when user submits a PNR on trains listing.
+     *
+     * @return array{ok: bool, pnr: string, message: string, train?: string, from?: string, to?: string, status?: string}
+     */
+    private function demoTrainPnrLookup(string $pnr): array
+    {
+        $pnr = strtoupper(preg_replace('/\s+/', '', $pnr));
+        if (strlen($pnr) < 3 || strlen($pnr) > 12) {
+            return [
+                'ok' => false,
+                'pnr' => $pnr,
+                'message' => 'Enter a typical PNR (3–12 alphanumeric characters). This site shows a demo response only.',
+            ];
+        }
+
+        return [
+            'ok' => true,
+            'pnr' => $pnr,
+            'message' => 'Demo status — connect a rail provider API later for live PNR.',
+            'train' => 'Sample Express (12'.substr(hash('crc32', $pnr), 0, 3).')',
+            'from' => 'New Delhi (NDLS)',
+            'to' => 'Mumbai Central (MMCT)',
+            'status' => 'CNF / WL demo',
+        ];
+    }
+
+    public function moduleDetail(string $slug, string $item)
     {
         abort_unless(isset($this->modules[$slug]), 404);
 
@@ -202,15 +238,19 @@ class SiteController extends Controller
             abort(404);
         }
 
-        $model = $this->findActiveItem($slug, $id);
+        $model = $this->resolveActiveItem($slug, $item);
         abort_if($model === null, 404);
+
+        if (ctype_digit((string) $item)) {
+            return redirect()->route('module.show', ['module' => $slug, 'item' => $model->slug], 301);
+        }
 
         $inWishlist = false;
         if (auth()->check() && Schema::hasTable('wishlist_items')) {
             $inWishlist = WishlistItem::query()
                 ->where('user_id', auth()->id())
                 ->where('module', $slug)
-                ->where('module_item_id', $id)
+                ->where('module_item_id', $model->id)
                 ->exists();
         }
 
@@ -222,58 +262,38 @@ class SiteController extends Controller
         ]);
     }
 
-    public function bookingForm(string $slug, int $id)
+    public function bookingForm(string $slug, string $item)
     {
         abort_unless(isset($this->modules[$slug]), 404);
         abort_unless($this->isBookableModule($slug), 404);
 
-        $model = $this->findActiveItem($slug, $id);
+        $model = $this->resolveActiveItem($slug, $item);
         abort_if($model === null, 404);
+
+        if (ctype_digit((string) $item)) {
+            return redirect()->route('booking.form', ['module' => $slug, 'item' => $model->slug], 301);
+        }
 
         return view('booking', [
             'slug' => $slug,
-            'id' => $id,
             'module' => $this->modules[$slug],
             'item' => $this->mapDetailRow($slug, $model),
+            'unitPrice' => $this->unitPrice($slug, $model),
             'savedTravellers' => auth()->check()
                 ? SavedTraveller::query()->where('user_id', auth()->id())->orderBy('full_name')->get()
                 : collect(),
         ]);
     }
 
-    public function bookingSubmit(Request $request, string $slug, int $id, GdsBookingClient $gds)
+    public function bookingSubmit(StoreBookingRequest $request, string $slug, string $item, GdsBookingClient $gds, CouponDiscountCalculator $coupons)
     {
         abort_unless(isset($this->modules[$slug]), 404);
         abort_unless($this->isBookableModule($slug), 404);
 
-        $model = $this->findActiveItem($slug, $id);
+        $model = $this->resolveActiveItem($slug, $item);
         abort_if($model === null, 404);
 
-        $rules = [
-            'name' => ['required', 'string', 'max:100'],
-            'email' => ['required', 'email'],
-            'phone' => ['required', 'string', 'max:20'],
-            'travellers' => ['required', 'integer', 'min:1', 'max:20'],
-            'travel_date' => ['required', 'date'],
-            'notes' => ['nullable', 'string', 'max:500'],
-            'save_traveller' => ['nullable', 'boolean'],
-        ];
-
-        if ($slug === 'flights') {
-            $rules['trip_type'] = ['required', 'in:one_way,round_trip,multi_city'];
-            $rules['return_date'] = ['nullable', 'date', 'after_or_equal:travel_date'];
-            $rules['seat_preference'] = ['nullable', 'string', 'max:80'];
-            $rules['meal_preference'] = ['nullable', 'string', 'max:120'];
-            $rules['multi_city_notes'] = ['nullable', 'string', 'max:2000'];
-        }
-
-        $validated = $request->validate($rules);
-
-        if ($slug === 'flights' && ($validated['trip_type'] ?? '') === 'round_trip') {
-            $validated = array_merge($validated, $request->validate([
-                'return_date' => ['required', 'date', 'after_or_equal:travel_date'],
-            ]));
-        }
+        $validated = $request->validated();
 
         $unitPrice = $this->unitPrice($slug, $model);
         $priceMultiplier = 1.0;
@@ -284,7 +304,14 @@ class SiteController extends Controller
                 default => 1.0,
             };
         }
-        $total = round($unitPrice * (int) $validated['travellers'] * $priceMultiplier, 2);
+        $subtotal = round($unitPrice * (int) $validated['travellers'] * $priceMultiplier, 2);
+
+        $calc = $coupons->apply($validated['coupon_code'] ?? null, $subtotal);
+        if ($calc['error'] !== null) {
+            return back()->withInput()->withErrors(['coupon_code' => $calc['error']]);
+        }
+
+        $total = $calc['total'];
 
         do {
             $bookingCode = 'JFA-'.strtoupper(Str::limit($slug, 3, '')).'-'.strtoupper(Str::random(6));
@@ -294,9 +321,12 @@ class SiteController extends Controller
             'user_id' => auth()->id(),
             'booking_code' => $bookingCode,
             'module' => $slug,
-            'module_item_id' => $id,
+            'module_item_id' => $model->id,
             'travel_date' => $validated['travel_date'],
             'travellers_count' => (int) $validated['travellers'],
+            'subtotal_amount' => $calc['subtotal'],
+            'discount_amount' => $calc['discount'],
+            'coupon_code' => $calc['coupon']?->code,
             'total_amount' => $total,
             'status' => 'confirmed',
             'payment_status' => 'pending',
@@ -351,12 +381,13 @@ class SiteController extends Controller
 
         return view('booking-confirmation', [
             'slug' => $slug,
-            'id' => $id,
             'module' => $this->modules[$slug],
             'item' => $this->mapDetailRow($slug, $model),
             'data' => $validated,
             'bookingCode' => $booking->booking_code,
             'totalAmount' => $total,
+            'subtotalAmount' => $calc['subtotal'],
+            'discountAmount' => $calc['discount'],
             'booking' => $booking,
             'paymentCheckoutUrl' => $paymentCheckoutUrl,
         ]);
@@ -399,6 +430,36 @@ class SiteController extends Controller
         if ($request->filled('date')) {
             $query->whereDate('departure_at', $request->date('date'));
         }
+        if ($request->filled('airline')) {
+            $query->where('airline', 'like', '%'.$request->string('airline').'%');
+        }
+        if ($request->filled('cabin_class')) {
+            $query->where('cabin_class', $request->string('cabin_class')->toString());
+        }
+        if ($request->filled('min_price')) {
+            $query->where('price', '>=', (float) $request->input('min_price'));
+        }
+        if ($request->filled('max_price')) {
+            $query->where('price', '<=', (float) $request->input('max_price'));
+        }
+        if ($request->filled('stops')) {
+            $query->where('stops', '<=', (int) $request->input('stops'));
+        }
+        if ($request->filled('dep_after')) {
+            $query->whereTime('departure_at', '>=', $request->string('dep_after')->toString());
+        }
+        if ($request->filled('dep_before')) {
+            $query->whereTime('departure_at', '<=', $request->string('dep_before')->toString());
+        }
+        if ($request->filled('max_duration_mins')) {
+            $max = (int) $request->input('max_duration_mins');
+            $driver = $query->getConnection()->getDriverName();
+            if ($driver === 'sqlite') {
+                $query->whereRaw('(strftime("%s", arrival_at) - strftime("%s", departure_at)) / 60 <= ?', [$max]);
+            } else {
+                $query->whereRaw('TIMESTAMPDIFF(MINUTE, departure_at, arrival_at) <= ?', [$max]);
+            }
+        }
     }
 
     private function filterHotels(Request $request, $query): void
@@ -411,6 +472,15 @@ class SiteController extends Controller
             $query->where(function ($qry) use ($q) {
                 $qry->where('name', 'like', $q)->orWhere('location', 'like', $q);
             });
+        }
+        if ($request->filled('min_price')) {
+            $query->where('price_per_night', '>=', (float) $request->input('min_price'));
+        }
+        if ($request->filled('max_price')) {
+            $query->where('price_per_night', '<=', (float) $request->input('max_price'));
+        }
+        if ($request->filled('min_stars')) {
+            $query->where('star_rating', '>=', (int) $request->input('min_stars'));
         }
     }
 
@@ -461,7 +531,41 @@ class SiteController extends Controller
             || (in_array($slug, self::ADDON_MODULES, true) && Schema::hasTable('travel_addons'));
     }
 
-    private function findActiveItem(string $slug, int $id): Flight|Hotel|TravelPackage|BusRoute|TrainRoute|CabService|TravelAddon|null
+    private function resolveActiveItem(string $slug, string $item): Flight|Hotel|TravelPackage|BusRoute|TrainRoute|CabService|TravelAddon|null
+    {
+        $bySlug = $this->findActiveItemBySlug($slug, $item);
+        if ($bySlug !== null) {
+            return $bySlug;
+        }
+        if (ctype_digit((string) $item)) {
+            return $this->findActiveItemById($slug, (int) $item);
+        }
+
+        return null;
+    }
+
+    private function findActiveItemBySlug(string $slug, string $itemSlug): Flight|Hotel|TravelPackage|BusRoute|TrainRoute|CabService|TravelAddon|null
+    {
+        if (in_array($slug, self::ADDON_MODULES, true) && Schema::hasTable('travel_addons')) {
+            return TravelAddon::query()
+                ->where('category', $slug)
+                ->where('is_active', true)
+                ->where('slug', $itemSlug)
+                ->first();
+        }
+
+        return match ($slug) {
+            'flights' => Flight::query()->where('is_active', true)->where('slug', $itemSlug)->first(),
+            'hotels' => Hotel::query()->where('is_active', true)->where('slug', $itemSlug)->first(),
+            'packages' => TravelPackage::query()->where('is_published', true)->where('slug', $itemSlug)->first(),
+            'buses' => BusRoute::query()->where('is_active', true)->where('slug', $itemSlug)->first(),
+            'trains' => TrainRoute::query()->where('is_active', true)->where('slug', $itemSlug)->first(),
+            'cabs' => CabService::query()->where('is_active', true)->where('slug', $itemSlug)->first(),
+            default => null,
+        };
+    }
+
+    private function findActiveItemById(string $slug, int $id): Flight|Hotel|TravelPackage|BusRoute|TrainRoute|CabService|TravelAddon|null
     {
         if (in_array($slug, self::ADDON_MODULES, true) && Schema::hasTable('travel_addons')) {
             return TravelAddon::query()->where('category', $slug)->where('is_active', true)->find($id);
@@ -486,36 +590,44 @@ class SiteController extends Controller
         return match ($slug) {
             'flights' => [
                 'id' => $model->id,
+                'slug' => $model->slug,
                 'title' => $model->airline.' '.$model->flight_number,
-                'subtitle' => $model->from_city.' → '.$model->to_city.' · '.$model->departure_at->format('d M Y, H:i'),
+                'subtitle' => $model->from_city.' → '.$model->to_city.' · '.$model->departure_at->format('d M Y, H:i')
+                    .' · '.$model->cabin_class.' · '.$model->stops.' stop(s) · '
+                    .abs((int) $model->departure_at->diffInMinutes($model->arrival_at)).' min',
                 'price' => (float) $model->price,
             ],
             'hotels' => [
                 'id' => $model->id,
+                'slug' => $model->slug,
                 'title' => $model->name,
                 'subtitle' => $model->city.($model->location ? ' · '.$model->location : '').' · '.$model->star_rating.'★',
                 'price' => (float) $model->price_per_night,
             ],
             'packages' => [
                 'id' => $model->id,
+                'slug' => $model->slug,
                 'title' => $model->name,
                 'subtitle' => $model->category.' · '.$model->destination.' · '.$model->duration_days.' days',
                 'price' => (float) ($model->offer_price ?? $model->price),
             ],
             'buses' => [
                 'id' => $model->id,
+                'slug' => $model->slug,
                 'title' => $model->operator_name,
                 'subtitle' => $model->from_city.' → '.$model->to_city.' · '.$model->departure_at->format('d M, H:i'),
                 'price' => (float) $model->price,
             ],
             'trains' => [
                 'id' => $model->id,
+                'slug' => $model->slug,
                 'title' => $model->train_name.' ('.$model->train_number.')',
                 'subtitle' => $model->from_city.' → '.$model->to_city.' · '.$model->departure_at->format('d M, H:i'),
                 'price' => (float) $model->price,
             ],
             'cabs' => [
                 'id' => $model->id,
+                'slug' => $model->slug,
                 'title' => $model->service_type,
                 'subtitle' => $model->from_location.($model->to_location ? ' → '.$model->to_location : ''),
                 'price' => (float) $model->base_fare,
@@ -524,13 +636,14 @@ class SiteController extends Controller
     }
 
     /**
-     * @return array{id:int, title:string, description:string, price:float, meta?:string}
+     * @return array{id:int, slug:string, title:string, description:string, price:float, meta?:string}
      */
     private function mapDetailRow(string $slug, Flight|Hotel|TravelPackage|BusRoute|TrainRoute|CabService|TravelAddon $model): array
     {
         if ($model instanceof TravelAddon) {
             return [
                 'id' => $model->id,
+                'slug' => $model->slug,
                 'title' => $model->name,
                 'description' => $model->description ?? $model->summary ?? __('jetfly.addon_default_description'),
                 'price' => (float) $model->price,
@@ -541,6 +654,7 @@ class SiteController extends Controller
         return match ($slug) {
             'flights' => [
                 'id' => $model->id,
+                'slug' => $model->slug,
                 'title' => $model->airline.' '.$model->flight_number,
                 'description' => 'Route '.$model->from_city.' to '.$model->to_city.'. Cabin '.$model->cabin_class.', '.$model->stops.' stop(s). Seats available: '.$model->seats_available.'.',
                 'price' => (float) $model->price,
@@ -548,6 +662,7 @@ class SiteController extends Controller
             ],
             'hotels' => [
                 'id' => $model->id,
+                'slug' => $model->slug,
                 'title' => $model->name,
                 'description' => $model->description ?? 'Comfortable stay with selected amenities.',
                 'price' => (float) $model->price_per_night,
@@ -555,6 +670,7 @@ class SiteController extends Controller
             ],
             'packages' => [
                 'id' => $model->id,
+                'slug' => $model->slug,
                 'title' => $model->name,
                 'description' => $model->details ?? $model->itinerary ?? 'Custom holiday package.',
                 'price' => (float) ($model->offer_price ?? $model->price),
@@ -562,6 +678,7 @@ class SiteController extends Controller
             ],
             'buses' => [
                 'id' => $model->id,
+                'slug' => $model->slug,
                 'title' => $model->operator_name,
                 'description' => 'Bus from '.$model->from_city.' to '.$model->to_city.'. Seats available: '.$model->seats_available.'.',
                 'price' => (float) $model->price,
@@ -569,6 +686,7 @@ class SiteController extends Controller
             ],
             'trains' => [
                 'id' => $model->id,
+                'slug' => $model->slug,
                 'title' => $model->train_name.' ('.$model->train_number.')',
                 'description' => 'Train from '.$model->from_city.' to '.$model->to_city.'. Seats available: '.$model->seats_available.'.',
                 'price' => (float) $model->price,
@@ -576,6 +694,7 @@ class SiteController extends Controller
             ],
             'cabs' => [
                 'id' => $model->id,
+                'slug' => $model->slug,
                 'title' => $model->service_type,
                 'description' => 'Pickup '.$model->from_location.($model->to_location ? ', drop '.$model->to_location : '').'.',
                 'price' => (float) $model->base_fare,

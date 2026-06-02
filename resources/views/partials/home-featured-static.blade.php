@@ -20,7 +20,7 @@
                 <h3 class="card-title">{{ $f->airline }} {{ $f->flight_number }}</h3>
                 <p class="card-meta">{{ $f->from_city }} → {{ $f->to_city }}</p>
                 <p class="card-price">From Rs {{ number_format($f->price, 2) }}</p>
-                <a class="btn secondary btn-block" href="{{ route('module.show', ['module' => 'flights', 'id' => $f->id]) }}">View details</a>
+                <a class="btn secondary btn-block" href="{{ route('module.show', ['module' => 'flights', 'item' => $f->slug]) }}">View details</a>
             </div>
         </article>
     @empty
@@ -37,7 +37,7 @@
                 <h3 class="card-title">{{ $h->name }}</h3>
                 <p class="card-meta">{{ $h->city }} · {{ $h->star_rating }}★</p>
                 <p class="card-price">From Rs {{ number_format($h->price_per_night, 2) }}/night</p>
-                <a class="btn secondary btn-block" href="{{ route('module.show', ['module' => 'hotels', 'id' => $h->id]) }}">View details</a>
+                <a class="btn secondary btn-block" href="{{ route('module.show', ['module' => 'hotels', 'item' => $h->slug]) }}">View details</a>
             </div>
         </article>
     @empty
@@ -54,7 +54,7 @@
                 <h3 class="card-title">{{ $p->name }}</h3>
                 <p class="card-meta">{{ $p->destination }} · {{ $p->duration_days }} days</p>
                 <p class="card-price">From Rs {{ number_format($p->offer_price ?? $p->price, 2) }}</p>
-                <a class="btn secondary btn-block" href="{{ route('module.show', ['module' => 'packages', 'id' => $p->id]) }}">View details</a>
+                <a class="btn secondary btn-block" href="{{ route('module.show', ['module' => 'packages', 'item' => $p->slug]) }}">View details</a>
             </div>
         </article>
     @empty

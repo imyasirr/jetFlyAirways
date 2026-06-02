@@ -6,11 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class TravelAddon extends Model
 {
+    use Concerns\HasInventorySlug;
+
     public const CATEGORY_VISA = 'visa';
 
     public const CATEGORY_INSURANCE = 'insurance';
 
     protected $fillable = [
+        'slug',
         'category',
         'name',
         'summary',

@@ -42,7 +42,18 @@
                         <div class="mm-mega-panel" role="menu">
                             <div class="mm-mega-grid">
                                 @foreach($item->children as $child)
-                                    <a href="{{ $child->resolvedUrl() }}" role="menuitem" class="mm-mega-item {{ $child->isCurrent() ? 'is-active' : '' }}" @if($child->open_new_tab) target="_blank" rel="noopener noreferrer" @endif>{{ $child->label }}</a>
+                                    @if($child->children->isEmpty())
+                                        <a href="{{ $child->resolvedUrl() }}" role="menuitem" class="mm-mega-item {{ $child->isCurrent() ? 'is-active' : '' }}" @if($child->open_new_tab) target="_blank" rel="noopener noreferrer" @endif>{{ $child->label }}</a>
+                                    @else
+                                        <div class="mm-mega-group" role="presentation">
+                                            <span class="mm-mega-group-title">{{ $child->label }}</span>
+                                            <div class="mm-mega-group-links" role="presentation">
+                                                @foreach($child->children as $grand)
+                                                    <a href="{{ $grand->resolvedUrl() }}" role="menuitem" class="mm-mega-item mm-mega-item--sub {{ $grand->isCurrent() ? 'is-active' : '' }}" @if($grand->open_new_tab) target="_blank" rel="noopener noreferrer" @endif>{{ $grand->label }}</a>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
                                 @endforeach
                             </div>
                         </div>
@@ -114,7 +125,14 @@
                 @else
                     <p class="mm-mobile-group">{{ $item->label }}</p>
                     @foreach($item->children as $child)
-                        <a href="{{ $child->resolvedUrl() }}" class="mm-mobile-link mm-mobile-sublink">{{ $child->label }}</a>
+                        @if($child->children->isEmpty())
+                            <a href="{{ $child->resolvedUrl() }}" class="mm-mobile-link mm-mobile-sublink">{{ $child->label }}</a>
+                        @else
+                            <p class="mm-mobile-subgroup">{{ $child->label }}</p>
+                            @foreach($child->children as $grand)
+                                <a href="{{ $grand->resolvedUrl() }}" class="mm-mobile-link mm-mobile-sublink mm-mobile-subsublink">{{ $grand->label }}</a>
+                            @endforeach
+                        @endif
                     @endforeach
                 @endif
             @empty

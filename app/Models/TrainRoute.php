@@ -7,9 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class TrainRoute extends Model
 {
+    use Concerns\HasInventorySlug;
     use HasFactory;
 
     protected $fillable = [
+        'slug',
         'train_name',
         'train_number',
         'from_city',

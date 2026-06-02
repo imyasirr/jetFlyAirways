@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Contracts\GdsBookingClient;
 use App\Mail\BookingPaidMail;
 use App\Models\Booking;
+use App\Models\Coupon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -93,6 +94,12 @@ class PaymentController extends Controller
             'payment_status' => 'paid',
             'razorpay_payment_id' => $data['razorpay_payment_id'],
         ]);
+
+        if (filled($booking->coupon_code)) {
+            Coupon::query()
+                ->whereRaw('UPPER(code) = ?', [strtoupper($booking->coupon_code)])
+                ->increment('used_count');
+        }
 
         try {
             $gds->recordPaymentCaptured($booking);

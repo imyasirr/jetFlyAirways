@@ -72,34 +72,31 @@ class MenuItem extends Model
     /** @return Collection<int, MenuItem> */
     public static function treeFor(string $location)
     {
-        return static::query()
+        $all = static::query()
             ->where('location', $location)
             ->where('is_active', true)
-            ->whereNull('parent_id')
             ->orderBy('sort_order')
-            ->with(['children' => fn ($q) => $q->where('is_active', true)->orderBy('sort_order')])
+            ->orderBy('id')
             ->get()
-            ->filter(function (MenuItem $item) {
-                if ($item->requires_auth && ! auth()->check()) {
-                    return false;
-                }
+            ->filter(fn (MenuItem $i) => ! $i->requires_auth || auth()->check())
+            ->values();
 
-                return true;
-            })
-            ->map(function (MenuItem $item) {
-                $item->setRelation(
-                    'children',
-                    $item->children->filter(function (MenuItem $child) {
-                        if ($child->requires_auth && ! auth()->check()) {
-                            return false;
-                        }
+        /** @var array<int|string, Collection<int, MenuItem>> $byParent */
+        $byParent = $all->groupBy(fn (MenuItem $i) => $i->parent_id ?? 0);
 
-                        return true;
-                    })->values()
-                );
+        $build = function (MenuItem $node) use (&$build, $byParent): MenuItem {
+            $children = ($byParent[$node->id] ?? collect())->values();
+            $node->setRelation(
+                'children',
+                $children->map(fn (MenuItem $child) => $build($child))->values()
+            );
 
-                return $item;
-            })
+            return $node;
+        };
+
+        return ($byParent[0] ?? collect())
+            ->values()
+            ->map(fn (MenuItem $root) => $build($root))
             ->values();
     }
 }
