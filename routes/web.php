@@ -56,6 +56,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [SiteController::class, 'home'])->name('home');
 Route::get('/welcome', [SiteController::class, 'welcome'])->name('welcome');
+// Preview TravelBook demo frontend (integrated with site layout)
+Route::view('/travelbook', 'travelbook_page')->name('travelbook.demo');
 
 Route::get('/locale/{locale}', function (string $locale) {
     abort_unless(in_array($locale, ['en', 'hi'], true), 404);

@@ -16,9 +16,14 @@
 /public/build
 /public/hot
 /public/storage
+/public/css/travelbook.css
 /storage/*.key
 /storage/pail
 /vendor
+/resources/css/travelbook.css
+/resources/views/index.html
+/resources/views/travelbook.blade.php
+/resources/views/travelbook_page.blade.php
 Homestead.json
 Homestead.yaml
 Thumbs.db

@@ -2,13 +2,13 @@
     <div class="home-ota-card">
         <div class="home-ota-tabs" role="tablist" aria-label="Booking type">
             <button type="button" class="home-ota-tab is-active" role="tab" aria-selected="true" aria-controls="home-ota-panel-flights" id="home-ota-tab-flights" data-home-tab="flights">
-                <span class="home-ota-tab-icon" aria-hidden="true">✈</span> Flights
+                <span class="home-ota-tab-icon" aria-hidden="true">FL</span> Flights
             </button>
             <button type="button" class="home-ota-tab" role="tab" aria-selected="false" aria-controls="home-ota-panel-hotels" id="home-ota-tab-hotels" data-home-tab="hotels">
-                <span class="home-ota-tab-icon" aria-hidden="true">🏨</span> Hotels
+                <span class="home-ota-tab-icon" aria-hidden="true">HT</span> Hotels
             </button>
             <button type="button" class="home-ota-tab" role="tab" aria-selected="false" aria-controls="home-ota-panel-packages" id="home-ota-tab-packages" data-home-tab="packages">
-                <span class="home-ota-tab-icon" aria-hidden="true">🌴</span> Holidays
+                <span class="home-ota-tab-icon" aria-hidden="true">HL</span> Holidays
             </button>
         </div>
         <p class="home-ota-quicklinks">
@@ -63,7 +63,7 @@
                     </div>
                     <div class="home-ota-field home-ota-field--submit">
                         <span class="home-ota-field-spacer" aria-hidden="true"></span>
-                        <button type="submit" class="home-ota-search-btn">SEARCH FLIGHTS</button>
+                        <button type="submit" class="home-ota-search-btn">Search flights</button>
                     </div>
                 </div>
             </form>
@@ -74,7 +74,7 @@
                 <div class="home-ota-fields home-ota-fields--hotels">
                     <div class="home-ota-field home-ota-field--grow">
                         <label for="hh-city">City, property name</label>
-                        <input id="hh-city" name="city" type="text" placeholder="Goa, Mumbai, Delhi…" value="{{ request('city') }}">
+                        <input id="hh-city" name="city" type="text" placeholder="Goa, Mumbai, Delhi" value="{{ request('city') }}">
                     </div>
                     <div class="home-ota-field">
                         <label for="hh-q">Hotel name (optional)</label>
@@ -94,7 +94,7 @@
                     </div>
                     <div class="home-ota-field home-ota-field--submit">
                         <span class="home-ota-field-spacer" aria-hidden="true"></span>
-                        <button type="submit" class="home-ota-search-btn home-ota-search-btn--hotels">SEARCH HOTELS</button>
+                        <button type="submit" class="home-ota-search-btn home-ota-search-btn--hotels">Search hotels</button>
                     </div>
                 </div>
             </form>
@@ -105,11 +105,11 @@
                 <div class="home-ota-fields home-ota-fields--packages">
                     <div class="home-ota-field">
                         <label for="hp-dest">Destination</label>
-                        <input id="hp-dest" name="destination" type="text" placeholder="Kerala, Dubai, Bali…" value="{{ request('destination') }}">
+                        <input id="hp-dest" name="destination" type="text" placeholder="Kerala, Dubai, Bali" value="{{ request('destination') }}">
                     </div>
                     <div class="home-ota-field">
                         <label for="hp-cat">Category</label>
-                        <input id="hp-cat" name="category" type="text" placeholder="Family, Honeymoon…" value="{{ request('category') }}">
+                        <input id="hp-cat" name="category" type="text" placeholder="Family, Honeymoon" value="{{ request('category') }}">
                     </div>
                     <div class="home-ota-field">
                         <label for="hp-q">Keyword</label>
@@ -117,7 +117,7 @@
                     </div>
                     <div class="home-ota-field home-ota-field--submit">
                         <span class="home-ota-field-spacer" aria-hidden="true"></span>
-                        <button type="submit" class="home-ota-search-btn home-ota-search-btn--packages">SEARCH PACKAGES</button>
+                        <button type="submit" class="home-ota-search-btn home-ota-search-btn--packages">Search packages</button>
                     </div>
                 </div>
             </form>

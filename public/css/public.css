@@ -1622,21 +1622,37 @@ html[data-theme="dark"] .jf-ota-detail__fare {
 }
 
 .mm-footer {
-    margin-top: 48px;
+    margin-top: 72px;
     font-size: 14px;
-    color: #374151;
+    color: #dbe5f2;
+    background: #07152d;
 }
 
 .mm-footer-main {
-    background: #fafafa;
-    border-top: 1px solid #e5e7eb;
-    padding: 40px 0 36px;
+    position: relative;
+    overflow: hidden;
+    background:
+        linear-gradient(145deg, rgba(7, 21, 45, .98) 0%, rgba(9, 32, 71, .98) 48%, rgba(0, 59, 149, .92) 100%);
+    border-top: 1px solid rgba(255, 255, 255, .08);
+    padding: clamp(58px, 8vw, 86px) 0 clamp(44px, 6vw, 64px);
+}
+
+.mm-footer-main::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 14% 16%, rgba(255, 213, 79, .16), transparent 26%),
+        radial-gradient(circle at 86% 8%, rgba(56, 189, 248, .18), transparent 30%);
+    pointer-events: none;
 }
 
 .mm-footer-grid {
+    position: relative;
+    z-index: 1;
     display: grid;
-    gap: 28px 24px;
-    grid-template-columns: 1.35fr repeat(4, 1fr);
+    gap: 34px 30px;
+    grid-template-columns: minmax(260px, 1.45fr) repeat(3, minmax(130px, .7fr)) minmax(280px, 1.1fr);
     align-items: start;
 }
 
@@ -1653,20 +1669,45 @@ html[data-theme="dark"] .jf-ota-detail__fare {
 }
 
 .mm-footer-logo {
-    font-weight: 900;
-    font-size: 1.2rem;
-    color: var(--mm-blue);
     display: block;
-    margin-bottom: 12px;
+    margin-bottom: 18px;
+    color: #fff;
+    font-weight: 900;
+    font-size: clamp(1.45rem, 3vw, 2rem);
     letter-spacing: -.02em;
 }
 
 .mm-footer-desc {
     margin: 0;
-    font-size: 13px;
-    line-height: 1.65;
-    color: #6b7280;
     max-width: 42ch;
+    color: #b8c1d1;
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.mm-footer-contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 22px;
+}
+
+.mm-footer-contact a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 9px 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .08);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, .12);
+    font-weight: 700;
+}
+
+.mm-footer-contact a:hover {
+    background: rgba(255, 213, 79, .16);
+    border-color: rgba(255, 213, 79, .35);
+    color: #ffd54f;
 }
 
 .mm-footer-social {
@@ -1676,7 +1717,7 @@ html[data-theme="dark"] .jf-ota-detail__fare {
 
 .mm-footer-social-label {
     font-weight: 800;
-    color: #374151;
+    color: #ffd54f;
     display: block;
     margin-bottom: 8px;
     font-size: 11px;
@@ -1691,21 +1732,21 @@ html[data-theme="dark"] .jf-ota-detail__fare {
 }
 
 .mm-footer-social-links a {
-    color: var(--mm-blue);
-    font-weight: 700;
+    color: #dbeafe;
+    font-weight: 800;
 }
 
 .mm-footer-social-links a:hover {
-    text-decoration: underline;
+    color: #ffd54f;
+    text-decoration: none;
 }
 
 .mm-footer-heading {
-    margin: 0 0 14px;
-    font-size: 11px;
+    margin: 0 0 18px;
+    font-size: 13px;
     font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: .1em;
-    color: #9ca3af;
+    letter-spacing: 0;
+    color: #fff;
 }
 
 .mm-footer-links {
@@ -1715,24 +1756,73 @@ html[data-theme="dark"] .jf-ota-detail__fare {
 }
 
 .mm-footer-links li {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 .mm-footer-links a {
-    color: #4b5563;
+    color: #b8c1d1;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 15px;
+    transition: color .2s, padding-left .2s;
 }
 
 .mm-footer-links a:hover {
-    color: var(--mm-blue);
+    color: #ffd54f;
+    padding-left: 5px;
+}
+
+.mm-footer-newsletter p {
+    margin: 0 0 18px;
+    color: #b8c1d1;
+    line-height: 1.7;
+}
+
+.mm-footer-newsletter-form {
+    display: flex;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .08);
+    border: 1px solid rgba(255, 255, 255, .1);
+}
+
+.mm-footer-newsletter-form input {
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    color: #fff;
+    padding: 0 12px;
+    font: inherit;
+    outline: none;
+}
+
+.mm-footer-newsletter-form input::placeholder {
+    color: rgba(255, 255, 255, .62);
+}
+
+.mm-footer-newsletter-form button {
+    flex: 0 0 auto;
+    border: 0;
+    border-radius: 999px;
+    background: #ffd54f;
+    color: #111;
+    padding: 12px 22px;
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+    transition: background .2s, transform .2s;
+}
+
+.mm-footer-newsletter-form button:hover {
+    background: #fff;
+    transform: translateY(-1px);
 }
 
 .mm-footer-bottom {
-    background: #2d2d2d;
-    color: #a3a3a3;
-    padding: 16px 0;
-    font-size: 12px;
+    background: #061126;
+    color: #9aa6bd;
+    padding: 20px 0;
+    font-size: 13px;
 }
 
 .mm-footer-bottom-inner {
@@ -1747,33 +1837,34 @@ html[data-theme="dark"] .jf-ota-detail__fare {
     text-align: right;
     max-width: 56ch;
     line-height: 1.5;
-    color: #a3a3a3;
+    color: #9aa6bd;
 }
 
 html[data-theme="dark"] .mm-footer-main {
-    background: #1e293b;
-    border-top-color: var(--border);
+    background:
+        linear-gradient(145deg, rgba(7, 21, 45, .98) 0%, rgba(9, 32, 71, .98) 48%, rgba(0, 59, 149, .92) 100%);
+    border-top-color: rgba(255, 255, 255, .08);
 }
 
 html[data-theme="dark"] .mm-footer-desc {
-    color: #94a3b8;
+    color: #b8c1d1;
 }
 
 html[data-theme="dark"] .mm-footer-heading {
-    color: #64748b;
+    color: #fff;
 }
 
 html[data-theme="dark"] .mm-footer-links a {
-    color: #cbd5e1;
+    color: #b8c1d1;
 }
 
 html[data-theme="dark"] .mm-footer-bottom {
-    background: #0f172a;
-    color: #94a3b8;
+    background: #061126;
+    color: #9aa6bd;
 }
 
 html[data-theme="dark"] .mm-footer-badges {
-    color: #94a3b8;
+    color: #9aa6bd;
 }
 
 input,

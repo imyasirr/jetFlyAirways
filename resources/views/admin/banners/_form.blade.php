@@ -8,17 +8,25 @@
 </label>
 
 <div class="admin-field-full">
-    @include('admin.partials.image-upload', [
-        'label' => $banner ? 'Replace banner image' : 'Banner image',
-        'name' => 'image_file',
-        'currentPath' => $banner->image ?? null,
-        'required' => ! $banner,
-        'hint' => 'JPEG, PNG, WebP or GIF — max 10 MB. Wide images (~1600×600) work best.',
-    ])
+    @if($banner)
+        @include('admin.partials.image-upload', [
+            'label' => 'Replace banner image',
+            'name' => 'image_file',
+            'currentPath' => $banner->image ?? null,
+            'required' => false,
+            'hint' => 'JPEG, PNG, WebP or GIF - max 10 MB. Wide images around 1800x900 work best.',
+        ])
+    @else
+        <div style="margin-bottom:14px;">
+            <label style="display:block;font-weight:600;margin-bottom:6px;">Banner images</label>
+            <p style="font-size:12px;color:#64748b;margin:0 0 8px;">Select one or multiple JPEG, PNG, WebP or GIF files. Each image will become one carousel slide.</p>
+            <input type="file" name="image_files[]" accept="image/jpeg,image/png,image/webp,image/gif" multiple required style="font-size:14px;">
+        </div>
+    @endif
 </div>
 
 <label>Link URL (optional)
-    <input type="text" name="link" value="{{ old('link', $banner?->link ?? '') }}" maxlength="500" placeholder="https://… or /flights — used by the CTA button">
+    <input type="text" name="link" value="{{ old('link', $banner?->link ?? '') }}" maxlength="500" placeholder="https://... or /flights - used by the CTA button">
 </label>
 
 <label>Button label (optional)
