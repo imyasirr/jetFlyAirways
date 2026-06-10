@@ -4,6 +4,9 @@
     $topLeft = $siteSetting?->topstrip_left ?? __('jetfly.topstrip_left');
     $bName = $siteSetting?->brand_name ?? 'Jet Fly Airways';
     $bTag = $siteSetting?->brand_tagline ?? 'Book · Fly · Stay';
+    $logoUrl = ($siteSetting ?? null)?->logo_image
+        ? \App\Support\PublicImageStorage::url($siteSetting->logo_image)
+        : null;
 @endphp
 <div class="mm-topbar" role="note">
     <div class="container mm-topbar-inner">
@@ -27,8 +30,12 @@
 </div>
 <header class="mm-header">
     <div class="container mm-header-inner">
-        <a href="{{ route('home') }}" class="mm-brand" aria-label="{{ $bName }} home">
-            <span class="mm-brand-mark">{{ $bName }}</span>
+        <a href="{{ route('home') }}" class="mm-brand {{ $logoUrl ? 'mm-brand--image' : '' }}" aria-label="{{ $bName }} home">
+            @if($logoUrl)
+                <img src="{{ $logoUrl }}" alt="{{ $bName }}" class="mm-brand-logo">
+            @else
+                <span class="mm-brand-mark">{{ $bName }}</span>
+            @endif
             <span class="mm-brand-sub">{{ $bTag }}</span>
         </a>
         <nav class="mm-mainnav" aria-label="Main navigation">

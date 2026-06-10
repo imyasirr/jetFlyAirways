@@ -613,6 +613,70 @@ a.jetfly-pagination__link:hover {
 .admin-form-grid > .admin-field-full {
     grid-column: 1 / -1;
 }
+.admin-image-upload {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+.admin-image-upload__label {
+    font-weight: 700;
+    color: #334155;
+}
+.admin-image-upload__hint {
+    margin: 0;
+    font-size: 12px;
+    color: #64748b;
+    line-height: 1.5;
+}
+.admin-image-upload__preview {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px;
+    border: 1px solid var(--admin-border);
+    border-radius: 14px;
+    background: #f8fafc;
+}
+.admin-image-upload__preview img {
+    width: min(180px, 42vw);
+    max-height: 120px;
+    object-fit: contain;
+    border-radius: 10px;
+    background: #fff;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+}
+.admin-image-upload__preview div {
+    min-width: 0;
+    display: grid;
+    gap: 5px;
+}
+.admin-image-upload__eyebrow {
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--admin-primary);
+    letter-spacing: .04em;
+    text-transform: uppercase;
+}
+.admin-image-upload__preview a {
+    font-weight: 700;
+}
+.admin-image-upload__preview code {
+    display: block;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    color: #475569;
+}
+.admin-image-upload__empty {
+    padding: 12px;
+    border: 1px dashed var(--admin-border);
+    border-radius: 12px;
+    color: #64748b;
+    background: #f8fafc;
+    font-size: 13px;
+}
+.admin-image-upload input[type="file"] {
+    font-size: 14px;
+}
 .flatpickr-calendar {
     z-index: 10050;
 }

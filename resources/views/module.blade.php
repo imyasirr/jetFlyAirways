@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="card" style="margin-bottom:16px;">
+    <div class="card module-head">
         <h1 class="section-title">{{ $module['icon'] }} {{ $module['title'] }}</h1>
-        <p style="margin:0;color:#64748b;">
+        <p>
             @if(!empty($addonCatalog))
                 {{ __('jetfly.module_addon_intro') }}
             @else
@@ -20,14 +20,14 @@
         </div>
     @else
         @unless(!empty($addonCatalog))
-        <div class="card" style="margin-bottom:16px;">
+        <div class="card module-filters">
             <form method="get" action="{{ route('module.index', $slug) }}" class="search-grid">
                 @if($slug === 'flights')
-                    <div><label style="font-size:12px;font-weight:600;color:#64748b;">From</label><input name="from" value="{{ request('from') }}" placeholder="City"></div>
-                    <div><label style="font-size:12px;font-weight:600;color:#64748b;">To</label><input name="to" value="{{ request('to') }}" placeholder="City"></div>
-                    <div><label style="font-size:12px;font-weight:600;color:#64748b;">Date</label><input type="date" name="date" value="{{ request('date') }}"></div>
-                    <div><label style="font-size:12px;font-weight:600;color:#64748b;">Airline</label><input name="airline" value="{{ request('airline') }}" placeholder="Name"></div>
-                    <div><label style="font-size:12px;font-weight:600;color:#64748b;">Cabin</label>
+                    <div><label>From</label><input name="from" value="{{ request('from') }}" placeholder="City"></div>
+                    <div><label>To</label><input name="to" value="{{ request('to') }}" placeholder="City"></div>
+                    <div><label>Date</label><input type="date" name="date" value="{{ request('date') }}"></div>
+                    <div><label>Airline</label><input name="airline" value="{{ request('airline') }}" placeholder="Name"></div>
+                    <div><label>Cabin</label>
                         <select name="cabin_class">
                             <option value="">Any</option>
                             <option value="Economy" @selected(request('cabin_class') === 'Economy')>Economy</option>
@@ -36,36 +36,36 @@
                             <option value="First" @selected(request('cabin_class') === 'First')>First</option>
                         </select>
                     </div>
-                    <div><label style="font-size:12px;font-weight:600;color:#64748b;">Max stops</label><input type="number" name="stops" min="0" max="9" value="{{ request('stops') }}" placeholder="e.g. 1"></div>
-                    <div><label style="font-size:12px;font-weight:600;color:#64748b;">Min ₹</label><input type="number" name="min_price" min="0" step="1" value="{{ request('min_price') }}"></div>
-                    <div><label style="font-size:12px;font-weight:600;color:#64748b;">Max ₹</label><input type="number" name="max_price" min="0" step="1" value="{{ request('max_price') }}"></div>
-                    <div><label style="font-size:12px;font-weight:600;color:#64748b;">Dep after</label><input type="time" name="dep_after" value="{{ request('dep_after') }}"></div>
-                    <div><label style="font-size:12px;font-weight:600;color:#64748b;">Dep before</label><input type="time" name="dep_before" value="{{ request('dep_before') }}"></div>
-                    <div><label style="font-size:12px;font-weight:600;color:#64748b;">Max duration (min)</label><input type="number" name="max_duration_mins" min="15" value="{{ request('max_duration_mins') }}" placeholder="e.g. 180"></div>
+                    <div><label>Max stops</label><input type="number" name="stops" min="0" max="9" value="{{ request('stops') }}" placeholder="e.g. 1"></div>
+                    <div><label>Min ₹</label><input type="number" name="min_price" min="0" step="1" value="{{ request('min_price') }}"></div>
+                    <div><label>Max ₹</label><input type="number" name="max_price" min="0" step="1" value="{{ request('max_price') }}"></div>
+                    <div><label>Dep after</label><input type="time" name="dep_after" value="{{ request('dep_after') }}"></div>
+                    <div><label>Dep before</label><input type="time" name="dep_before" value="{{ request('dep_before') }}"></div>
+                    <div><label>Max duration (min)</label><input type="number" name="max_duration_mins" min="15" value="{{ request('max_duration_mins') }}" placeholder="e.g. 180"></div>
                 @elseif($slug === 'hotels')
-                    <div><label style="font-size:12px;font-weight:600;color:#64748b;">City</label><input name="city" value="{{ request('city') }}" placeholder="City"></div>
-                    <div><label style="font-size:12px;font-weight:600;color:#64748b;">Hotel name</label><input name="q" value="{{ request('q') }}" placeholder="Optional"></div>
-                    <div><label style="font-size:12px;font-weight:600;color:#64748b;">Min ₹ / night</label><input type="number" name="min_price" min="0" value="{{ request('min_price') }}"></div>
-                    <div><label style="font-size:12px;font-weight:600;color:#64748b;">Max ₹ / night</label><input type="number" name="max_price" min="0" value="{{ request('max_price') }}"></div>
-                    <div><label style="font-size:12px;font-weight:600;color:#64748b;">Min stars</label><input type="number" name="min_stars" min="1" max="5" value="{{ request('min_stars') }}"></div>
+                    <div><label>City</label><input name="city" value="{{ request('city') }}" placeholder="City"></div>
+                    <div><label>Hotel name</label><input name="q" value="{{ request('q') }}" placeholder="Optional"></div>
+                    <div><label>Min ₹ / night</label><input type="number" name="min_price" min="0" value="{{ request('min_price') }}"></div>
+                    <div><label>Max ₹ / night</label><input type="number" name="max_price" min="0" value="{{ request('max_price') }}"></div>
+                    <div><label>Min stars</label><input type="number" name="min_stars" min="1" max="5" value="{{ request('min_stars') }}"></div>
                 @elseif($slug === 'packages')
-                    <div><label style="font-size:12px;font-weight:600;color:#64748b;">Destination</label><input name="destination" value="{{ request('destination') }}" placeholder="Place"></div>
-                    <div><label style="font-size:12px;font-weight:600;color:#64748b;">Category</label><input name="category" value="{{ request('category') }}" placeholder="Type"></div>
-                    <div><label style="font-size:12px;font-weight:600;color:#64748b;">Keyword</label><input name="q" value="{{ request('q') }}" placeholder="Search"></div>
+                    <div><label>Destination</label><input name="destination" value="{{ request('destination') }}" placeholder="Place"></div>
+                    <div><label>Category</label><input name="category" value="{{ request('category') }}" placeholder="Type"></div>
+                    <div><label>Keyword</label><input name="q" value="{{ request('q') }}" placeholder="Search"></div>
                 @elseif(in_array($slug, ['buses','trains']))
-                    <div><label style="font-size:12px;font-weight:600;color:#64748b;">From</label><input name="from" value="{{ request('from') }}" placeholder="City"></div>
-                    <div><label style="font-size:12px;font-weight:600;color:#64748b;">To</label><input name="to" value="{{ request('to') }}" placeholder="City"></div>
-                    <div><label style="font-size:12px;font-weight:600;color:#64748b;">Date</label><input type="date" name="date" value="{{ request('date') }}"></div>
+                    <div><label>From</label><input name="from" value="{{ request('from') }}" placeholder="City"></div>
+                    <div><label>To</label><input name="to" value="{{ request('to') }}" placeholder="City"></div>
+                    <div><label>Date</label><input type="date" name="date" value="{{ request('date') }}"></div>
                 @elseif($slug === 'cabs')
-                    <div style="grid-column:span 2;"><label style="font-size:12px;font-weight:600;color:#64748b;">Search</label><input name="q" value="{{ request('q') }}" placeholder="Service type, from, to…"></div>
+                    <div style="grid-column:span 2;"><label>Search</label><input name="q" value="{{ request('q') }}" placeholder="Service type, from, to…"></div>
                 @endif
-                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <div class="module-filter-actions">
                     <button class="btn secondary" type="submit">Apply filters</button>
                     <a class="btn" href="{{ route('module.index', $slug) }}">Clear</a>
                 </div>
             </form>
             @if($slug === 'hotels' && (request('check_in') || request('check_out') || request('guests')))
-                <p style="margin:10px 0 0;font-size:13px;color:#64748b;">Check-in / guests from home search are shown for planning — listing filters use price &amp; stars.</p>
+                <p class="page-help">Check-in / guests from home search are shown for planning — listing filters use price &amp; stars.</p>
             @endif
         </div>
         @endunless

@@ -6,7 +6,7 @@
     <div class="card">
         <h2 class="section-title" style="font-size:1.1rem;">Public site chrome (OTA-style)</h2>
         <p style="font-size:14px;color:#64748b;margin:0 0 16px;max-width:72ch;line-height:1.55;">
-            Controls the <strong>top promo bar</strong>, <strong>logo text</strong>, <strong>support phone/email</strong>, <strong>home hero background</strong> (full-width image behind search — like MMT), <strong>footer</strong>, and <strong>social links</strong>.
+            Controls the <strong>top promo bar</strong>, <strong>header/footer logo</strong>, <strong>support phone/email</strong>, <strong>home hero background</strong> (full-width image behind search — like MMT), <strong>footer</strong>, and <strong>social links</strong>.
             Main navigation links are still under <a href="{{ route('admin.menu-items.index') }}">Header &amp; footer menu</a>.
             Promo slides under the hero come from <a href="{{ route('admin.banners.index') }}">Home banners</a>.
         </p>
@@ -27,6 +27,19 @@
             </label>
             <label>Brand tagline (logo, line 2)
                 <input type="text" name="brand_tagline" value="{{ old('brand_tagline', $setting->brand_tagline) }}">
+            </label>
+            <div class="admin-field-full">
+                @include('admin.partials.image-upload', [
+                    'label' => 'Header & footer logo image',
+                    'name' => 'logo_image_file',
+                    'currentPath' => $setting->logo_image,
+                    'required' => false,
+                    'hint' => 'Optional. This image appears in both public header and footer. Use a transparent PNG/WebP or clean SVG-style logo crop. JPEG, PNG, WebP or GIF — max 4 MB.',
+                ])
+            </div>
+            <label class="admin-field-full" style="flex-direction:row;align-items:center;gap:10px;">
+                <input type="checkbox" name="clear_logo_image" value="1" @checked(old('clear_logo_image'))>
+                <span>Remove logo image (use brand text instead)</span>
             </label>
             <div class="admin-field-full">
                 @include('admin.partials.image-upload', [

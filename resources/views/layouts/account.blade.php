@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'My account') — Jet Fly</title>
+    <link rel="stylesheet" href="{{ asset('css/public.css') }}?v=15">
     <style>
         :root { --acct-primary:#0c4a6e; --acct-accent:#0d9488; --acct-bg:#f0fdfa; --acct-border:#ccfbf1; --acct-muted:#64748b; }
         * { box-sizing:border-box; }
         body { margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif; background:var(--acct-bg); color:#0f172a; min-height:100vh; }
         a { color:inherit; text-decoration:none; }
-        .acct-shell { display:flex; min-height:100vh; }
+        .acct-shell { display:flex; min-height: calc(100vh - 200px); }
         .acct-sidebar { width:250px; background:#fff; border-right:1px solid var(--acct-border); padding:20px 0; flex-shrink:0; position:sticky; top:0; align-self:flex-start; min-height:100vh; }
         .acct-sidebar a { display:block; padding:10px 20px; font-size:14px; font-weight:600; color:#334155; border-left:3px solid transparent; }
         .acct-sidebar a:hover { background:#f0fdfa; color:var(--acct-primary); }
@@ -56,83 +57,90 @@
     @stack('styles')
 </head>
 <body>
-    <div class="acct-shell">
-        <aside class="acct-sidebar">
-            <div class="group">Account</div>
-            <a href="{{ route('account.dashboard') }}" class="{{ request()->routeIs('account.dashboard') ? 'is-active' : '' }}">Overview</a>
-            <a href="{{ route('account.bookings.index') }}" class="{{ request()->routeIs('account.bookings.*') ? 'is-active' : '' }}">My bookings</a>
-            <a href="{{ route('account.saved-travellers.index') }}" class="{{ request()->routeIs('account.saved-travellers.*') ? 'is-active' : '' }}">Saved travellers</a>
-            <a href="{{ route('account.refunds.index') }}" class="{{ request()->routeIs('account.refunds.*') ? 'is-active' : '' }}">Refund tracking</a>
-            <a href="{{ route('account.offers') }}" class="{{ request()->routeIs('account.offers') ? 'is-active' : '' }}">Offers &amp; discounts</a>
-            <a href="{{ route('account.wishlist.index') }}" class="{{ request()->routeIs('account.wishlist.index') ? 'is-active' : '' }}">Wishlist</a>
-            <a href="{{ route('account.announcements.index') }}" class="{{ request()->routeIs('account.announcements.index', 'account.announcements.read') ? 'is-active' : '' }}">Notifications</a>
-            <div class="group">Settings</div>
-            <a href="{{ route('account.profile.edit') }}" class="{{ request()->routeIs('account.profile.*') ? 'is-active' : '' }}">Profile</a>
-            <a href="{{ route('account.password.edit') }}" class="{{ request()->routeIs('account.password.*') ? 'is-active' : '' }}">Password</a>
-        </aside>
-        <div class="acct-main">
-            <header class="acct-top">
-                <div>
-                    @php
-                        $accountRoute = \Illuminate\Support\Facades\Route::currentRouteName() ?? '';
-                        $accountParts = explode('.', $accountRoute);
-                        $accountRes = $accountParts[1] ?? 'dashboard';
-                        $accountAct = $accountParts[2] ?? 'index';
-                        $accountLabels = [
-                            'dashboard' => 'Overview',
-                            'bookings' => 'My bookings',
-                            'wishlist' => 'Wishlist',
-                            'announcements' => 'Notifications',
-                            'profile' => 'Profile',
-                            'password' => 'Password',
-                            'offers' => 'Offers & discounts',
-                        ];
-                        $accountCrumbs = [
-                            ['label' => 'Account', 'url' => route('account.dashboard')],
-                        ];
-                        if ($accountRes !== 'dashboard') {
-                            $accountCrumbs[] = [
-                                'label' => $accountLabels[$accountRes] ?? ucwords(str_replace('-', ' ', $accountRes)),
-                                'url' => null,
+    @include('partials.welcome-popup')
+    @include('partials.public-header')
+    <main>
+        <div class="acct-shell">
+            <aside class="acct-sidebar">
+                <div class="group">Account</div>
+                <a href="{{ route('account.dashboard') }}" class="{{ request()->routeIs('account.dashboard') ? 'is-active' : '' }}">Overview</a>
+                <a href="{{ route('account.bookings.index') }}" class="{{ request()->routeIs('account.bookings.*') ? 'is-active' : '' }}">My bookings</a>
+                <a href="{{ route('account.saved-travellers.index') }}" class="{{ request()->routeIs('account.saved-travellers.*') ? 'is-active' : '' }}">Saved travellers</a>
+                <a href="{{ route('account.refunds.index') }}" class="{{ request()->routeIs('account.refunds.*') ? 'is-active' : '' }}">Refund tracking</a>
+                <a href="{{ route('account.offers') }}" class="{{ request()->routeIs('account.offers') ? 'is-active' : '' }}">Offers &amp; discounts</a>
+                <a href="{{ route('account.wishlist.index') }}" class="{{ request()->routeIs('account.wishlist.index') ? 'is-active' : '' }}">Wishlist</a>
+                <a href="{{ route('account.announcements.index') }}" class="{{ request()->routeIs('account.announcements.index', 'account.announcements.read') ? 'is-active' : '' }}">Notifications</a>
+                <div class="group">Settings</div>
+                <a href="{{ route('account.profile.edit') }}" class="{{ request()->routeIs('account.profile.*') ? 'is-active' : '' }}">Profile</a>
+                <a href="{{ route('account.password.edit') }}" class="{{ request()->routeIs('account.password.*') ? 'is-active' : '' }}">Password</a>
+            </aside>
+            <div class="acct-main">
+                <header class="acct-top">
+                    <div>
+                        @php
+                            $accountRoute = \Illuminate\Support\Facades\Route::currentRouteName() ?? '';
+                            $accountParts = explode('.', $accountRoute);
+                            $accountRes = $accountParts[1] ?? 'dashboard';
+                            $accountAct = $accountParts[2] ?? 'index';
+                            $accountLabels = [
+                                'dashboard' => 'Overview',
+                                'bookings' => 'My bookings',
+                                'wishlist' => 'Wishlist',
+                                'announcements' => 'Notifications',
+                                'profile' => 'Profile',
+                                'password' => 'Password',
+                                'offers' => 'Offers & discounts',
                             ];
-                            if (!in_array($accountAct, ['index', 'edit', ''], true)) {
+                            $accountCrumbs = [
+                                ['label' => 'Account', 'url' => route('account.dashboard')],
+                            ];
+                            if ($accountRes !== 'dashboard') {
                                 $accountCrumbs[] = [
-                                    'label' => ucwords(str_replace('-', ' ', $accountAct)),
+                                    'label' => $accountLabels[$accountRes] ?? ucwords(str_replace('-', ' ', $accountRes)),
                                     'url' => null,
                                 ];
+                                if (!in_array($accountAct, ['index', 'edit', ''], true)) {
+                                    $accountCrumbs[] = [
+                                        'label' => ucwords(str_replace('-', ' ', $accountAct)),
+                                        'url' => null,
+                                    ];
+                                }
                             }
-                        }
-                    @endphp
-                    <h1>@yield('heading', 'My account')</h1>
-                    <nav class="acct-breadcrumbs" aria-label="Breadcrumb">
-                        <ol>
-                            @foreach($accountCrumbs as $index => $crumb)
-                                @php $isLast = $index === count($accountCrumbs) - 1; @endphp
-                                <li>
-                                    @if(!$isLast && !empty($crumb['url']))
-                                        <a href="{{ $crumb['url'] }}">{{ $crumb['label'] }}</a>
-                                    @else
-                                        <span aria-current="page">{{ $crumb['label'] }}</span>
-                                    @endif
-                                </li>
-                            @endforeach
-                        </ol>
-                    </nav>
+                        @endphp
+                        <h1>@yield('heading', 'My account')</h1>
+                        <nav class="acct-breadcrumbs" aria-label="Breadcrumb">
+                            <ol>
+                                @foreach($accountCrumbs as $index => $crumb)
+                                    @php $isLast = $index === count($accountCrumbs) - 1; @endphp
+                                    <li>
+                                        @if(!$isLast && !empty($crumb['url']))
+                                            <a href="{{ $crumb['url'] }}">{{ $crumb['label'] }}</a>
+                                        @else
+                                            <span aria-current="page">{{ $crumb['label'] }}</span>
+                                        @endif
+                                    </li>
+                                @endforeach
+                            </ol>
+                        </nav>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+                        <a href="{{ route('home') }}" class="site-link">← Back to website</a>
+                        <form method="post" action="{{ route('logout') }}" style="margin:0;">
+                            @csrf
+                            <button type="submit" class="btn outline">Log out</button>
+                        </form>
+                    </div>
+                </header>
+                <div class="acct-body">
+                    @yield('content')
                 </div>
-                <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-                    <a href="{{ route('home') }}" class="site-link">← Back to website</a>
-                    <form method="post" action="{{ route('logout') }}" style="margin:0;">
-                        @csrf
-                        <button type="submit" class="btn outline">Log out</button>
-                    </form>
-                </div>
-            </header>
-            <div class="acct-body">
-                @yield('content')
             </div>
         </div>
-    </div>
+    </main>
+    @include('partials.public-footer')
+    @include('partials.whatsapp-float')
+    @include('partials.live-chat-float')
     @stack('scripts')
-    @include('partials.flash-swal', ['swalConfirmColor' => '#0d9488'])
+    @include('partials.flash-swal', ['swalConfirmColor' => '#008cff'])
 </body>
 </html>

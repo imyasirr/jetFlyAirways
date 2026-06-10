@@ -21,16 +21,15 @@ final class PublicImageStorage
             return $storedPath;
         }
 
-        if (str_starts_with($storedPath, '/storage/')) {
-            return asset(ltrim($storedPath, '/'));
-        }
-
         $relative = ltrim($storedPath, '/');
         if (str_starts_with($relative, 'storage/')) {
-            return asset($relative);
+            $relative = substr($relative, strlen('storage/'));
+        }
+        if (str_starts_with($relative, 'uploads/')) {
+            $relative = substr($relative, strlen('uploads/'));
         }
 
-        return asset('storage/'.$relative);
+        return url('uploads/'.$relative);
     }
 
     public static function storeUpload(?UploadedFile $file, string $directory, ?string $deleteRelativePath = null): ?string
@@ -51,6 +50,14 @@ final class PublicImageStorage
         }
         if (preg_match('#^https?://#i', $relativePath)) {
             return;
+        }
+
+        $relativePath = ltrim(str_replace('\\', '/', $relativePath), '/');
+        if (str_starts_with($relativePath, 'storage/')) {
+            $relativePath = substr($relativePath, strlen('storage/'));
+        }
+        if (str_starts_with($relativePath, 'uploads/')) {
+            $relativePath = substr($relativePath, strlen('uploads/'));
         }
 
         Storage::disk(self::DISK)->delete($relativePath);

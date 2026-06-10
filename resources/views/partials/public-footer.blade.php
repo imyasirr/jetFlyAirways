@@ -4,6 +4,9 @@
     $copyName = $siteSetting?->footer_copyright_name ?? 'Jet Fly Airways';
     $phone = $siteSetting?->support_phone ?? '+91 1800-000-0000';
     $email = $siteSetting?->support_email ?? 'support@jetflyairways.com';
+    $logoUrl = ($siteSetting ?? null)?->logo_image
+        ? \App\Support\PublicImageStorage::url($siteSetting->logo_image)
+        : null;
     $socials = array_filter([
         'Facebook' => $siteSetting?->social_facebook_url,
         'Instagram' => $siteSetting?->social_instagram_url,
@@ -15,7 +18,11 @@
     <div class="mm-footer-main">
         <div class="container mm-footer-grid">
             <div class="mm-footer-brand">
-                <span class="mm-footer-logo">{{ $copyName }}</span>
+                @if($logoUrl)
+                    <img src="{{ $logoUrl }}" alt="{{ $copyName }}" class="mm-footer-logo-img">
+                @else
+                    <span class="mm-footer-logo">{{ $copyName }}</span>
+                @endif
                 <p class="mm-footer-desc">{{ $footAbout }}</p>
                 <div class="mm-footer-contact">
                     <a href="tel:{{ preg_replace('/\s+/', '', $phone) }}">{{ $phone }}</a>

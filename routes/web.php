@@ -53,6 +53,7 @@ use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\Account\RefundController as AccountRefundController;
 use App\Http\Controllers\Account\SavedTravellerController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
 Route::get('/', [SiteController::class, 'home'])->name('home');
 Route::get('/welcome', [SiteController::class, 'welcome'])->name('welcome');
@@ -65,6 +66,17 @@ Route::get('/locale/{locale}', function (string $locale) {
 
     return back();
 })->name('locale.switch');
+
+Route::get('/uploads/{path}', function (string $path) {
+    abort_if(str_contains($path, '..') || str_starts_with($path, '/'), 404);
+    abort_unless(Storage::disk('public')->exists($path), 404);
+
+    $fullPath = storage_path('app/public/'.$path);
+
+    return response(Storage::disk('public')->get($path), 200)
+        ->header('Content-Type', mime_content_type($fullPath) ?: 'application/octet-stream')
+        ->header('Cache-Control', 'public, max-age=604800');
+})->where('path', '.*')->name('public-images.show');
 
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{blog:slug}', [BlogController::class, 'show'])->name('blog.show');

@@ -5,9 +5,9 @@
 @section('meta_description', 'Reach Jet Fly Airways for bookings, support and corporate queries.')
 
 @section('content')
-    <div class="card" style="max-width:560px;">
+    <div class="card page-card page-card--narrow">
         <h1 class="section-title">Contact us</h1>
-        <p style="color:#64748b;font-size:14px;">We usually respond within one business day. For urgent booking changes, mention your booking code.</p>
+        <p class="page-muted">We usually respond within one business day. For urgent booking changes, mention your booking code.</p>
         <form method="post" action="{{ route('contact.store') }}" style="display:grid;gap:12px;margin-top:16px;">
             @csrf
             <label>Name <input type="text" name="name" value="{{ old('name') }}" required></label>

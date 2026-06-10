@@ -26,6 +26,8 @@ class SiteSettingController extends Controller
             'support_email' => ['nullable', 'string', 'max:160'],
             'brand_name' => ['nullable', 'string', 'max:120'],
             'brand_tagline' => ['nullable', 'string', 'max:180'],
+            'logo_image_file' => ['nullable', 'image', 'mimes:jpeg,png,webp,gif', 'max:4096'],
+            'clear_logo_image' => ['nullable', 'boolean'],
             'footer_about' => ['nullable', 'string', 'max:5000'],
             'footer_badges' => ['nullable', 'string', 'max:600'],
             'footer_copyright_name' => ['nullable', 'string', 'max:160'],
@@ -38,10 +40,22 @@ class SiteSettingController extends Controller
             'clear_hero_image' => ['nullable', 'boolean'],
         ]);
 
-        unset($data['hero_image_file'], $data['clear_hero_image']);
+        unset($data['logo_image_file'], $data['clear_logo_image'], $data['hero_image_file'], $data['clear_hero_image']);
 
         $row = SiteSetting::query()->firstOrNew([]);
         $row->fill($data);
+
+        if ($request->boolean('clear_logo_image')) {
+            PublicImageStorage::deleteIfExists($row->logo_image);
+            $row->logo_image = null;
+        }
+
+        if ($request->hasFile('logo_image_file')) {
+            $path = PublicImageStorage::storeUpload($request->file('logo_image_file'), 'site-logo', $row->logo_image);
+            if ($path !== null) {
+                $row->logo_image = $path;
+            }
+        }
 
         if ($request->boolean('clear_hero_image')) {
             PublicImageStorage::deleteIfExists($row->hero_image);

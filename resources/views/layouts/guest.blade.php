@@ -4,10 +4,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Sign in') — Jet Fly Airways</title>
+    <link rel="stylesheet" href="{{ asset('css/public.css') }}?v=15">
     <style>
         :root { --primary:#0b2f71; --secondary:#38bdf8; --accent:#f97316; --bg:#e8f0fc; --text:#0f172a; --muted:#64748b; }
         * { box-sizing:border-box; }
-        body { margin:0; min-height:100vh; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background:linear-gradient(160deg,#e8f0fc 0%,#f8fafc 50%,#e0f2fe 100%); color:var(--text); display:flex; align-items:center; justify-content:center; padding:24px; }
+        body { margin:0; min-height:100vh; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; background:linear-gradient(160deg,#e8f0fc 0%,#f8fafc 50%,#e0f2fe 100%); color:var(--text); }
         a { color:inherit; text-decoration:none; }
         .guest-wrap { width:100%; max-width:420px; }
         .guest-brand { display:block; text-align:center; font-weight:800; font-size:1.25rem; color:var(--primary); margin-bottom:24px; letter-spacing:.02em; }
@@ -36,13 +37,22 @@
     </style>
 </head>
 <body>
-    <div class="guest-wrap">
-        <a href="{{ route('home') }}" class="guest-brand">Jet Fly Airways</a>
-        <div class="guest-card">
-            @yield('content')
+    @include('partials.welcome-popup')
+    @include('partials.public-header')
+    <main>
+        <div class="container" style="padding: clamp(18px, 3.5vw, 34px) 0;">
+            <div class="guest-wrap" style="margin: 0 auto;">
+                <a href="{{ route('home') }}" class="guest-brand">Jet Fly Airways</a>
+                <div class="guest-card">
+                    @yield('content')
+                </div>
+                <p class="back"><a href="{{ route('home') }}">← Back to website</a></p>
+            </div>
         </div>
-        <p class="back"><a href="{{ route('home') }}">← Back to website</a></p>
-    </div>
-    @include('partials.flash-swal', ['swalConfirmColor' => '#0b2f71'])
+    </main>
+    @include('partials.public-footer')
+    @include('partials.whatsapp-float')
+    @include('partials.live-chat-float')
+    @include('partials.flash-swal', ['swalConfirmColor' => '#008cff'])
 </body>
 </html>

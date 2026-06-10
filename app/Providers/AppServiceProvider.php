@@ -15,6 +15,7 @@ use App\Services\Sms\LogSmsSender;
 use App\Services\Sms\SmsSender;
 use App\Services\Sms\TwilioSmsSender;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -43,7 +44,7 @@ class AppServiceProvider extends ServiceProvider
         Paginator::defaultView('pagination.jetfly');
         Paginator::defaultSimpleView('pagination.jetfly-simple');
 
-        View::composer('layouts.app', function ($view) {
+        View::composer(['layouts.app', 'layouts.account', 'layouts.guest'], function ($view) {
             if (! Schema::hasTable('menu_items')) {
                 $view->with('headerMenu', collect());
                 $view->with('footerMenu', collect());
@@ -74,10 +75,10 @@ class AppServiceProvider extends ServiceProvider
             $view->with('siteSetting', $siteSetting);
 
             $unreadAnnouncements = 0;
-            if (auth()->check() && Schema::hasTable('announcements') && Schema::hasTable('announcement_reads')) {
+            if (Auth::check() && Schema::hasTable('announcements') && Schema::hasTable('announcement_reads')) {
                 $publishedIds = Announcement::query()->published()->pluck('id');
                 $readIds = AnnouncementRead::query()
-                    ->where('user_id', auth()->id())
+                    ->where('user_id', Auth::id())
                     ->whereIn('announcement_id', $publishedIds)
                     ->pluck('announcement_id');
                 $unreadAnnouncements = $publishedIds->diff($readIds)->count();

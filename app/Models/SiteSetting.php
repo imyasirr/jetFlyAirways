@@ -12,6 +12,7 @@ class SiteSetting extends Model
         'support_email',
         'brand_name',
         'brand_tagline',
+        'logo_image',
         'footer_about',
         'footer_badges',
         'footer_copyright_name',

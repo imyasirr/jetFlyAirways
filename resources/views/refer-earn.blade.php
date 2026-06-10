@@ -3,9 +3,9 @@
 @section('title', 'Refer & Earn — Jet Fly Airways')
 
 @section('content')
-    <div class="card" style="max-width:760px;">
+    <div class="card page-card">
         <h1 class="section-title">Refer &amp; Earn</h1>
-        <p style="color:#64748b;margin-top:0;">Invite friends to Jet Fly. When they sign up using your referral link, they are linked to your account.</p>
+        <p class="page-muted">Invite friends to Jet Fly. When they sign up using your referral link, they are linked to your account.</p>
 
         @auth
             <div class="card" style="padding:14px;border:1px dashed #cbd5e1;box-shadow:none;background:#f8fafc;">

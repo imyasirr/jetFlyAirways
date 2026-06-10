@@ -3,11 +3,7 @@
 @section('body_class', 'page-home')
 
 @push('styles')
-<<<<<<< HEAD
-<link rel="stylesheet" href="{{ asset('css/home.css') }}?v=1">
-=======
-    <link rel="stylesheet" href="{{ asset('css/home.css') }}?v=2">
->>>>>>> c9da812e3a03eb637bc70fc80b77c76534d56dda
+<link rel="stylesheet" href="{{ asset('css/home.css') }}?v=2">
 @endpush
 
 @section('title', $siteSeo?->meta_title ?? 'Home - Jet Fly Airways')

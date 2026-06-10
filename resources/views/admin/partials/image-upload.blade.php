@@ -2,15 +2,24 @@
     $fieldName = $name ?? 'image_file';
     $imgUrl = isset($currentPath) ? \App\Support\PublicImageStorage::url($currentPath) : null;
 @endphp
-<div style="margin-bottom:14px;">
-    <label style="display:block;font-weight:600;margin-bottom:6px;">{{ $label }}</label>
+<div class="admin-image-upload">
+    <label class="admin-image-upload__label">{{ $label }}</label>
     @if(!empty($hint))
-        <p style="font-size:12px;color:#64748b;margin:0 0 8px;">{{ $hint }}</p>
+        <p class="admin-image-upload__hint">{{ $hint }}</p>
     @endif
     @if($imgUrl)
-        <div style="margin:0 0 10px;">
-            <img src="{{ $imgUrl }}" alt="" style="max-height:140px;max-width:100%;border-radius:10px;border:1px solid var(--admin-border);object-fit:contain;background:#f8fafc;">
+        <div class="admin-image-upload__preview">
+            <img src="{{ $imgUrl }}" alt="{{ $label }} current preview">
+            <div>
+                <span class="admin-image-upload__eyebrow">Current uploaded image</span>
+                <a href="{{ $imgUrl }}" target="_blank" rel="noopener noreferrer">Open image</a>
+                @if(!empty($currentPath))
+                    <code>{{ $currentPath }}</code>
+                @endif
+            </div>
         </div>
+    @else
+        <div class="admin-image-upload__empty">No image uploaded yet.</div>
     @endif
-    <input type="file" name="{{ $fieldName }}" accept="image/jpeg,image/png,image/webp,image/gif" {{ !empty($required) ? 'required' : '' }} style="font-size:14px;">
+    <input type="file" name="{{ $fieldName }}" accept="image/jpeg,image/png,image/webp,image/gif" {{ !empty($required) ? 'required' : '' }}>
 </div>
