@@ -185,6 +185,7 @@ class SiteController extends Controller
 
         $query = $this->listingQuery($slug);
         $this->applyListingFilters($request, $slug, $query);
+        $this->applyListingSort($request, $slug, $query);
         $paginator = $query->paginate(12)->withQueryString();
         $items = $paginator->through(fn ($model) => $this->mapListingRow($slug, $model));
 
@@ -415,6 +416,32 @@ class SiteController extends Controller
             'buses' => $this->filterBusesTrains($request, $query, 'from_city', 'to_city'),
             'trains' => $this->filterBusesTrains($request, $query, 'from_city', 'to_city'),
             'cabs' => $this->filterCabs($request, $query),
+            default => null,
+        };
+    }
+
+    private function applyListingSort(Request $request, string $slug, $query): void
+    {
+        if (! $request->filled('sort')) {
+            return;
+        }
+
+        $priceColumn = match ($slug) {
+            'flights' => 'price',
+            'hotels' => 'price_per_night',
+            'packages' => 'price',
+            'buses', 'trains' => 'price',
+            'cabs' => 'base_fare',
+            default => null,
+        };
+
+        if ($priceColumn === null) {
+            return;
+        }
+
+        match ($request->string('sort')->toString()) {
+            'price_asc' => $query->reorder()->orderBy($priceColumn),
+            'price_desc' => $query->reorder()->orderByDesc($priceColumn),
             default => null,
         };
     }

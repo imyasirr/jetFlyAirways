@@ -1,162 +1,162 @@
-<div class="home-ota-shell" id="search">
-    <div class="home-ota-card">
-        <div class="home-ota-tabs" role="tablist" aria-label="Booking type">
-            <button type="button" class="home-ota-tab is-active" role="tab" aria-selected="true" aria-controls="home-ota-panel-flights" id="home-ota-tab-flights" data-home-tab="flights">
-                <span class="home-ota-tab-icon" aria-hidden="true">FL</span> Flights
+@php
+    $tripType = request('trip_type', 'one_way');
+    $activeModule = $activeModule ?? 'flights';
+    $compact = !empty($compact);
+@endphp
+<div class="jfa-search {{ $compact ? 'jfa-search--compact' : '' }}" id="jfa-search-panel">
+    <div class="jfa-search__tabs" role="tablist" aria-label="Booking type">
+        @foreach([
+            ['id' => 'flights', 'label' => 'Flights', 'icon' => 'flight'],
+            ['id' => 'hotels', 'label' => 'Hotels', 'icon' => 'hotel'],
+            ['id' => 'packages', 'label' => 'Holidays', 'icon' => 'beach_access'],
+            ['id' => 'trains', 'label' => 'Trains', 'icon' => 'train'],
+            ['id' => 'buses', 'label' => 'Buses', 'icon' => 'directions_bus'],
+            ['id' => 'cabs', 'label' => 'Cabs', 'icon' => 'local_taxi'],
+            ['id' => 'visa', 'label' => 'Visa', 'icon' => 'travel_explore'],
+            ['id' => 'insurance', 'label' => 'Insurance', 'icon' => 'shield'],
+        ] as $tab)
+            <button type="button" class="jfa-search__tab {{ $activeModule === $tab['id'] ? 'is-active' : '' }}" data-jfa-tab="{{ $tab['id'] }}" role="tab" aria-selected="{{ $activeModule === $tab['id'] ? 'true' : 'false' }}">
+                <span class="material-symbols-outlined" style="font-size:18px;">{{ $tab['icon'] }}</span>
+                {{ $tab['label'] }}
             </button>
-            <button type="button" class="home-ota-tab" role="tab" aria-selected="false" aria-controls="home-ota-panel-hotels" id="home-ota-tab-hotels" data-home-tab="hotels">
-                <span class="home-ota-tab-icon" aria-hidden="true">HT</span> Hotels
-            </button>
-            <button type="button" class="home-ota-tab" role="tab" aria-selected="false" aria-controls="home-ota-panel-packages" id="home-ota-tab-packages" data-home-tab="packages">
-                <span class="home-ota-tab-icon" aria-hidden="true">HL</span> Holidays
-            </button>
-        </div>
-        <p class="home-ota-quicklinks">
-            <span class="home-ota-quicklabel">Also book:</span>
-            <a href="{{ route('module.index', 'buses') }}">Buses</a>
-            <a href="{{ route('module.index', 'trains') }}">Trains</a>
-            <a href="{{ route('module.index', 'cabs') }}">Cabs</a>
-            <a href="{{ route('module.index', 'visa') }}">Visa</a>
-            <a href="{{ route('module.index', 'insurance') }}">Insurance</a>
-        </p>
-
-        <div id="home-ota-panel-flights" class="home-ota-panel is-active" role="tabpanel" aria-labelledby="home-ota-tab-flights">
-            <form method="get" action="{{ route('module.index', 'flights') }}" class="home-ota-form">
-                <div class="home-ota-fields home-ota-fields--flights">
-                    <div class="home-ota-field">
-                        <label for="hf-trip">Trip</label>
-                        <select id="hf-trip" name="trip_type" data-home-flight-trip>
-                            <option value="one_way" @selected(request('trip_type', 'one_way') === 'one_way')>One way</option>
-                            <option value="round_trip" @selected(request('trip_type') === 'round_trip')>Round trip</option>
-                            <option value="multi_city" @selected(request('trip_type') === 'multi_city')>Multi city</option>
-                        </select>
-                    </div>
-                    <div class="home-ota-field">
-                        <label for="hf-from">From</label>
-                        <input id="hf-from" name="from" type="text" placeholder="City or airport" value="{{ request('from') }}" autocomplete="off">
-                    </div>
-                    <div class="home-ota-field">
-                        <label for="hf-to">To</label>
-                        <input id="hf-to" name="to" type="text" placeholder="City or airport" value="{{ request('to') }}" autocomplete="off">
-                    </div>
-                    <div class="home-ota-field home-ota-field--date">
-                        <label for="hf-date">Departure</label>
-                        <input id="hf-date" name="date" type="date" value="{{ request('date') }}">
-                    </div>
-                    <div class="home-ota-field home-ota-field--date" id="hf-return-wrap" @if(request('trip_type') !== 'round_trip') hidden @endif>
-                        <label for="hf-ret">Return</label>
-                        <input id="hf-ret" name="return_date" type="date" value="{{ request('return_date') }}">
-                    </div>
-                    <div class="home-ota-field">
-                        <label for="hf-trav">Travellers</label>
-                        <input id="hf-trav" name="travellers" type="number" min="1" max="9" value="{{ request('travellers', 1) }}">
-                    </div>
-                    <div class="home-ota-field">
-                        <label for="hf-class">Class</label>
-                        <select id="hf-class" name="cabin_class">
-                            <option value="">Any</option>
-                            <option value="Economy" @selected(request('cabin_class') === 'Economy')>Economy</option>
-                            <option value="Premium Economy" @selected(request('cabin_class') === 'Premium Economy')>Premium Economy</option>
-                            <option value="Business" @selected(request('cabin_class') === 'Business')>Business</option>
-                            <option value="First" @selected(request('cabin_class') === 'First')>First</option>
-                        </select>
-                    </div>
-                    <div class="home-ota-field home-ota-field--submit">
-                        <span class="home-ota-field-spacer" aria-hidden="true"></span>
-                        <button type="submit" class="home-ota-search-btn">Search flights</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        <div id="home-ota-panel-hotels" class="home-ota-panel" role="tabpanel" aria-labelledby="home-ota-tab-hotels" hidden>
-            <form method="get" action="{{ route('module.index', 'hotels') }}" class="home-ota-form">
-                <div class="home-ota-fields home-ota-fields--hotels">
-                    <div class="home-ota-field home-ota-field--grow">
-                        <label for="hh-city">City, property name</label>
-                        <input id="hh-city" name="city" type="text" placeholder="Goa, Mumbai, Delhi" value="{{ request('city') }}">
-                    </div>
-                    <div class="home-ota-field">
-                        <label for="hh-q">Hotel name (optional)</label>
-                        <input id="hh-q" name="q" type="text" placeholder="Search by name" value="{{ request('q') }}">
-                    </div>
-                    <div class="home-ota-field home-ota-field--date">
-                        <label for="hh-in">Check-in</label>
-                        <input id="hh-in" name="check_in" type="date" value="{{ request('check_in') }}">
-                    </div>
-                    <div class="home-ota-field home-ota-field--date">
-                        <label for="hh-out">Check-out</label>
-                        <input id="hh-out" name="check_out" type="date" value="{{ request('check_out') }}">
-                    </div>
-                    <div class="home-ota-field">
-                        <label for="hh-guests">Guests</label>
-                        <input id="hh-guests" name="guests" type="number" min="1" max="20" value="{{ request('guests', 2) }}">
-                    </div>
-                    <div class="home-ota-field home-ota-field--submit">
-                        <span class="home-ota-field-spacer" aria-hidden="true"></span>
-                        <button type="submit" class="home-ota-search-btn home-ota-search-btn--hotels">Search hotels</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        <div id="home-ota-panel-packages" class="home-ota-panel" role="tabpanel" aria-labelledby="home-ota-tab-packages" hidden>
-            <form method="get" action="{{ route('module.index', 'packages') }}" class="home-ota-form">
-                <div class="home-ota-fields home-ota-fields--packages">
-                    <div class="home-ota-field">
-                        <label for="hp-dest">Destination</label>
-                        <input id="hp-dest" name="destination" type="text" placeholder="Kerala, Dubai, Bali" value="{{ request('destination') }}">
-                    </div>
-                    <div class="home-ota-field">
-                        <label for="hp-cat">Category</label>
-                        <input id="hp-cat" name="category" type="text" placeholder="Family, Honeymoon" value="{{ request('category') }}">
-                    </div>
-                    <div class="home-ota-field">
-                        <label for="hp-q">Keyword</label>
-                        <input id="hp-q" name="q" type="text" placeholder="Package name" value="{{ request('q') }}">
-                    </div>
-                    <div class="home-ota-field home-ota-field--submit">
-                        <span class="home-ota-field-spacer" aria-hidden="true"></span>
-                        <button type="submit" class="home-ota-search-btn home-ota-search-btn--packages">Search packages</button>
-                    </div>
-                </div>
-            </form>
-        </div>
+        @endforeach
     </div>
+
+    <div class="jfa-search__panel {{ $activeModule === 'flights' ? 'is-active' : '' }}" data-jfa-panel="flights" role="tabpanel" @if($activeModule !== 'flights') hidden @endif>
+        <form method="get" action="{{ route('module.index', 'flights') }}">
+            <div class="jfa-search__pills" role="radiogroup" aria-label="Trip type">
+                @foreach(['one_way' => 'One way', 'round_trip' => 'Round trip', 'multi_city' => 'Multi city'] as $val => $lbl)
+                    <label class="jfa-search__pill {{ $tripType === $val ? 'is-active' : '' }}">
+                        <input type="radio" name="trip_type" value="{{ $val }}" @checked($tripType === $val)>
+                        {{ $lbl }}
+                    </label>
+                @endforeach
+            </div>
+            <div class="jfa-search__grid jfa-search__grid--4">
+                <div><label class="jfa-label" for="hf-from">From</label><input id="hf-from" name="from" type="text" placeholder="City or airport" value="{{ request('from') }}"></div>
+                <div><label class="jfa-label" for="hf-to">To</label><input id="hf-to" name="to" type="text" placeholder="City or airport" value="{{ request('to') }}"></div>
+                <div><label class="jfa-label" for="hf-date">Departure</label><input id="hf-date" name="date" type="date" value="{{ request('date') }}"></div>
+                <div id="hf-return-wrap" style="{{ $tripType !== 'round_trip' ? 'opacity:.55;' : '' }}">
+                    <label class="jfa-label" for="hf-ret">Return</label>
+                    <input id="hf-ret" name="return_date" type="date" value="{{ request('return_date') }}" @disabled($tripType !== 'round_trip')>
+                </div>
+                <div><label class="jfa-label" for="hf-trav">Travellers</label><input id="hf-trav" name="travellers" type="number" min="1" max="9" value="{{ request('travellers', 1) }}"></div>
+                <div><label class="jfa-label" for="hf-class">Class</label>
+                    <select id="hf-class" name="cabin_class">
+                        <option value="">Any</option>
+                        @foreach(['Economy', 'Premium Economy', 'Business', 'First'] as $c)
+                            <option value="{{ $c }}" @selected(request('cabin_class') === $c)>{{ $c }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="jfa-search__foot">
+                <div class="jfa-search__quicklinks">
+                    @foreach(['buses' => 'Buses', 'trains' => 'Trains', 'cabs' => 'Cabs', 'visa' => 'Visa', 'insurance' => 'Insurance'] as $slug => $lbl)
+                        <button type="button" data-jfa-tab-trigger="{{ $slug }}">{{ $lbl }}</button>
+                    @endforeach
+                </div>
+                <button type="submit" class="jfa-search__submit"><span class="material-symbols-outlined">search</span> Search</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="jfa-search__panel {{ $activeModule === 'hotels' ? 'is-active' : '' }}" data-jfa-panel="hotels" role="tabpanel" @if($activeModule !== 'hotels') hidden @endif>
+        <form method="get" action="{{ route('module.index', 'hotels') }}">
+            <div class="jfa-search__grid jfa-search__grid--4">
+                <div style="grid-column:span 2;"><label class="jfa-label" for="hh-city">City or Hotel</label><input id="hh-city" name="city" type="text" placeholder="Mumbai, Delhi, Goa…" value="{{ request('city') }}"></div>
+                <div><label class="jfa-label" for="hh-in">Check-in</label><input id="hh-in" name="check_in" type="date" value="{{ request('check_in') }}"></div>
+                <div><label class="jfa-label" for="hh-out">Check-out</label><input id="hh-out" name="check_out" type="date" value="{{ request('check_out') }}"></div>
+                <div><label class="jfa-label" for="hh-guests">Guests</label><input id="hh-guests" name="guests" type="number" min="1" max="20" value="{{ request('guests', 2) }}"></div>
+            </div>
+            <div class="jfa-search__foot"><span></span><button type="submit" class="jfa-search__submit"><span class="material-symbols-outlined">search</span> Search</button></div>
+        </form>
+    </div>
+
+    <div class="jfa-search__panel {{ $activeModule === 'packages' ? 'is-active' : '' }}" data-jfa-panel="packages" role="tabpanel" @if($activeModule !== 'packages') hidden @endif>
+        <form method="get" action="{{ route('module.index', 'packages') }}">
+            <div class="jfa-search__grid">
+                <div><label class="jfa-label" for="hp-dest">Destination</label><input id="hp-dest" name="destination" type="text" placeholder="Kerala, Dubai, Bali" value="{{ request('destination') }}"></div>
+                <div><label class="jfa-label" for="hp-cat">Category</label><input id="hp-cat" name="category" type="text" placeholder="Family, Honeymoon" value="{{ request('category') }}"></div>
+                <div><label class="jfa-label" for="hp-q">Keyword</label><input id="hp-q" name="q" type="text" placeholder="Package name" value="{{ request('q') }}"></div>
+            </div>
+            <div class="jfa-search__foot"><span></span><button type="submit" class="jfa-search__submit"><span class="material-symbols-outlined">search</span> Search</button></div>
+        </form>
+    </div>
+
+    @foreach(['trains', 'buses'] as $mod)
+        <div class="jfa-search__panel {{ $activeModule === $mod ? 'is-active' : '' }}" data-jfa-panel="{{ $mod }}" role="tabpanel" @if($activeModule !== $mod) hidden @endif>
+            <form method="get" action="{{ route('module.index', $mod) }}">
+                <div class="jfa-search__grid">
+                    <div><label class="jfa-label">From</label><input name="from" type="text" placeholder="Origin city" value="{{ request('from') }}"></div>
+                    <div><label class="jfa-label">To</label><input name="to" type="text" placeholder="Destination city" value="{{ request('to') }}"></div>
+                    <div><label class="jfa-label">Travel Date</label><input name="date" type="date" value="{{ request('date') }}"></div>
+                </div>
+                <div class="jfa-search__foot"><span></span><button type="submit" class="jfa-search__submit"><span class="material-symbols-outlined">search</span> Search</button></div>
+            </form>
+        </div>
+    @endforeach
+
+    <div class="jfa-search__panel {{ $activeModule === 'cabs' ? 'is-active' : '' }}" data-jfa-panel="cabs" role="tabpanel" @if($activeModule !== 'cabs') hidden @endif>
+        <form method="get" action="{{ route('module.index', 'cabs') }}">
+            <div class="jfa-search__grid">
+                <div><label class="jfa-label">Pickup</label><input name="q" type="text" placeholder="Airport, hotel, city…" value="{{ request('q') }}"></div>
+                <div><label class="jfa-label">Drop</label><input type="text" placeholder="Destination"></div>
+            </div>
+            <div class="jfa-search__foot"><span></span><button type="submit" class="jfa-search__submit"><span class="material-symbols-outlined">search</span> Search</button></div>
+        </form>
+    </div>
+
+    @foreach(['visa', 'insurance'] as $mod)
+        <div class="jfa-search__panel {{ $activeModule === $mod ? 'is-active' : '' }}" data-jfa-panel="{{ $mod }}" role="tabpanel" @if($activeModule !== $mod) hidden @endif>
+            <div style="text-align:center;padding:24px 0;color:var(--jfa-muted);">
+                <span class="material-symbols-outlined" style="font-size:40px;color:var(--jfa-primary-container);display:block;margin-bottom:8px;">{{ $mod === 'visa' ? 'travel_explore' : 'shield' }}</span>
+                Browse our full {{ $mod === 'visa' ? 'Visa Services' : 'Travel Insurance' }} catalog.
+            </div>
+            <div class="jfa-search__foot" style="justify-content:center;">
+                <a href="{{ route('module.index', $mod) }}" class="jfa-search__submit" style="text-decoration:none;display:inline-flex;">View catalog</a>
+            </div>
+        </div>
+    @endforeach
 </div>
 
 <script>
 (function () {
-    var tabs = document.querySelectorAll('.home-ota-tab');
-    var panels = document.querySelectorAll('.home-ota-panel');
-    if (!tabs.length || !panels.length) return;
-    function activate(name) {
-        tabs.forEach(function (t) {
-            var on = t.getAttribute('data-home-tab') === name;
+    var root = document.getElementById('jfa-search-panel');
+    if (!root) return;
+
+    function activateTab(id) {
+        root.querySelectorAll('.jfa-search__tab').forEach(function (t) {
+            var on = t.getAttribute('data-jfa-tab') === id;
             t.classList.toggle('is-active', on);
             t.setAttribute('aria-selected', on ? 'true' : 'false');
         });
-        panels.forEach(function (p) {
-            var on = p.id === 'home-ota-panel-' + name;
+        root.querySelectorAll('.jfa-search__panel').forEach(function (p) {
+            var on = p.getAttribute('data-jfa-panel') === id;
             p.classList.toggle('is-active', on);
-            if (on) { p.removeAttribute('hidden'); }
-            else { p.setAttribute('hidden', ''); }
+            p.hidden = !on;
         });
     }
-    tabs.forEach(function (tab) {
-        tab.addEventListener('click', function () {
-            activate(tab.getAttribute('data-home-tab'));
-        });
+
+    root.querySelectorAll('[data-jfa-tab]').forEach(function (btn) {
+        btn.addEventListener('click', function () { activateTab(btn.getAttribute('data-jfa-tab')); });
+    });
+    root.querySelectorAll('[data-jfa-tab-trigger]').forEach(function (btn) {
+        btn.addEventListener('click', function () { activateTab(btn.getAttribute('data-jfa-tab-trigger')); });
     });
 
-    var trip = document.querySelector('[data-home-flight-trip]');
-    var retWrap = document.getElementById('hf-return-wrap');
-    if (trip && retWrap) {
-        function syncTrip() {
-            retWrap.hidden = trip.value !== 'round_trip';
-        }
-        trip.addEventListener('change', syncTrip);
-        syncTrip();
-    }
+    root.querySelectorAll('input[name="trip_type"]').forEach(function (r) {
+        r.addEventListener('change', function () {
+            var wrap = document.getElementById('hf-return-wrap');
+            var ret = document.getElementById('hf-ret');
+            if (!wrap || !ret) return;
+            var round = r.value === 'round_trip' && r.checked;
+            wrap.style.opacity = round ? '1' : '.55';
+            ret.disabled = !round;
+            root.querySelectorAll('.jfa-search__pill').forEach(function (pill) {
+                pill.classList.toggle('is-active', pill.querySelector('input') && pill.querySelector('input').checked);
+            });
+        });
+    });
 })();
 </script>

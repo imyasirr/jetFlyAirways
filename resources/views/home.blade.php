@@ -2,139 +2,186 @@
 
 @section('body_class', 'page-home')
 
-@push('styles')
-<link rel="stylesheet" href="{{ asset('css/home.css') }}?v=2">
-@endpush
-
 @section('title', $siteSeo?->meta_title ?? 'Home - Jet Fly Airways')
 
 @section('meta_description', $siteSeo?->meta_description ?? 'Jet Fly Airways - search flights, hotels, buses, trains, cabs and holiday packages with live inventory.')
 
 @section('full')
-@php
-    $fallbackHero = 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1800&auto=format&fit=crop';
-    $heroSlides = collect($banners ?? [])
-        ->filter(fn ($banner) => $banner->is_active)
-        ->map(function ($banner) {
-            return [
+    @php
+        $heroSetting = $siteSetting ?? \App\Models\SiteSetting::query()->first();
+        $settingHero = $heroSetting?->hero_image
+            ? \App\Support\PublicImageStorage::url($heroSetting->hero_image)
+            : null;
+        $fallbackHero = $settingHero ?: 'https://images.unsplash.com/photo-1436491865332-7a61a1092e56?auto=format&fit=crop&q=80&w=2000';
+        $heroSlides = collect($banners ?? [])
+            ->filter(fn ($banner) => $banner->is_active)
+            ->map(fn ($banner) => [
                 'image' => \App\Support\PublicImageStorage::url($banner->image),
-                'title' => $banner->title,
-                'description' => $banner->description,
-                'link' => $banner->link,
-                'button_text' => $banner->button_text,
-            ];
-        })
-        ->filter(fn ($slide) => filled($slide['image']))
-        ->values();
+                'title' => $banner->title ?: 'Fly Beyond Horizons',
+                'description' => $banner->description ?: 'Discover India and the world with unbeatable fares on 500+ routes.',
+                'link' => $banner->link ?: route('module.index', 'flights'),
+                'button_text' => $banner->button_text ?: 'Search Flights',
+                'tag' => '✈ Flights from ₹999',
+            ])
+            ->filter(fn ($slide) => filled($slide['image']))
+            ->values();
+        if ($heroSlides->isEmpty()) {
+            $heroSlides = collect([[
+                'image' => $fallbackHero,
+                'title' => 'Fly Beyond Horizons',
+                'description' => 'Discover India and the world with unbeatable fares on 500+ routes.',
+                'link' => route('module.index', 'flights'),
+                'button_text' => 'Search Flights',
+                'tag' => '✈ Flights from ₹999',
+            ]]);
+        }
+        $services = [
+            ['icon' => 'flight', 'label' => 'Flights', 'href' => route('module.index', 'flights'), 'color' => '#003B95'],
+            ['icon' => 'hotel', 'label' => 'Hotels', 'href' => route('module.index', 'hotels'), 'color' => '#0d9488'],
+            ['icon' => 'beach_access', 'label' => 'Packages', 'href' => route('module.index', 'packages'), 'color' => '#f97316'],
+            ['icon' => 'train', 'label' => 'Trains', 'href' => route('module.index', 'trains'), 'color' => '#7c3aed'],
+            ['icon' => 'directions_bus', 'label' => 'Buses', 'href' => route('module.index', 'buses'), 'color' => '#b45309'],
+            ['icon' => 'local_taxi', 'label' => 'Cabs', 'href' => route('module.index', 'cabs'), 'color' => '#0369a1'],
+            ['icon' => 'travel_explore', 'label' => 'Visa', 'href' => route('module.index', 'visa'), 'color' => '#be185d'],
+            ['icon' => 'shield', 'label' => 'Insurance', 'href' => route('module.index', 'insurance'), 'color' => '#047857'],
+        ];
+        $trustBadges = [
+            ['icon' => 'verified_user', 'title' => 'Secure Payments', 'subtitle' => 'PCI-DSS compliant. UPI, Cards & Netbanking.'],
+            ['icon' => 'support_agent', 'title' => '24/7 Support', 'subtitle' => 'Dedicated team, 365 days a year.'],
+            ['icon' => 'price_check', 'title' => 'Best Price Guarantee', 'subtitle' => "Found it cheaper? We'll match it."],
+            ['icon' => 'workspace_premium', 'title' => 'Award-Winning Service', 'subtitle' => 'Trusted by millions of travellers.'],
+        ];
+    @endphp
 
-    if ($heroSlides->isEmpty()) {
-        $heroSlides = collect([[
-            'image' => $fallbackHero,
-            'title' => 'Discover your dream vacation',
-            'description' => 'Explore luxury hotels, flights, tours and unforgettable travel experiences with Jet Fly Airways.',
-            'link' => '#search',
-            'button_text' => 'Explore now',
-        ]]);
-    }
-@endphp
-<section class="home-premium-hero" aria-label="Book travel" data-home-hero-carousel>
-    <div class="home-premium-hero__track">
-        @foreach($heroSlides as $slide)
-            <article class="home-premium-hero__slide {{ $loop->first ? 'is-active' : '' }}" style="--home-hero-slide: url('{{ e($slide['image']) }}');" aria-hidden="{{ $loop->first ? 'false' : 'true' }}">
-                <div class="home-premium-hero__bg" aria-hidden="true"></div>
-                <div class="container home-premium-hero__inner home-premium-hero__inner--single">
-                    <div class="home-premium-hero__copy">
-                        <p class="home-ota-kicker">Best fares - easy booking - 24x7 support</p>
-                        <h1 class="home-ota-title">{{ $slide['title'] ?: 'Discover your dream vacation' }}</h1>
-                        <p class="home-ota-sub">{{ $slide['description'] ?: 'Explore luxury hotels, flights, tours and unforgettable travel experiences with Jet Fly Airways.' }}</p>
-                        <div class="home-premium-actions">
-                            <a href="{{ $slide['link'] ?: '#search' }}" class="home-premium-btn home-premium-btn--gold">{{ $slide['button_text'] ?: 'Explore now' }}</a>
-                            <a href="{{ route('module.index', 'packages') }}" class="home-premium-btn home-premium-btn--glass">View holidays</a>
-                        </div>
-                    </div>
-                </div>
-            </article>
-        @endforeach
-    </div>
-    @if($heroSlides->count() > 1)
-        <div class="home-premium-hero__dots" aria-label="Banner slides">
+    <section class="jfa-hero" data-home-hero-carousel aria-label="Book travel">
+        <div class="jfa-hero__bg" aria-hidden="true">
             @foreach($heroSlides as $slide)
-                <button type="button" class="home-premium-hero__dot {{ $loop->first ? 'is-active' : '' }}" data-home-hero-dot="{{ $loop->index }}" aria-label="Show banner {{ $loop->iteration }}" aria-current="{{ $loop->first ? 'true' : 'false' }}"></button>
+                <img src="{{ e($slide['image']) }}" alt="" class="{{ $loop->first ? 'is-active' : '' }}" data-hero-slide style="{{ $loop->first ? '' : 'position:absolute;inset:0;opacity:0;' }}">
             @endforeach
         </div>
-    @endif
-</section>
+        <div class="jfa-hero__overlay" aria-hidden="true"></div>
+        <div class="jfa-container jfa-hero__content">
+            @foreach($heroSlides as $slide)
+                <div class="jfa-hero__copy {{ $loop->first ? 'is-active' : '' }}" data-hero-copy @if(!$loop->first) hidden @endif>
+                    <span class="jfa-hero__tag">{{ $slide['tag'] }}</span>
+                    <h1>{{ $slide['title'] }}</h1>
+                    <p class="jfa-hero__sub">{{ $slide['description'] }}</p>
+                    <a href="{{ $slide['link'] ?: '#search' }}" class="jfa-hero__cta">
+                        {{ $slide['button_text'] ?: 'Explore now' }}
+                        <span class="material-symbols-outlined">arrow_forward</span>
+                    </a>
+                </div>
+            @endforeach
+            @if($heroSlides->count() > 1)
+                <div class="jfa-hero__dots" aria-label="Banner slides">
+                    @foreach($heroSlides as $slide)
+                        <button type="button" class="jfa-hero__dot {{ $loop->first ? 'is-active' : '' }}" data-hero-dot="{{ $loop->index }}" aria-label="Slide {{ $loop->iteration }}" style="width:{{ $loop->first ? '32px' : '8px' }};"></button>
+                    @endforeach
+                </div>
+            @endif
+        </div>
+    </section>
 
-<div class="container home-search-wrapper">
-    @include('partials.home-search-panel')
-</div>
-
-<div class="container home-premium-trust-wrap">
-    <div class="home-ota-trust" role="list" aria-label="Why book with Jet Fly Airways">
-        <span class="home-ota-trust-item" role="listitem"><strong>Best fares</strong> on routes you choose</span>
-        <span class="home-ota-trust-item" role="listitem"><strong>Flexible search</strong> across hotels and packages</span>
-        <span class="home-ota-trust-item" role="listitem"><strong>Secure checkout</strong> ready for UPI and cards</span>
+    <div class="jfa-container jfa-hero__search-wrap" id="search">
+        @include('partials.home-search-panel')
     </div>
-</div>
 
+    <section class="jfa-container" style="padding:48px 24px;">
+        <div class="jfa-grid jfa-grid--4">
+            @foreach($trustBadges as $badge)
+                <div class="jfa-trust-card">
+                    <span class="jfa-trust-card__icon"><span class="material-symbols-outlined filled">{{ $badge['icon'] }}</span></span>
+                    <span>
+                        <p class="jfa-trust-card__title">{{ $badge['title'] }}</p>
+                        <p class="jfa-trust-card__sub">{{ $badge['subtitle'] }}</p>
+                    </span>
+                </div>
+            @endforeach
+        </div>
+    </section>
+
+    <section class="jfa-section jfa-section--muted">
+        <div class="jfa-container">
+            <div style="text-align:center;margin-bottom:32px;">
+                <h2 class="jfa-section-title">All Travel Services</h2>
+                <p class="jfa-section-sub">Everything you need for seamless travel — in one place.</p>
+            </div>
+            <div class="jfa-services-row">
+                @foreach($services as $s)
+                    <a href="{{ $s['href'] }}" class="jfa-service">
+                        <span class="jfa-service__icon" style="background:{{ $s['color'] }}15;border:1.5px solid {{ $s['color'] }}30;">
+                            <span class="material-symbols-outlined filled" style="color:{{ $s['color'] }};font-size:28px;">{{ $s['icon'] }}</span>
+                        </span>
+                        <span class="jfa-service__label">{{ $s['label'] }}</span>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    </section>
+
+    @include('partials.home-featured-sections')
+
+    <section class="jfa-section" style="padding-top:0;">
+        <div class="jfa-container">
+            <div class="jfa-newsletter-banner">
+                <div class="jfa-newsletter-banner__copy">
+                    <h2>Get Deals in Your Inbox</h2>
+                    <p>Subscribe to our newsletter and never miss a flash sale.</p>
+                    <form class="jfa-newsletter-banner__form" action="{{ route('contact.create') }}" method="get">
+                        <input type="email" name="email" placeholder="your@email.com" required aria-label="Email">
+                        <button type="submit">Subscribe Now</button>
+                    </form>
+                    <p style="font-size:12px;color:rgba(191,219,254,.8);margin:12px 0 0;">No spam. Unsubscribe anytime.</p>
+                </div>
+                <div class="jfa-newsletter-banner__img">
+                    <img src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&q=80&w=600" alt="" loading="lazy">
+                </div>
+            </div>
+        </div>
+    </section>
 @endsection
+
+@section('content')
+    {{-- Featured sections include their own jfa-section + jfa-container --}}
+@endsection
+
+@push('styles')
+<style>.page-home main > .jfa-container:empty { display: none; }</style>
+@endpush
 
 @push('scripts')
 <script>
 (function () {
     var root = document.querySelector('[data-home-hero-carousel]');
     if (!root) return;
-    var slides = root.querySelectorAll('.home-premium-hero__slide');
-    var dots = root.querySelectorAll('.home-premium-hero__dot');
+    var slides = root.querySelectorAll('[data-hero-slide]');
+    var copies = root.querySelectorAll('[data-hero-copy]');
+    var dots = root.querySelectorAll('[data-hero-dot]');
     if (slides.length < 2) return;
-    var current = 0;
-    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var timer = null;
-
-    function show(index) {
-        current = (index + slides.length) % slides.length;
-        slides.forEach(function (slide, i) {
-            var active = i === current;
-            slide.classList.toggle('is-active', active);
-            slide.setAttribute('aria-hidden', active ? 'false' : 'true');
+    var current = 0, timer = null;
+    function show(i) {
+        current = (i + slides.length) % slides.length;
+        slides.forEach(function (el, idx) {
+            el.style.opacity = idx === current ? '1' : '0';
+            if (idx === current) { el.style.position = 'relative'; } else { el.style.position = 'absolute'; el.style.inset = '0'; }
         });
-        dots.forEach(function (dot, i) {
-            var active = i === current;
-            dot.classList.toggle('is-active', active);
-            dot.setAttribute('aria-current', active ? 'true' : 'false');
+        copies.forEach(function (el, idx) {
+            el.hidden = idx !== current;
+            el.classList.toggle('is-active', idx === current);
+        });
+        dots.forEach(function (dot, idx) {
+            dot.classList.toggle('is-active', idx === current);
+            dot.style.width = idx === current ? '32px' : '8px';
         });
     }
-
-    function start() {
-        if (reduceMotion) return;
-        stop();
-        timer = setInterval(function () { show(current + 1); }, 5500);
-    }
-
-    function stop() {
-        if (timer) clearInterval(timer);
-        timer = null;
-    }
-
+    function start() { timer = setInterval(function () { show(current + 1); }, 5000); }
+    function stop() { if (timer) clearInterval(timer); timer = null; }
     dots.forEach(function (dot) {
-        dot.addEventListener('click', function () {
-            stop();
-            show(parseInt(dot.getAttribute('data-home-hero-dot'), 10) || 0);
-            start();
-        });
+        dot.addEventListener('click', function () { stop(); show(parseInt(dot.getAttribute('data-hero-dot'), 10) || 0); start(); });
     });
-
     root.addEventListener('mouseenter', stop);
     root.addEventListener('mouseleave', start);
-    document.addEventListener('visibilitychange', function () {
-        if (document.hidden) stop();
-        else start();
-    });
     start();
 })();
 </script>
 @endpush
-
-@section('content')
-@include('partials.home-featured-sections')
-@endsection

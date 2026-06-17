@@ -5,7 +5,7 @@
 @section('content')
     <div class="card">
         <h2 class="section-title" style="font-size:1.1rem;">Meta tags &amp; social preview</h2>
-        <p style="font-size:14px;color:#64748b;margin:0 0 16px;max-width:62ch;line-height:1.5;">These fields apply to the <strong>home</strong> and <strong>welcome</strong> URLs (<code>/</code> and <code>/welcome</code>): browser title, description, Open Graph, and optional JSON-LD.</p>
+        <p style="font-size:14px;color:#64748b;margin:0 0 16px;max-width:62ch;line-height:1.5;">These settings apply <strong>site-wide</strong>. Meta title &amp; description are the defaults for every public page (pages with their own SEO override them). Keywords, robots, OG image and Twitter cards apply everywhere. Canonical URL, OG title/description and JSON-LD schema apply to the <strong>home</strong> page.</p>
         <form method="post" action="{{ route('admin.site-seo.update') }}" enctype="multipart/form-data" class="admin-form-grid">
             @csrf
             @method('PUT')

@@ -1,146 +1,127 @@
 <!doctype html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'My account') — Jet Fly</title>
-    <link rel="stylesheet" href="{{ asset('css/public.css') }}?v=15">
-    <style>
-        :root { --acct-primary:#0c4a6e; --acct-accent:#0d9488; --acct-bg:#f0fdfa; --acct-border:#ccfbf1; --acct-muted:#64748b; }
-        * { box-sizing:border-box; }
-        body { margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif; background:var(--acct-bg); color:#0f172a; min-height:100vh; }
-        a { color:inherit; text-decoration:none; }
-        .acct-shell { display:flex; min-height: calc(100vh - 200px); }
-        .acct-sidebar { width:250px; background:#fff; border-right:1px solid var(--acct-border); padding:20px 0; flex-shrink:0; position:sticky; top:0; align-self:flex-start; min-height:100vh; }
-        .acct-sidebar a { display:block; padding:10px 20px; font-size:14px; font-weight:600; color:#334155; border-left:3px solid transparent; }
-        .acct-sidebar a:hover { background:#f0fdfa; color:var(--acct-primary); }
-        .acct-sidebar a.is-active { border-left-color:var(--acct-accent); background:#ecfdf5; color:var(--acct-primary); }
-        .acct-sidebar .group { font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:#94a3b8; padding:16px 20px 8px; }
-        .acct-main { flex:1; min-width:0; display:flex; flex-direction:column; }
-        .acct-top { background:#fff; border-bottom:1px solid var(--acct-border); padding:16px 24px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; }
-        .acct-top h1 { margin:0; font-size:1.2rem; color:var(--acct-primary); }
-        .acct-breadcrumbs { font-size:13px; color:var(--acct-muted); margin-top:8px; }
-        .acct-breadcrumbs ol { margin:0; padding:0; list-style:none; display:flex; flex-wrap:wrap; gap:6px 10px; }
-        .acct-breadcrumbs li { display:inline-flex; align-items:center; gap:10px; }
-        .acct-breadcrumbs li + li::before { content:"/"; color:#94a3b8; }
-        .acct-breadcrumbs a { color:#334155; font-weight:600; }
-        .acct-breadcrumbs a:hover { color:var(--acct-primary); }
-        .acct-breadcrumbs [aria-current="page"] { color:var(--acct-primary); font-weight:700; }
-        .acct-top a.site-link { font-size:14px; color:var(--acct-accent); font-weight:600; }
-        .acct-body { padding:24px; flex:1; }
-        .acct-card { background:#fff; border-radius:14px; padding:22px; border:1px solid var(--acct-border); box-shadow:0 2px 12px rgba(13,148,136,.06); margin-bottom:20px; }
-        .acct-card h2 { margin:0 0 14px; font-size:1.05rem; color:var(--acct-primary); }
-        .acct-stats { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:14px; margin-bottom:24px; }
-        .acct-stat { background:#fff; border:1px solid var(--acct-border); border-radius:12px; padding:16px; text-align:center; }
-        .acct-stat strong { display:block; font-size:1.4rem; color:var(--acct-accent); }
-        .acct-stat span { font-size:12px; color:var(--acct-muted); text-transform:uppercase; letter-spacing:.04em; }
-        table.acct-table { width:100%; border-collapse:collapse; font-size:14px; }
-        table.acct-table th, table.acct-table td { text-align:left; padding:10px 12px; border-bottom:1px solid var(--acct-border); }
-        table.acct-table th { color:var(--acct-muted); font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
-        .btn { display:inline-block; background:var(--acct-accent); color:#fff; border:none; border-radius:10px; padding:10px 18px; font-weight:700; cursor:pointer; font-size:14px; }
-        .btn.outline { background:#fff; color:var(--acct-primary); border:2px solid var(--acct-border); }
-        .btn.outline:hover { background:#f0fdfa; }
-        .form-actions { display:flex; align-items:center; flex-wrap:wrap; gap:10px; margin-top:12px; }
-        .form-actions .btn { margin:0; }
-        label { display:block; font-size:13px; font-weight:600; color:var(--acct-muted); margin-bottom:6px; }
-        input, textarea { width:100%; max-width:420px; padding:10px 12px; border:1px solid #cbd5e1; border-radius:10px; font-size:15px; margin-bottom:14px; }
-        input:focus, textarea:focus { outline:2px solid var(--acct-accent); border-color:transparent; }
-        .ticket { border:2px dashed var(--acct-border); border-radius:12px; padding:20px; background:linear-gradient(180deg,#fff 0%,#f0fdfa 100%); }
-        .ticket-code { font-size:1.5rem; font-weight:800; letter-spacing:.08em; color:var(--acct-primary); }
-        .badge { display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:700; background:#ecfdf5; color:#0f766e; }
-        .pagination { margin-top:16px; font-size:14px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
-        .pagination a, .pagination span { padding:6px 12px; border-radius:8px; border:1px solid var(--acct-border); background:#fff; }
-        .pagination span[aria-current="page"] { background:#ecfdf5; border-color:var(--acct-accent); color:var(--acct-primary); font-weight:700; }
-        @media (max-width:860px) { .acct-shell { flex-direction:column; } .acct-sidebar { width:100%; min-height:0; position:relative; display:flex; flex-wrap:wrap; gap:4px; padding:12px; } .acct-sidebar a { padding:8px 14px; border-radius:8px; border-left:none; } .acct-sidebar a.is-active { border:2px solid var(--acct-accent); } .form-actions { flex-direction:column; align-items:stretch; } .form-actions .btn { width:100%; text-align:center; } }
-    </style>
+    <title>@yield('title', 'My account') — {{ ($siteSetting ?? null)?->brand_name ?: 'Jet Fly Airways' }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/jfa-website.css') }}?v=4">
     @stack('styles')
 </head>
-<body>
+<body class="jfa-page">
+    @include('partials.ui-extras')
     @include('partials.welcome-popup')
-    @include('partials.public-header')
-    <main>
-        <div class="acct-shell">
-            <aside class="acct-sidebar">
-                <div class="group">Account</div>
-                <a href="{{ route('account.dashboard') }}" class="{{ request()->routeIs('account.dashboard') ? 'is-active' : '' }}">Overview</a>
-                <a href="{{ route('account.bookings.index') }}" class="{{ request()->routeIs('account.bookings.*') ? 'is-active' : '' }}">My bookings</a>
-                <a href="{{ route('account.saved-travellers.index') }}" class="{{ request()->routeIs('account.saved-travellers.*') ? 'is-active' : '' }}">Saved travellers</a>
-                <a href="{{ route('account.refunds.index') }}" class="{{ request()->routeIs('account.refunds.*') ? 'is-active' : '' }}">Refund tracking</a>
-                <a href="{{ route('account.offers') }}" class="{{ request()->routeIs('account.offers') ? 'is-active' : '' }}">Offers &amp; discounts</a>
-                <a href="{{ route('account.wishlist.index') }}" class="{{ request()->routeIs('account.wishlist.index') ? 'is-active' : '' }}">Wishlist</a>
-                <a href="{{ route('account.announcements.index') }}" class="{{ request()->routeIs('account.announcements.index', 'account.announcements.read') ? 'is-active' : '' }}">Notifications</a>
-                <div class="group">Settings</div>
-                <a href="{{ route('account.profile.edit') }}" class="{{ request()->routeIs('account.profile.*') ? 'is-active' : '' }}">Profile</a>
-                <a href="{{ route('account.password.edit') }}" class="{{ request()->routeIs('account.password.*') ? 'is-active' : '' }}">Password</a>
-            </aside>
-            <div class="acct-main">
-                <header class="acct-top">
-                    <div>
-                        @php
-                            $accountRoute = \Illuminate\Support\Facades\Route::currentRouteName() ?? '';
-                            $accountParts = explode('.', $accountRoute);
-                            $accountRes = $accountParts[1] ?? 'dashboard';
-                            $accountAct = $accountParts[2] ?? 'index';
-                            $accountLabels = [
-                                'dashboard' => 'Overview',
-                                'bookings' => 'My bookings',
-                                'wishlist' => 'Wishlist',
-                                'announcements' => 'Notifications',
-                                'profile' => 'Profile',
-                                'password' => 'Password',
-                                'offers' => 'Offers & discounts',
-                            ];
-                            $accountCrumbs = [
-                                ['label' => 'Account', 'url' => route('account.dashboard')],
-                            ];
-                            if ($accountRes !== 'dashboard') {
-                                $accountCrumbs[] = [
-                                    'label' => $accountLabels[$accountRes] ?? ucwords(str_replace('-', ' ', $accountRes)),
-                                    'url' => null,
-                                ];
-                                if (!in_array($accountAct, ['index', 'edit', ''], true)) {
-                                    $accountCrumbs[] = [
-                                        'label' => ucwords(str_replace('-', ' ', $accountAct)),
-                                        'url' => null,
-                                    ];
-                                }
-                            }
-                        @endphp
-                        <h1>@yield('heading', 'My account')</h1>
-                        <nav class="acct-breadcrumbs" aria-label="Breadcrumb">
-                            <ol>
-                                @foreach($accountCrumbs as $index => $crumb)
-                                    @php $isLast = $index === count($accountCrumbs) - 1; @endphp
-                                    <li>
-                                        @if(!$isLast && !empty($crumb['url']))
-                                            <a href="{{ $crumb['url'] }}">{{ $crumb['label'] }}</a>
-                                        @else
-                                            <span aria-current="page">{{ $crumb['label'] }}</span>
-                                        @endif
-                                    </li>
-                                @endforeach
-                            </ol>
-                        </nav>
+    @include('partials.jfa-header')
+
+    @php
+        $user = auth()->user();
+        $initials = collect(explode(' ', (string) $user->name))->filter()->map(fn ($w) => mb_strtoupper(mb_substr($w, 0, 1)))->take(2)->implode('') ?: 'U';
+        $accountRoute = \Illuminate\Support\Facades\Route::currentRouteName() ?? '';
+        $navItems = [
+            ['group' => 'Overview', 'items' => [
+                ['label' => 'Dashboard', 'route' => 'account.dashboard', 'icon' => 'dashboard'],
+            ]],
+            ['group' => 'Bookings', 'items' => [
+                ['label' => 'My Bookings', 'route' => 'account.bookings.index', 'icon' => 'luggage'],
+                ['label' => 'Refund Tracking', 'route' => 'account.refunds.index', 'icon' => 'currency_rupee'],
+            ]],
+            ['group' => 'Preferences', 'items' => [
+                ['label' => 'Saved Travellers', 'route' => 'account.saved-travellers.index', 'icon' => 'group'],
+                ['label' => 'Wishlist', 'route' => 'account.wishlist.index', 'icon' => 'favorite'],
+                ['label' => 'Offers & Discounts', 'route' => 'account.offers', 'icon' => 'local_offer'],
+            ]],
+            ['group' => 'Activity', 'items' => [
+                ['label' => 'Notifications', 'route' => 'account.announcements.index', 'icon' => 'notifications'],
+            ]],
+            ['group' => 'Settings', 'items' => [
+                ['label' => 'Profile', 'route' => 'account.profile.edit', 'icon' => 'person'],
+                ['label' => 'Change Password', 'route' => 'account.password.edit', 'icon' => 'lock'],
+            ]],
+        ];
+    @endphp
+
+    <div class="jfa-account-page">
+        <div class="jfa-container jfa-account-wrap">
+            <aside class="jfa-account-sidebar">
+                <div class="jfa-account-user">
+                    <div class="jfa-account-user__row">
+                        <span class="jfa-account-user__avatar">{{ $initials }}</span>
+                        <span>
+                            <strong style="display:block;font-size:14px;">{{ $user->name }}</strong>
+                            <small style="font-size:12px;color:var(--jfa-muted);">{{ $user->email }}</small>
+                        </span>
                     </div>
-                    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
-                        <a href="{{ route('home') }}" class="site-link">← Back to website</a>
-                        <form method="post" action="{{ route('logout') }}" style="margin:0;">
+                    <div style="display:flex;gap:8px;">
+                        <a href="{{ route('home') }}" class="btn secondary" style="flex:1;padding:8px 10px;font-size:12px;">← Website</a>
+                        <form method="post" action="{{ route('logout') }}" style="flex:1;margin:0;">
                             @csrf
-                            <button type="submit" class="btn outline">Log out</button>
+                            <button type="submit" class="btn secondary" style="width:100%;padding:8px 10px;font-size:12px;color:#dc2626;border-color:#fecaca;">Log Out</button>
                         </form>
                     </div>
-                </header>
-                <div class="acct-body">
-                    @yield('content')
                 </div>
+                <nav class="jfa-account-nav" aria-label="Account navigation">
+                    @foreach($navItems as $group)
+                        @if(!$loop->first)<div class="jfa-account-nav__sep"></div>@endif
+                        <div class="jfa-account-nav__group">{{ $group['group'] }}</div>
+                        @foreach($group['items'] as $item)
+                            <a href="{{ route($item['route']) }}" class="{{ request()->routeIs($item['route']) || request()->routeIs(str_replace('.edit', '.*', $item['route'])) || request()->routeIs(str_replace('.index', '.*', $item['route'])) || (str_contains($item['route'], 'bookings') && request()->routeIs('account.bookings.*')) ? 'is-active' : '' }}">
+                                <span class="material-symbols-outlined">{{ $item['icon'] }}</span>
+                                {{ $item['label'] }}
+                            </a>
+                        @endforeach
+                    @endforeach
+                </nav>
+            </aside>
+
+            <div class="jfa-account-main">
+                <button type="button" class="jfa-account-mobile-toggle" id="jfa-acct-menu-toggle">
+                    <span class="material-symbols-outlined">menu</span> Account Menu
+                </button>
+                <nav class="jfa-account-mobile-menu" id="jfa-acct-mobile-menu">
+                    @foreach($navItems as $group)
+                        @foreach($group['items'] as $item)
+                            <a href="{{ route($item['route']) }}" style="display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;font-size:14px;font-weight:600;">
+                                <span class="material-symbols-outlined" style="font-size:18px;">{{ $item['icon'] }}</span>
+                                {{ $item['label'] }}
+                            </a>
+                        @endforeach
+                    @endforeach
+                </nav>
+
+                <header class="jfa-account-head">
+                    <nav class="jfa-breadcrumb" aria-label="Breadcrumb">
+                        <a href="{{ route('home') }}">Home</a>
+                        <span class="material-symbols-outlined" style="font-size:14px;">chevron_right</span>
+                        <a href="{{ route('account.dashboard') }}">My Account</a>
+                        @if(!request()->routeIs('account.dashboard'))
+                            <span class="material-symbols-outlined" style="font-size:14px;">chevron_right</span>
+                            <span aria-current="page">@yield('heading', 'Account')</span>
+                        @endif
+                    </nav>
+                    <h1>@yield('heading', 'My account')</h1>
+                </header>
+
+                @yield('content')
             </div>
         </div>
-    </main>
-    @include('partials.public-footer')
-    @include('partials.whatsapp-float')
-    @include('partials.live-chat-float')
+    </div>
+
+    @include('partials.jfa-footer')
+    @include('partials.jfa-floating')
     @stack('scripts')
-    @include('partials.flash-swal', ['swalConfirmColor' => '#008cff'])
+    <script>
+    (function () {
+        var btn = document.getElementById('jfa-acct-menu-toggle');
+        var menu = document.getElementById('jfa-acct-mobile-menu');
+        if (btn && menu) {
+            btn.addEventListener('click', function () { menu.classList.toggle('is-open'); });
+        }
+    })();
+    </script>
+    @include('partials.flash-swal', ['swalConfirmColor' => '#003B95'])
 </body>
 </html>

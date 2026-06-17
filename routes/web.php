@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\CareerApplicationController;
 use App\Http\Controllers\Admin\CareerController as AdminCareerController;
 use App\Http\Controllers\Admin\ContactInquiryController;
 use App\Http\Controllers\Admin\CouponController;
+use App\Http\Controllers\Admin\DestinationGuideController as AdminDestinationGuideController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\FaqController as AdminFaqController;
 use App\Http\Controllers\Admin\FlightController;
@@ -46,6 +47,7 @@ use App\Http\Controllers\BookingTicketController;
 use App\Http\Controllers\ContactFormController;
 use App\Http\Controllers\FaqController;
 use App\Http\Controllers\JobController;
+use App\Http\Controllers\DestinationGuideController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\SiteController;
@@ -152,6 +154,7 @@ Route::middleware('auth')->group(function () {
         ->name('wishlist.destroy');
 });
 
+Route::get('/p/destination-guide', [DestinationGuideController::class, 'show'])->name('destination-guide.show');
 Route::get('/p/{slug}', [PageController::class, 'show'])->name('pages.show');
 
 foreach (['about', 'careers', 'contact', 'help', 'refund', 'terms', 'privacy', 'sitemap'] as $legacyPage) {
@@ -166,6 +169,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
     Route::post('logout', [AdminAuthController::class, 'destroy'])->name('logout');
+
+    Route::get('destination-guide', [AdminDestinationGuideController::class, 'edit'])->name('destination-guide.edit');
+    Route::put('destination-guide/settings', [AdminDestinationGuideController::class, 'updateSettings'])->name('destination-guide.settings.update');
+    Route::post('destination-guide/features', [AdminDestinationGuideController::class, 'storeFeature'])->name('destination-guide.features.store');
+    Route::put('destination-guide/features/{feature}', [AdminDestinationGuideController::class, 'updateFeature'])->name('destination-guide.features.update');
+    Route::delete('destination-guide/features/{feature}', [AdminDestinationGuideController::class, 'destroyFeature'])->name('destination-guide.features.destroy');
+    Route::post('destination-guide/spots', [AdminDestinationGuideController::class, 'storeSpot'])->name('destination-guide.spots.store');
+    Route::put('destination-guide/spots/{spot}', [AdminDestinationGuideController::class, 'updateSpot'])->name('destination-guide.spots.update');
+    Route::delete('destination-guide/spots/{spot}', [AdminDestinationGuideController::class, 'destroySpot'])->name('destination-guide.spots.destroy');
+    Route::post('destination-guide/tips', [AdminDestinationGuideController::class, 'storeTip'])->name('destination-guide.tips.store');
+    Route::put('destination-guide/tips/{tip}', [AdminDestinationGuideController::class, 'updateTip'])->name('destination-guide.tips.update');
+    Route::delete('destination-guide/tips/{tip}', [AdminDestinationGuideController::class, 'destroyTip'])->name('destination-guide.tips.destroy');
 
     Route::get('bookings', [BookingController::class, 'index'])->name('bookings.index');
     Route::get('bookings/{booking}', [BookingController::class, 'show'])->name('bookings.show');

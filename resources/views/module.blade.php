@@ -1,127 +1,174 @@
 @extends('layouts.app')
 
-@section('content')
-    <div class="card module-head">
-        <h1 class="section-title">{{ $module['icon'] }} {{ $module['title'] }}</h1>
-        <p>
-            @if(!empty($addonCatalog))
-                {{ __('jetfly.module_addon_intro') }}
-            @else
-                {{ __('jetfly.module_db_intro') }}
-            @endif
-        </p>
+@section('body_class', 'page-module')
+
+@php
+    $moduleMeta = [
+        'flights' => ['icon' => 'flight', 'color' => '#003B95', 'desc' => 'Search and book cheap flights across 500+ routes in India and worldwide.'],
+        'hotels' => ['icon' => 'hotel', 'color' => '#0d9488', 'desc' => 'Book 50,000+ hotels across India. Best rates, instant confirmation.'],
+        'packages' => ['icon' => 'beach_access', 'color' => '#f97316', 'desc' => 'Curated holiday packages with flights, hotels, meals and sightseeing included.'],
+        'buses' => ['icon' => 'directions_bus', 'color' => '#b45309', 'desc' => 'Book AC/Non-AC buses across 10,000+ routes. Fast, safe and affordable.'],
+        'trains' => ['icon' => 'train', 'color' => '#7c3aed', 'desc' => 'Book Indian Railways tickets with live PNR status. All classes, all routes.'],
+        'cabs' => ['icon' => 'local_taxi', 'color' => '#0369a1', 'desc' => 'Book outstation cabs, airport transfers and one-way drops across India.'],
+        'visa' => ['icon' => 'travel_explore', 'color' => '#be185d', 'desc' => 'Hassle-free visa assistance for 100+ countries. Document help, application support.'],
+        'insurance' => ['icon' => 'shield', 'color' => '#047857', 'desc' => 'Comprehensive travel insurance for domestic and international trips.'],
+    ];
+    $meta = $moduleMeta[$slug] ?? $moduleMeta['flights'];
+    $hasSidebar = empty($staticModule) && empty($addonCatalog) && ! in_array($slug, ['visa', 'insurance'], true);
+    $resultCount = isset($items) && is_object($items) && method_exists($items, 'total') ? $items->total() : (is_countable($items ?? null) ? count($items) : 0);
+@endphp
+
+@section('full')
+    <div class="jfa-module-hero" style="--jfa-module-color: {{ $meta['color'] }};">
+        <div class="jfa-container">
+            <nav class="jfa-breadcrumb jfa-breadcrumb--light" aria-label="Breadcrumb">
+                <a href="{{ route('home') }}">Home</a>
+                <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+                <span aria-current="page">{{ $module['title'] }}</span>
+            </nav>
+            <div class="jfa-module-hero__head">
+                <span class="material-symbols-outlined filled jfa-module-hero__icon">{{ $meta['icon'] }}</span>
+                <h1>{{ $module['title'] }}</h1>
+            </div>
+            <p class="jfa-module-hero__desc">
+                @if(!empty($addonCatalog))
+                    {{ __('jetfly.module_addon_intro') }}
+                @elseif(!empty($staticModule))
+                    {{ __('jetfly.module_static_addon') }}
+                @else
+                    {{ $meta['desc'] }}
+                @endif
+            </p>
+        </div>
     </div>
 
-    @if(!empty($staticModule))
-        <div class="card">
-            <p>{{ __('jetfly.module_static_addon') }}</p>
-            <p style="margin-top:12px;"><a class="btn secondary" href="{{ route('contact.create') }}">{{ __('jetfly.contact_us') }}</a>
-                <a class="btn" href="{{ route('home') }}" style="margin-left:8px;">{{ __('jetfly.back_home') }}</a></p>
+    @if(empty($staticModule) && empty($addonCatalog))
+        <div class="jfa-container jfa-module-search-wrap">
+            @include('partials.home-search-panel', ['activeModule' => $slug, 'compact' => true])
         </div>
-    @else
-        @unless(!empty($addonCatalog))
-        <div class="card module-filters">
-            <form method="get" action="{{ route('module.index', $slug) }}" class="search-grid">
-                @if($slug === 'flights')
-                    <div><label>From</label><input name="from" value="{{ request('from') }}" placeholder="City"></div>
-                    <div><label>To</label><input name="to" value="{{ request('to') }}" placeholder="City"></div>
-                    <div><label>Date</label><input type="date" name="date" value="{{ request('date') }}"></div>
-                    <div><label>Airline</label><input name="airline" value="{{ request('airline') }}" placeholder="Name"></div>
-                    <div><label>Cabin</label>
-                        <select name="cabin_class">
-                            <option value="">Any</option>
-                            <option value="Economy" @selected(request('cabin_class') === 'Economy')>Economy</option>
-                            <option value="Premium Economy" @selected(request('cabin_class') === 'Premium Economy')>Premium Economy</option>
-                            <option value="Business" @selected(request('cabin_class') === 'Business')>Business</option>
-                            <option value="First" @selected(request('cabin_class') === 'First')>First</option>
-                        </select>
-                    </div>
-                    <div><label>Max stops</label><input type="number" name="stops" min="0" max="9" value="{{ request('stops') }}" placeholder="e.g. 1"></div>
-                    <div><label>Min ₹</label><input type="number" name="min_price" min="0" step="1" value="{{ request('min_price') }}"></div>
-                    <div><label>Max ₹</label><input type="number" name="max_price" min="0" step="1" value="{{ request('max_price') }}"></div>
-                    <div><label>Dep after</label><input type="time" name="dep_after" value="{{ request('dep_after') }}"></div>
-                    <div><label>Dep before</label><input type="time" name="dep_before" value="{{ request('dep_before') }}"></div>
-                    <div><label>Max duration (min)</label><input type="number" name="max_duration_mins" min="15" value="{{ request('max_duration_mins') }}" placeholder="e.g. 180"></div>
-                @elseif($slug === 'hotels')
-                    <div><label>City</label><input name="city" value="{{ request('city') }}" placeholder="City"></div>
-                    <div><label>Hotel name</label><input name="q" value="{{ request('q') }}" placeholder="Optional"></div>
-                    <div><label>Min ₹ / night</label><input type="number" name="min_price" min="0" value="{{ request('min_price') }}"></div>
-                    <div><label>Max ₹ / night</label><input type="number" name="max_price" min="0" value="{{ request('max_price') }}"></div>
-                    <div><label>Min stars</label><input type="number" name="min_stars" min="1" max="5" value="{{ request('min_stars') }}"></div>
-                @elseif($slug === 'packages')
-                    <div><label>Destination</label><input name="destination" value="{{ request('destination') }}" placeholder="Place"></div>
-                    <div><label>Category</label><input name="category" value="{{ request('category') }}" placeholder="Type"></div>
-                    <div><label>Keyword</label><input name="q" value="{{ request('q') }}" placeholder="Search"></div>
-                @elseif(in_array($slug, ['buses','trains']))
-                    <div><label>From</label><input name="from" value="{{ request('from') }}" placeholder="City"></div>
-                    <div><label>To</label><input name="to" value="{{ request('to') }}" placeholder="City"></div>
-                    <div><label>Date</label><input type="date" name="date" value="{{ request('date') }}"></div>
-                @elseif($slug === 'cabs')
-                    <div style="grid-column:span 2;"><label>Search</label><input name="q" value="{{ request('q') }}" placeholder="Service type, from, to…"></div>
-                @endif
-                <div class="module-filter-actions">
-                    <button class="btn secondary" type="submit">Apply filters</button>
-                    <a class="btn" href="{{ route('module.index', $slug) }}">Clear</a>
-                </div>
-            </form>
-            @if($slug === 'hotels' && (request('check_in') || request('check_out') || request('guests')))
-                <p class="page-help">Check-in / guests from home search are shown for planning — listing filters use price &amp; stars.</p>
-            @endif
-        </div>
-        @endunless
+    @endif
 
-        @if(empty($addonCatalog) && $slug === 'trains')
-            <div class="card" style="margin-bottom:16px;">
-                <h2 class="section-title" style="font-size:1rem;">PNR status (demo)</h2>
-                <p style="margin:0 0 10px;font-size:13px;color:#64748b;">Enter a PNR to see a sample response. Live data needs a rail API later.</p>
-                <form method="get" action="{{ route('module.index', 'trains') }}" class="search-grid" style="align-items:flex-end;">
-                    @foreach(request()->except('pnr') as $key => $val)
-                        @if(is_array($val)) @continue @endif
-                        <input type="hidden" name="{{ $key }}" value="{{ $val }}">
-                    @endforeach
-                    <div><label style="font-size:12px;font-weight:600;color:#64748b;">PNR</label><input name="pnr" value="{{ request('pnr') }}" placeholder="e.g. 4258123456" maxlength="12"></div>
-                    <div style="display:flex;gap:8px;">
-                        <button type="submit" class="btn secondary">Check PNR</button>
+    <div class="jfa-container jfa-module-body">
+        @if(!empty($staticModule))
+            <div class="jfa-card jfa-module-empty">
+                <p>{{ __('jetfly.module_static_addon') }}</p>
+                <div class="form-actions" style="justify-content:center;">
+                    <a class="btn secondary" href="{{ route('contact.create') }}">{{ __('jetfly.contact_us') }}</a>
+                    <a class="btn" href="{{ route('home') }}">{{ __('jetfly.back_home') }}</a>
+                </div>
+            </div>
+        @else
+            @if($slug === 'trains' && empty($addonCatalog))
+                <div class="jfa-pnr-widget">
+                    <div class="jfa-pnr-widget__head">
+                        <span class="material-symbols-outlined filled">train</span>
+                        <h3>PNR status check</h3>
                     </div>
-                </form>
-                @if(!empty($trainPnrResult))
-                    <div style="margin-top:12px;padding:12px;border-radius:10px;border:1px solid var(--border);background:var(--card);font-size:14px;">
-                        @if(!empty($trainPnrResult['ok']))
-                            <p style="margin:0 0 6px;"><strong>PNR {{ $trainPnrResult['pnr'] }}</strong></p>
-                            <p style="margin:0;color:#64748b;">{{ $trainPnrResult['message'] }}</p>
-                            <p style="margin:8px 0 0;"><strong>Train:</strong> {{ $trainPnrResult['train'] ?? '—' }}</p>
-                            <p style="margin:4px 0 0;"><strong>Route:</strong> {{ $trainPnrResult['from'] ?? '—' }} → {{ $trainPnrResult['to'] ?? '—' }}</p>
-                            <p style="margin:4px 0 0;"><strong>Status:</strong> {{ $trainPnrResult['status'] ?? '—' }}</p>
-                        @else
-                            <p style="margin:0;color:#b45309;">{{ $trainPnrResult['message'] }}</p>
+                    <form method="get" action="{{ route('module.index', 'trains') }}" class="jfa-pnr-widget__form">
+                        @foreach(request()->except('pnr') as $key => $val)
+                            @if(!is_array($val))
+                                <input type="hidden" name="{{ $key }}" value="{{ $val }}">
+                            @endif
+                        @endforeach
+                        <input name="pnr" value="{{ request('pnr') }}" placeholder="Enter 10-digit PNR" maxlength="12" aria-label="PNR number">
+                        <button type="submit" class="btn">Check</button>
+                    </form>
+                    @if(!empty($trainPnrResult))
+                        <div class="jfa-pnr-widget__result {{ !empty($trainPnrResult['ok']) ? 'is-success' : 'is-error' }}">
+                            @if(!empty($trainPnrResult['ok']))
+                                <p><strong>PNR {{ $trainPnrResult['pnr'] }}</strong> — {{ $trainPnrResult['message'] }}</p>
+                                <p class="jfa-pnr-widget__meta">{{ $trainPnrResult['train'] ?? '' }} · {{ $trainPnrResult['from'] ?? '' }} → {{ $trainPnrResult['to'] ?? '' }}</p>
+                            @else
+                                <p>{{ $trainPnrResult['message'] }}</p>
+                            @endif
+                        </div>
+                    @endif
+                </div>
+            @endif
+
+            <div class="jfa-module-layout">
+                @if($hasSidebar)
+                    <button type="button" class="jfa-filter-mobile-toggle" id="jfa-filter-toggle" aria-expanded="false" aria-controls="jfa-filter-sidebar">
+                        <span class="material-symbols-outlined">tune</span>
+                        Filters
+                    </button>
+
+                    <aside class="jfa-filter-sidebar" id="jfa-filter-sidebar">
+                        <div class="jfa-filter-sidebar__card">
+                            <div class="jfa-filter-sidebar__head">
+                                <h3>Filters</h3>
+                                <a href="{{ route('module.index', $slug) }}" class="jfa-filter-sidebar__reset">Reset</a>
+                            </div>
+                            @include('partials.module-filter-sidebar')
+                        </div>
+                    </aside>
+                @endif
+
+                <div class="jfa-module-results">
+                    <div class="jfa-module-sortbar">
+                        <span class="jfa-module-sortbar__count">{{ number_format($resultCount) }} results found</span>
+                        @if($hasSidebar && $resultCount > 0)
+                            <label class="jfa-module-sortbar__sort">
+                                <span>Sort by:</span>
+                                <select name="sort" form="jfa-module-filters" onchange="document.getElementById('jfa-module-filters')?.requestSubmit()">
+                                    <option value="">Recommended</option>
+                                    <option value="price_asc" @selected(request('sort') === 'price_asc')>Price: Low to High</option>
+                                    <option value="price_desc" @selected(request('sort') === 'price_desc')>Price: High to Low</option>
+                                </select>
+                            </label>
                         @endif
                     </div>
-                @endif
+
+                    <div class="jfa-grid jfa-grid--3">
+                        @forelse($items ?? [] as $item)
+                            <article class="jfa-listing-card">
+                                <div class="jfa-listing-card__body">
+                                    <h3 class="jfa-listing-card__title">{{ $item['title'] }}</h3>
+                                    <p class="jfa-listing-card__sub">{{ $item['subtitle'] }}</p>
+                                    <div class="jfa-listing-card__foot">
+                                        @if(($item['price'] ?? 0) > 0)
+                                            <div>
+                                                <div class="jfa-listing-card__price-label">From</div>
+                                                <div class="jfa-listing-card__price">₹{{ number_format($item['price'], 0) }}</div>
+                                            </div>
+                                        @endif
+                                        @if(!empty($item['external']))
+                                            <a class="btn" href="{{ $item['book_url'] ?? route('contact.create') }}" style="padding:10px 18px;font-size:14px;">Request</a>
+                                        @else
+                                            <a class="btn" href="{{ route('module.show', ['module' => $slug, 'item' => $item['slug']]) }}" style="padding:10px 18px;font-size:14px;">View Details</a>
+                                        @endif
+                                    </div>
+                                </div>
+                            </article>
+                        @empty
+                            <div class="jfa-card jfa-module-empty" style="grid-column:1/-1;">
+                                <span class="material-symbols-outlined">search_off</span>
+                                <h3>No results found</h3>
+                                <p>Try adjusting your filters or search for a different route.</p>
+                                <a class="btn" href="{{ route('contact.create') }}">Contact Support</a>
+                            </div>
+                        @endforelse
+                    </div>
+
+                    @if(isset($items) && is_object($items) && method_exists($items, 'hasPages') && $items->hasPages())
+                        <div class="jfa-module-pagination">{{ $items->links() }}</div>
+                    @endif
+                </div>
             </div>
         @endif
-
-        <div class="grid">
-            @forelse($items as $item)
-                <div class="card">
-                    <h3 style="margin-top:0;">{{ $item['title'] }}</h3>
-                    <p style="font-size:14px;color:#64748b;">{{ $item['subtitle'] }}</p>
-                    @if(($item['price'] ?? 0) > 0)
-                        <p><strong>From: Rs {{ number_format($item['price'], 2) }}</strong></p>
-                    @endif
-                    @if(!empty($item['external']))
-                        <a class="btn secondary" href="{{ $item['book_url'] ?? route('contact.create') }}">Request booking</a>
-                    @else
-                        <a class="btn secondary" href="{{ route('module.show', ['module' => $slug, 'item' => $item['slug']]) }}">View Details</a>
-                    @endif
-                </div>
-            @empty
-                <div class="card" style="grid-column:1/-1;">
-                    <p>No matching listings. Try clearing filters or add data in the <a href="{{ route('admin.dashboard') }}">admin panel</a>.</p>
-                </div>
-            @endforelse
-        </div>
-        @if($items->hasPages())
-            <div style="margin-top:16px;">{{ $items->links() }}</div>
-        @endif
-    @endif
+    </div>
 @endsection
+
+@push('scripts')
+<script>
+(function () {
+    var toggle = document.getElementById('jfa-filter-toggle');
+    var sidebar = document.getElementById('jfa-filter-sidebar');
+    if (!toggle || !sidebar) return;
+    toggle.addEventListener('click', function () {
+        var open = sidebar.classList.toggle('is-open');
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+})();
+</script>
+@endpush

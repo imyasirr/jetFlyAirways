@@ -1,13 +1,25 @@
 @if(isset($testimonials) && $testimonials->isNotEmpty())
-    <h2 class="section-title section-title-spaced-lg">What travellers say</h2>
-    <div class="grid">
-        @foreach($testimonials as $t)
-            <div class="card">
-                <p class="card-meta" style="margin-bottom:8px;">{{ str_repeat('★', (int) $t->rating) }}</p>
-                <p class="card-meta" style="font-style:italic;">“{{ $t->review }}”</p>
-                <p class="card-title" style="margin-top:12px;margin-bottom:0;">{{ $t->name }}</p>
-                @if($t->designation)<p class="card-meta" style="margin:4px 0 0;">{{ $t->designation }}</p>@endif
-            </div>
-        @endforeach
+<section class="jfa-section jfa-section--blue">
+    <div class="jfa-container">
+        <div style="text-align:center;margin-bottom:32px;">
+            <h2 class="jfa-section-title">Loved by Travellers</h2>
+            <p class="jfa-section-sub">Here's what our customers say</p>
+        </div>
+        <div class="jfa-grid jfa-grid--3">
+            @foreach($testimonials as $t)
+                <article class="jfa-testimonial">
+                    <div class="jfa-testimonial__stars">{{ str_repeat('★', min(5, (int) $t->rating)) }}</div>
+                    <p class="jfa-testimonial__text">"{{ $t->review }}"</p>
+                    <div class="jfa-testimonial__author">
+                        <span class="jfa-testimonial__avatar">{{ mb_substr($t->name, 0, 1) }}</span>
+                        <span>
+                            <strong style="display:block;font-size:14px;">{{ $t->name }}</strong>
+                            @if($t->designation)<small style="color:var(--jfa-muted);">{{ $t->designation }}</small>@endif
+                        </span>
+                    </div>
+                </article>
+            @endforeach
+        </div>
     </div>
+</section>
 @endif

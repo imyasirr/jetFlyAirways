@@ -11,21 +11,6 @@
 <div class="mm-topbar" role="note">
     <div class="container mm-topbar-inner">
         <span class="mm-topbar-promo">{{ $topLeft }}</span>
-        <div class="mm-topbar-actions">
-            <span class="mm-topbar-locale locale-switch" aria-label="Language">
-                <a href="{{ route('locale.switch', 'en') }}" class="mm-topbar-link {{ app()->getLocale() === 'en' ? 'is-active' : '' }}">English</a>
-                <span class="mm-topbar-dot" aria-hidden="true"></span>
-                <a href="{{ route('locale.switch', 'hi') }}" class="mm-topbar-link {{ app()->getLocale() === 'hi' ? 'is-active' : '' }}">हिंदी</a>
-            </span>
-            <button type="button" class="mm-topbar-link mm-topbar-btn" data-theme-toggle>{{ __('jetfly.theme_toggle') }}</button>
-            <a href="tel:{{ preg_replace('/\s+/', '', $phone) }}" class="mm-topbar-link mm-topbar-phone">{{ $phone }}</a>
-            <a href="mailto:{{ $email }}" class="mm-topbar-link">{{ $email }}</a>
-            @auth
-                @if(($unreadAnnouncements ?? 0) > 0)
-                    <a href="{{ route('account.announcements.index') }}" class="mm-topbar-link">Alerts<span class="notif-badge">{{ $unreadAnnouncements }}</span></a>
-                @endif
-            @endauth
-        </div>
     </div>
 </div>
 <header class="mm-header">
@@ -33,10 +18,13 @@
         <a href="{{ route('home') }}" class="mm-brand {{ $logoUrl ? 'mm-brand--image' : '' }}" aria-label="{{ $bName }} home">
             @if($logoUrl)
                 <img src="{{ $logoUrl }}" alt="{{ $bName }}" class="mm-brand-logo">
-            @else
-                <span class="mm-brand-mark">{{ $bName }}</span>
             @endif
-            <span class="mm-brand-sub">{{ $bTag }}</span>
+            <span class="mm-brand-text">
+                <span class="mm-brand-mark">{{ $bName }}</span>
+                @if($bTag)
+                    <span class="mm-brand-sub">{{ $bTag }}</span>
+                @endif
+            </span>
         </a>
         <nav class="mm-mainnav" aria-label="Main navigation">
             @php $headerMenu = $headerMenu ?? collect(); @endphp
@@ -70,12 +58,12 @@
                 <a href="{{ route('module.index', 'flights') }}" class="mm-navlink">{{ __('jetfly.nav_flights') }}</a>
                 <a href="{{ route('module.index', 'hotels') }}" class="mm-navlink">{{ __('jetfly.nav_hotels') }}</a>
                 <a href="{{ route('module.index', 'packages') }}" class="mm-navlink">{{ __('jetfly.nav_packages') }}</a>
+                <a href="{{ route('module.index', 'trains') }}" class="mm-navlink">Trains</a>
+                <a href="{{ route('module.index', 'buses') }}" class="mm-navlink">Buses</a>
                 <div class="mm-mega">
                     <button type="button" class="mm-navlink mm-mega-trigger" aria-haspopup="true" aria-expanded="false">More <span class="mm-caret" aria-hidden="true">▾</span></button>
                     <div class="mm-mega-panel" role="menu">
                         <div class="mm-mega-grid">
-                            <a href="{{ route('module.index', 'trains') }}" role="menuitem" class="mm-mega-item">Trains</a>
-                            <a href="{{ route('module.index', 'buses') }}" role="menuitem" class="mm-mega-item">Buses</a>
                             <a href="{{ route('module.index', 'cabs') }}" role="menuitem" class="mm-mega-item">Cabs</a>
                             <a href="{{ route('module.index', 'visa') }}" role="menuitem" class="mm-mega-item">Visa</a>
                             <a href="{{ route('module.index', 'insurance') }}" role="menuitem" class="mm-mega-item">Insurance</a>
@@ -87,7 +75,14 @@
             @endforelse
         </nav>
         <div class="mm-header-cta">
-            <a href="{{ route('home') }}#search" class="mm-btn mm-btn--primary">{{ __('jetfly.book_now') }}</a>
+            @auth
+                @if(($unreadAnnouncements ?? 0) > 0)
+                    <a href="{{ route('account.announcements.index') }}" class="mm-iconbtn" aria-label="Alerts" title="Alerts">
+                        <span class="material-symbols-outlined" aria-hidden="true">notifications</span>
+                        <span class="notif-badge">{{ $unreadAnnouncements }}</span>
+                    </a>
+                @endif
+            @endauth
             @auth
                 <details class="mm-account-dd">
                     <summary class="mm-btn mm-btn--outline mm-account-summary" aria-label="Account menu">
@@ -107,6 +102,51 @@
                             <a href="{{ route('admin.dashboard') }}" class="mm-account-link" role="menuitem">{{ __('jetfly.admin') }}</a>
                         @endif
                         <div class="mm-account-sep" role="presentation"></div>
+                        <details class="mm-account-sub">
+                            <summary class="mm-account-link mm-account-sub-summary">
+                                <span class="mm-account-sub-title">
+                                    <span class="material-symbols-outlined" aria-hidden="true">translate</span>
+                                    Language
+                                </span>
+                                <span class="mm-subcaret" aria-hidden="true">▾</span>
+                            </summary>
+                            <div class="mm-account-sub-panel">
+                                <a href="{{ route('locale.switch', 'en') }}" class="mm-account-sub-option {{ app()->getLocale() === 'en' ? 'is-active' : '' }}">
+                                    English
+                                    @if(app()->getLocale() === 'en')<span class="material-symbols-outlined" aria-hidden="true">check</span>@endif
+                                </a>
+                                <a href="{{ route('locale.switch', 'hi') }}" class="mm-account-sub-option {{ app()->getLocale() === 'hi' ? 'is-active' : '' }}">
+                                    हिंदी
+                                    @if(app()->getLocale() === 'hi')<span class="material-symbols-outlined" aria-hidden="true">check</span>@endif
+                                </a>
+                            </div>
+                        </details>
+                        <details class="mm-account-sub">
+                            <summary class="mm-account-link mm-account-sub-summary">
+                                <span class="mm-account-sub-title">
+                                    <span class="material-symbols-outlined" aria-hidden="true">contrast</span>
+                                    Appearance
+                                </span>
+                                <span class="mm-subcaret" aria-hidden="true">▾</span>
+                            </summary>
+                            <div class="mm-account-sub-panel">
+                                <button type="button" class="mm-account-sub-option" data-theme-set="light">
+                                    <span class="mm-account-sub-option-label">
+                                        <span class="material-symbols-outlined" aria-hidden="true">light_mode</span>
+                                        Light mode
+                                    </span>
+                                    <span class="material-symbols-outlined mm-theme-check" aria-hidden="true">check</span>
+                                </button>
+                                <button type="button" class="mm-account-sub-option" data-theme-set="dark">
+                                    <span class="mm-account-sub-option-label">
+                                        <span class="material-symbols-outlined" aria-hidden="true">dark_mode</span>
+                                        Dark mode
+                                    </span>
+                                    <span class="material-symbols-outlined mm-theme-check" aria-hidden="true">check</span>
+                                </button>
+                            </div>
+                        </details>
+                        <div class="mm-account-sep" role="presentation"></div>
                         <form method="post" action="{{ route('logout') }}" class="mm-account-logout-form">
                             @csrf
                             <button type="submit" class="mm-account-link--logout">{{ __('jetfly.log_out') }}</button>
@@ -114,7 +154,7 @@
                     </div>
                 </details>
             @else
-                <a href="{{ route('login') }}" class="mm-btn mm-btn--outline mm-login-wide">Login or Create Account <span class="mm-caret" aria-hidden="true">▾</span></a>
+                <a href="{{ route('login') }}" class="mm-btn mm-btn--outline mm-login-wide">Sign In</a>
             @endauth
         </div>
         <button type="button" class="mm-nav-toggle" aria-expanded="false" aria-controls="mm-mobile-nav" data-mm-nav-toggle>
@@ -156,6 +196,17 @@
                 <a href="{{ route('currency-converter') }}" class="mm-mobile-link mm-mobile-sublink">Currency Converter</a>
             @endforelse
             @auth
+                <p class="mm-mobile-group">Preferences</p>
+                <span class="mm-mobile-link locale-switch" style="display:flex;gap:14px;">
+                    <a href="{{ route('locale.switch', 'en') }}" style="{{ app()->getLocale() === 'en' ? 'text-decoration:underline;' : '' }}">English</a>
+                    <a href="{{ route('locale.switch', 'hi') }}" style="{{ app()->getLocale() === 'hi' ? 'text-decoration:underline;' : '' }}">हिंदी</a>
+                </span>
+                <button type="button" class="mm-mobile-link" data-theme-toggle style="width:100%;text-align:left;border:none;background:none;font:inherit;cursor:pointer;"><span data-theme-label>Dark mode</span></button>
+            @endauth
+            <p class="mm-mobile-group">Contact</p>
+            <a href="tel:{{ preg_replace('/\s+/', '', $phone) }}" class="mm-mobile-link mm-mobile-sublink">{{ $phone }}</a>
+            <a href="mailto:{{ $email }}" class="mm-mobile-link mm-mobile-sublink">{{ $email }}</a>
+            @auth
                 <p class="mm-mobile-group">Account</p>
                 <a href="{{ route('account.bookings.index') }}" class="mm-mobile-link mm-mobile-sublink">My Trips</a>
                 <a href="{{ route('account.saved-travellers.index') }}" class="mm-mobile-link mm-mobile-sublink">Saved travellers</a>
@@ -169,9 +220,8 @@
                     <button type="submit" class="mm-mobile-link mm-mobile-sublink" style="width:100%;text-align:left;border:none;background:none;font:inherit;cursor:pointer;">{{ __('jetfly.log_out') }}</button>
                 </form>
             @else
-                <a href="{{ route('login') }}" class="mm-mobile-link mm-mobile-sublink">Login or Create Account</a>
+                <a href="{{ route('login') }}" class="mm-mobile-link mm-mobile-sublink">Sign In or Create Account</a>
             @endauth
-            <a href="{{ route('home') }}#search" class="mm-btn mm-btn--primary mm-mobile-cta">{{ __('jetfly.book_now') }}</a>
         </div>
     </div>
 </header>
@@ -236,5 +286,42 @@
             closeAllMegas();
         }
     });
+
+    var themeKey = 'jetfly-theme';
+    var rootEl = document.documentElement;
+    var savedTheme = null;
+    try { savedTheme = localStorage.getItem(themeKey); } catch (err) {}
+    if (savedTheme === 'dark' || savedTheme === 'light') {
+        rootEl.setAttribute('data-theme', savedTheme);
+    }
+
+    function syncThemeLabels() {
+        var dark = rootEl.getAttribute('data-theme') === 'dark';
+        document.querySelectorAll('[data-theme-label]').forEach(function (label) {
+            label.textContent = dark ? 'Light mode' : 'Dark mode';
+        });
+        document.querySelectorAll('[data-theme-set]').forEach(function (opt) {
+            opt.classList.toggle('is-active', opt.getAttribute('data-theme-set') === (dark ? 'dark' : 'light'));
+        });
+    }
+
+    function applyTheme(next) {
+        rootEl.setAttribute('data-theme', next);
+        try { localStorage.setItem(themeKey, next); } catch (err) {}
+        syncThemeLabels();
+    }
+
+    document.querySelectorAll('[data-theme-toggle]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            applyTheme(rootEl.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+        });
+    });
+
+    document.querySelectorAll('[data-theme-set]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            applyTheme(btn.getAttribute('data-theme-set'));
+        });
+    });
+    syncThemeLabels();
 })();
 </script>

@@ -92,16 +92,7 @@ HTML,
                 'slug' => 'destination-guide',
                 'title' => 'Destination guide',
                 'meta_description' => 'Explore destinations, seasons, and travel tips with Jet Fly Airways.',
-                'body' => <<<'HTML'
-<h1 class="section-title">Destination guide</h1>
-<p>Plan smarter with region highlights, best seasons to visit, and airport or station access tips. Use our search to compare fares and stays — then refine dates for the lowest combined trip cost.</p>
-<div class="cms-feature-grid" role="presentation">
-<div class="cms-feature-card"><strong>When to go</strong> Shoulder seasons often balance weather and price — adjust for local festivals and holidays.</div>
-<div class="cms-feature-card"><strong>Hubs &amp; access</strong> Check the nearest airport or station and ground options (metro, cab, bus) before you lock dates.</div>
-<div class="cms-feature-card"><strong>Stay + fly</strong> Bundling hotels with flights can simplify changes — compare both in one session.</div>
-</div>
-<p class="cms-callout"><strong>Custom trip</strong> Need a tailored itinerary? <a href="/p/contact">Contact us</a> with rough dates and group size.</p>
-HTML,
+                'body' => '<p>Content is managed from Admin → Destination guide.</p>',
             ],
             [
                 'slug' => 'top-deals',

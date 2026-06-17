@@ -23,6 +23,7 @@
             'offers' => $M('Offers', 'offer', 'Promotional offers displayed on the homepage and offer strips.'),
             'menu-items' => $M('Header & footer menu', 'menu link', 'Edit navigation links, new-tab behaviour, and login-only items.'),
             'pages' => $M('CMS pages', 'page', 'Create and publish static pages (About, Terms, etc.) for your site.'),
+            'destination-guide' => $M('Destination guide', 'destination guide', 'Intro, feature cards, trending destinations, and planning tips on /p/destination-guide.'),
             'site-seo' => $M('Site SEO', 'SEO', 'Homepage meta tags, Open Graph, and structured data for search and social.'),
             'site-settings' => $M('Site header & footer', 'setting', 'Top bar text, logo lines, support contacts, footer copy, and social URLs on the public site.'),
             'banners' => $M('Home banners', 'banner', 'Promo carousel below the hero on / and /welcome — image, copy, and CTA links (separate from the single hero background in Site header & footer).'),
@@ -60,11 +61,17 @@
     @endphp
     <title>@yield('title', $defaultHeading) — Jet Fly Admin</title>
     <meta name="description" content="@yield('meta_description', $defaultPageDescription)">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v=5">
+    <link rel="stylesheet" href="{{ asset('css/admin-skybound.css') }}?v=4">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
     @stack('styles')
 </head>
 <body class="admin-body">
+    @include('partials.ui-extras')
     <div class="admin-shell">
         <aside class="admin-sidebar" aria-label="Admin navigation">
             <div class="admin-sidebar-brand">
@@ -94,6 +101,7 @@
                 <div class="nav-group">Site &amp; marketing</div>
                 <a href="{{ route('admin.menu-items.index') }}" class="{{ request()->routeIs('admin.menu-items.*') ? 'active' : '' }}">Header &amp; footer menu</a>
                 <a href="{{ route('admin.pages.index') }}" class="{{ request()->routeIs('admin.pages.*') ? 'active' : '' }}">CMS pages</a>
+                <a href="{{ route('admin.destination-guide.edit') }}" class="{{ request()->routeIs('admin.destination-guide.*') ? 'active' : '' }}">Destination guide</a>
                 <a href="{{ route('admin.site-seo.edit') }}" class="{{ request()->routeIs('admin.site-seo.*') ? 'active' : '' }}">Site SEO</a>
                 <a href="{{ route('admin.site-settings.edit') }}" class="{{ request()->routeIs('admin.site-settings.*') ? 'active' : '' }}">Site header &amp; footer</a>
                 <a href="{{ route('admin.integrations.index') }}" class="{{ request()->routeIs('admin.integrations.*') ? 'active' : '' }}">API integrations</a>
@@ -141,29 +149,75 @@
                             }
                         }
                     @endphp
-                    <h1>@yield('heading', $defaultHeading)</h1>
-                    <p class="admin-page-description">@yield('page_description', $defaultPageDescription)</p>
                     <nav class="admin-breadcrumbs" aria-label="Breadcrumb">
                         <ol>
                             @foreach($adminCrumbs as $index => $crumb)
                                 @php $isLast = $index === count($adminCrumbs) - 1; @endphp
                                 <li>
                                     @if(!$isLast && !empty($crumb['url']))
-                                        <a href="{{ $crumb['url'] }}">{{ $crumb['label'] }}</a>
+                                        <a href="{{ $crumb['url'] }}">
+                                            @if($index === 0)<span class="material-symbols-outlined adm-crumb-home" aria-hidden="true">home</span>@endif
+                                            {{ $crumb['label'] }}
+                                        </a>
                                     @else
-                                        <span aria-current="page">{{ $crumb['label'] }}</span>
+                                        <span aria-current="page">
+                                            @if($index === 0)<span class="material-symbols-outlined adm-crumb-home" aria-hidden="true">home</span>@endif
+                                            {{ $crumb['label'] }}
+                                        </span>
                                     @endif
                                 </li>
                             @endforeach
                         </ol>
                     </nav>
+                    <h1>@yield('heading', $defaultHeading)</h1>
+                    <p class="admin-page-description">@yield('page_description', $defaultPageDescription)</p>
                 </div>
-                <div class="admin-user">
-                    <span class="email" title="{{ auth()->user()->email }}">{{ auth()->user()->email }}</span>
-                    <form method="post" action="{{ route('admin.logout') }}" style="margin:0;">
-                        @csrf
-                        <button type="submit" class="btn-logout">Log out</button>
-                    </form>
+                @php
+                    $admUser = auth()->user();
+                    $admInitials = collect(explode(' ', (string) $admUser->name))
+                        ->filter()->map(fn ($w) => mb_strtoupper(mb_substr($w, 0, 1)))->take(2)->implode('') ?: 'A';
+                @endphp
+                <div class="admin-topbar-actions">
+                    <a href="{{ route('home') }}" target="_blank" rel="noopener" class="adm-action" title="View public site">
+                        <span class="material-symbols-outlined" aria-hidden="true">open_in_new</span>
+                        <span class="adm-action-label">View site</span>
+                    </a>
+                    <details class="adm-user-dd" data-adm-user-dd>
+                        <summary class="adm-user-summary" aria-label="Account menu">
+                            <span class="adm-avatar">{{ $admInitials }}</span>
+                            <span class="adm-user-meta">
+                                <strong>{{ \Illuminate\Support\Str::limit($admUser->name, 20) }}</strong>
+                                <small>Administrator</small>
+                            </span>
+                            <span class="material-symbols-outlined adm-caret" aria-hidden="true">expand_more</span>
+                        </summary>
+                        <div class="adm-user-panel" role="menu">
+                            <div class="adm-user-head">
+                                <span class="adm-avatar adm-avatar--lg">{{ $admInitials }}</span>
+                                <span class="adm-user-meta">
+                                    <strong>{{ $admUser->name }}</strong>
+                                    <small title="{{ $admUser->email }}">{{ $admUser->email }}</small>
+                                </span>
+                            </div>
+                            <div class="adm-user-sep" role="presentation"></div>
+                            <a href="{{ route('admin.dashboard') }}" class="adm-user-link" role="menuitem">
+                                <span class="material-symbols-outlined" aria-hidden="true">space_dashboard</span>
+                                Dashboard
+                            </a>
+                            <a href="{{ route('home') }}" target="_blank" rel="noopener" class="adm-user-link" role="menuitem">
+                                <span class="material-symbols-outlined" aria-hidden="true">language</span>
+                                View public site
+                            </a>
+                            <div class="adm-user-sep" role="presentation"></div>
+                            <form method="post" action="{{ route('admin.logout') }}" style="margin:0;">
+                                @csrf
+                                <button type="submit" class="adm-user-link adm-user-link--logout" role="menuitem">
+                                    <span class="material-symbols-outlined" aria-hidden="true">logout</span>
+                                    Log out
+                                </button>
+                            </form>
+                        </div>
+                    </details>
                 </div>
             </header>
             <div class="admin-content">
@@ -180,6 +234,19 @@
             var active = nav && nav.querySelector('a.active');
             if (nav && active) {
                 active.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+            }
+            var userDd = document.querySelector('[data-adm-user-dd]');
+            if (userDd) {
+                document.addEventListener('click', function (e) {
+                    if (userDd.open && !userDd.contains(e.target)) {
+                        userDd.open = false;
+                    }
+                });
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape') {
+                        userDd.open = false;
+                    }
+                });
             }
             if (typeof flatpickr === 'undefined') {
                 return;

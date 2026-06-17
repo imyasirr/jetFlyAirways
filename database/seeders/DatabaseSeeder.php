@@ -74,8 +74,8 @@ class DatabaseSeeder extends Seeder
             $this->call(HomeSectionSeeder::class);
         }
 
-        if (Schema::hasTable('travel_addons')) {
-            $this->call(TravelAddonSeeder::class);
+        if (Schema::hasTable('destination_guide_settings')) {
+            $this->call(DestinationGuideSeeder::class);
         }
     }
 }
