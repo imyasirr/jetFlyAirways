@@ -3,13 +3,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Sign in') — {{ ($siteSetting ?? null)?->brand_name ?: 'Jet Fly Airways' }}</title>
-    @if(($siteSeo ?? null)?->meta_description)<meta name="description" content="{{ $siteSeo->meta_description }}">@endif
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/jfa-website.css') }}?v=1">
+    @include('partials.seo-head', ['seoTitleSuffix' => true, 'seoTitleDefault' => 'Sign in'])
+    @include('partials.head-fonts')
+    <link rel="stylesheet" href="{{ asset('css/jfa-website.css') }}?v=8">
 </head>
 <body>
     @include('partials.ui-extras')

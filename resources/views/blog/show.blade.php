@@ -2,9 +2,12 @@
 
 @section('body_class', 'page-blog-post')
 
-@section('title', ($blog->meta_title ?: $blog->title) . ' — Jet Fly Airways')
+@section('title', ($blog->meta_title ?: $blog->title).' — Jet Fly Airways')
 
 @section('meta_description', $blog->meta_description ?: \Illuminate\Support\Str::limit(strip_tags($blog->excerpt), 160))
+
+@section('og_image', $blog->cover_url ?? '')
+@section('og_type', 'article')
 
 @section('full')
     <header class="blog-post-hero {{ $blog->cover_image ? 'blog-post-hero--photo' : '' }}" aria-label="Article header">

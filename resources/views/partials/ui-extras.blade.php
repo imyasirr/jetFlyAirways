@@ -130,17 +130,39 @@
         showLoader();
     }, true);
 
-    /* Hide when restored from back/forward cache */
-    window.addEventListener('pageshow', hideLoader);
+    window.addEventListener('pageshow', function (e) {
+        if (e.persisted) {
+            pageReady = true;
+            hideLoader();
+        }
+    });
 
-    /* Initial page load: hide as soon as the DOM is ready (single loader cycle) */
-    if (document.readyState !== 'loading') {
+    /* Initial page load: hide only after fonts + styles are ready */
+    var pageReady = false;
+
+    function revealPage() {
+        if (pageReady) return;
+        pageReady = true;
+        document.documentElement.classList.add('jf-ready');
         hideLoader();
-    } else {
-        document.addEventListener('DOMContentLoaded', hideLoader);
-        window.addEventListener('load', hideLoader);
     }
-    setTimeout(hideLoader, 6000);
+
+    var fontsReady = (document.fonts && document.fonts.ready)
+        ? document.fonts.ready
+        : Promise.resolve();
+
+    var windowReady = new Promise(function (resolve) {
+        if (document.readyState === 'complete') resolve();
+        else window.addEventListener('load', resolve, { once: true });
+    });
+
+    Promise.all([fontsReady, windowReady]).then(function () {
+        requestAnimationFrame(function () {
+            requestAnimationFrame(revealPage);
+        });
+    });
+
+    setTimeout(revealPage, 8000);
 
     /* ---------- Password show / hide ---------- */
     var eyeOn = '<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>';

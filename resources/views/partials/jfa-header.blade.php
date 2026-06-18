@@ -120,12 +120,29 @@
             @endauth
         </div>
 
-        <button type="button" class="jfa-hamburger" id="jfa-hamburger" aria-label="Menu" aria-expanded="false">
+        @guest
+            <div class="jfa-header__actions jfa-header__actions--compact">
+                <a href="{{ route('login') }}" class="jfa-btn-signin">Sign In</a>
+            </div>
+        @endguest
+
+        <button type="button" class="jfa-hamburger" id="jfa-hamburger" aria-label="Open menu" aria-expanded="false" aria-controls="jfa-mobile-nav">
             <span class="material-symbols-outlined" id="jfa-hamburger-icon">menu</span>
         </button>
     </div>
+</header>
 
-    <nav class="jfa-mobile-nav" id="jfa-mobile-nav" aria-label="Mobile navigation">
+<button type="button" class="jfa-drawer-backdrop" id="jfa-drawer-backdrop" aria-label="Close menu" hidden></button>
+
+<aside class="jfa-drawer" id="jfa-mobile-nav" aria-label="Mobile navigation" aria-hidden="true">
+    <div class="jfa-drawer__head">
+        <strong>Menu</strong>
+        <button type="button" class="jfa-drawer__close" id="jfa-drawer-close" aria-label="Close menu">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+    </div>
+    <div class="jfa-drawer__body">
+        <nav class="jfa-mobile-nav">
         @forelse($headerMenu as $item)
             @if($item->children->isEmpty())
                 <a href="{{ $item->resolvedUrl() }}">{{ $item->label }}</a>
@@ -156,8 +173,9 @@
                 <a href="{{ route('register') }}" style="background:var(--jfa-promo-yellow);color:var(--jfa-on-yellow);font-weight:700;">Register</a>
             @endauth
         </div>
-    </nav>
-</header>
+        </nav>
+    </div>
+</aside>
 
 <script>
 (function () {
@@ -188,13 +206,48 @@
     });
 
     var ham = document.getElementById('jfa-hamburger');
-    var mob = document.getElementById('jfa-mobile-nav');
+    var drawer = document.getElementById('jfa-mobile-nav');
+    var backdrop = document.getElementById('jfa-drawer-backdrop');
+    var closeBtn = document.getElementById('jfa-drawer-close');
     var icon = document.getElementById('jfa-hamburger-icon');
-    if (ham && mob) {
+
+    function openDrawer() {
+        if (!drawer || !backdrop) return;
+        drawer.classList.add('is-open');
+        backdrop.classList.add('is-open');
+        backdrop.hidden = false;
+        drawer.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('jfa-nav-open');
+        if (ham) ham.setAttribute('aria-expanded', 'true');
+        if (icon) icon.textContent = 'close';
+    }
+
+    function closeDrawer() {
+        if (!drawer || !backdrop) return;
+        drawer.classList.remove('is-open');
+        backdrop.classList.remove('is-open');
+        backdrop.hidden = true;
+        drawer.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('jfa-nav-open');
+        if (ham) ham.setAttribute('aria-expanded', 'false');
+        if (icon) icon.textContent = 'menu';
+    }
+
+    if (ham && drawer && backdrop) {
         ham.addEventListener('click', function () {
-            var open = mob.classList.toggle('is-open');
-            ham.setAttribute('aria-expanded', open ? 'true' : 'false');
-            if (icon) icon.textContent = open ? 'close' : 'menu';
+            if (drawer.classList.contains('is-open')) closeDrawer();
+            else openDrawer();
+        });
+        backdrop.addEventListener('click', closeDrawer);
+        if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+        drawer.querySelectorAll('a').forEach(function (link) {
+            link.addEventListener('click', closeDrawer);
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && drawer.classList.contains('is-open')) closeDrawer();
+        });
+        window.addEventListener('resize', function () {
+            if (window.innerWidth >= 1280) closeDrawer();
         });
     }
 })();

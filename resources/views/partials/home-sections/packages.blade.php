@@ -1,13 +1,30 @@
-<h2 class="section-title section-title-spaced">Holiday picks</h2>
-<div class="grid">
-    @forelse($featuredPackages as $p)
-        <div class="card">
-            <h3 class="card-title">{{ $p->name }}</h3>
-            <p class="card-meta">{{ $p->destination }} · {{ $p->duration_days }} days</p>
-            <p class="card-price">From Rs {{ number_format($p->offer_price ?? $p->price, 2) }}</p>
-            <a class="btn secondary btn-block" href="{{ route('module.show', ['module' => 'packages', 'item' => $p->slug]) }}">View</a>
+<section class="jfa-section">
+    <div class="jfa-container">
+        <div class="jfa-section-head">
+            <div>
+                <h2 class="jfa-section-title">Holiday picks</h2>
+                <p class="jfa-section-sub">Curated packages for every traveller</p>
+            </div>
+            <a href="{{ route('module.index', 'packages') }}" class="jfa-link-arrow">All Packages <span class="material-symbols-outlined" style="font-size:16px;">arrow_forward</span></a>
         </div>
-    @empty
-        <p class="card empty-hint" style="grid-column:1/-1;">No packages yet — add from Admin → Travel Packages.</p>
-    @endforelse
-</div>
+        <div class="jfa-grid jfa-grid--3">
+            @forelse($featuredPackages as $p)
+                <article class="jfa-listing-card">
+                    <div class="jfa-listing-card__body">
+                        <h3 class="jfa-listing-card__title">{{ $p->name }}</h3>
+                        <p class="jfa-listing-card__sub">{{ $p->destination }} · {{ $p->duration_days }} days</p>
+                        <div class="jfa-listing-card__foot">
+                            <div>
+                                <div class="jfa-listing-card__price-label">From</div>
+                                <div class="jfa-listing-card__price">₹{{ number_format($p->offer_price ?? $p->price, 0) }}</div>
+                            </div>
+                            <a class="btn" href="{{ route('module.show', ['module' => 'packages', 'item' => $p->slug]) }}" style="padding:10px 18px;font-size:14px;">View</a>
+                        </div>
+                    </div>
+                </article>
+            @empty
+                <p style="grid-column:1/-1;color:var(--jfa-muted);">No packages yet — add from Admin → Travel Packages.</p>
+            @endforelse
+        </div>
+    </div>
+</section>

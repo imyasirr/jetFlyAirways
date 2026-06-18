@@ -1,4 +1,4 @@
-<section class="jfa-section">
+<section class="jfa-section jfa-section--white">
     <div class="jfa-container">
         <div class="jfa-section-head">
             <div>

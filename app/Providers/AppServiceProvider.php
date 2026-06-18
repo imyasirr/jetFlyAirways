@@ -44,7 +44,7 @@ class AppServiceProvider extends ServiceProvider
         Paginator::defaultView('pagination.jetfly');
         Paginator::defaultSimpleView('pagination.jetfly-simple');
 
-        View::composer(['layouts.app', 'layouts.account', 'layouts.guest'], function ($view) {
+        View::composer(['layouts.app', 'layouts.account', 'layouts.guest', 'layouts.auth-split'], function ($view) {
             if (! Schema::hasTable('menu_items')) {
                 $view->with('headerMenu', collect());
                 $view->with('footerMenu', collect());

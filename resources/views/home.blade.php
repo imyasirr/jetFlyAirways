@@ -86,8 +86,9 @@
         @include('partials.home-search-panel')
     </div>
 
-    <section class="jfa-container" style="padding:48px 24px;">
-        <div class="jfa-grid jfa-grid--4">
+    <section class="jfa-section jfa-section--white">
+        <div class="jfa-container">
+            <div class="jfa-grid jfa-grid--4">
             @foreach($trustBadges as $badge)
                 <div class="jfa-trust-card">
                     <span class="jfa-trust-card__icon"><span class="material-symbols-outlined filled">{{ $badge['icon'] }}</span></span>
@@ -98,6 +99,7 @@
                 </div>
             @endforeach
         </div>
+    </div>
     </section>
 
     <section class="jfa-section jfa-section--muted">
@@ -121,7 +123,7 @@
 
     @include('partials.home-featured-sections')
 
-    <section class="jfa-section" style="padding-top:0;">
+    <section class="jfa-section jfa-section--white" style="padding-top:0;">
         <div class="jfa-container">
             <div class="jfa-newsletter-banner">
                 <div class="jfa-newsletter-banner__copy">

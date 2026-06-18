@@ -4,12 +4,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'My account') — {{ ($siteSetting ?? null)?->brand_name ?: 'Jet Fly Airways' }}</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/jfa-website.css') }}?v=4">
+    @include('partials.seo-head', [
+        'seoTitleSuffix' => true,
+        'seoTitleDefault' => 'My account',
+        'defaultRobots' => 'noindex, nofollow',
+    ])
+    @include('partials.head-fonts')
+    <link rel="stylesheet" href="{{ asset('css/jfa-website.css') }}?v=8">
     @stack('styles')
 </head>
 <body class="jfa-page">
