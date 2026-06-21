@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Mail\NewContactInquiryMail;
 use App\Models\ContactInquiry;
+use App\Models\PageBanner;
+use App\Models\SiteSetting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -14,7 +16,14 @@ class ContactFormController extends Controller
 {
     public function create(): View
     {
-        return view('contact.create');
+        $siteSetting = Schema::hasTable('site_settings')
+            ? SiteSetting::query()->first()
+            : null;
+
+        return view('contact.create', [
+            'pageBanner' => PageBanner::forKey('contact'),
+            'siteSetting' => $siteSetting,
+        ]);
     }
 
     public function store(Request $request): RedirectResponse

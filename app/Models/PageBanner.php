@@ -36,7 +36,27 @@ class PageBanner extends Model
             'visa' => 'Visa (/visa)',
             'insurance' => 'Insurance (/insurance)',
             'blog' => 'Travel blog (/blog)',
+            'contact' => 'Contact us (/contact-us)',
         ];
+    }
+
+    /** Ensure every catalog entry has a database row (safe to call on each admin list load). */
+    public static function syncCatalog(): void
+    {
+        if (! Schema::hasTable('page_banners')) {
+            return;
+        }
+
+        foreach (static::catalog() as $pageKey => $label) {
+            $row = static::query()->firstOrCreate(
+                ['page_key' => $pageKey],
+                ['label' => $label, 'is_active' => true]
+            );
+
+            if ($row->label !== $label) {
+                $row->update(['label' => $label]);
+            }
+        }
     }
 
     public static function forKey(string $key): ?self

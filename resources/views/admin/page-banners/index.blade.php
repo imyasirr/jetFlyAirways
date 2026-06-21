@@ -5,7 +5,7 @@
         <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
             <div>
                 <h1 class="section-title" style="margin:0;">Page banners</h1>
-                <p style="margin:6px 0 0;color:#64748b;font-size:14px;">Hero background images for module listing pages and the travel blog. CMS pages use the banner field on each page edit screen.</p>
+                <p style="margin:6px 0 0;color:#64748b;font-size:14px;">Hero backgrounds for listing pages (/flights, /hotels, …), travel blog, and Contact us (/contact-us). Custom CMS pages (About, Help, etc.) set their hero on <strong>CMS pages → Edit</strong>, not here.</p>
             </div>
         </div>
 
@@ -19,7 +19,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($banners as $banner)
+                @forelse($banners as $banner)
                     <tr>
                         <td>
                             <strong>{{ $banner->label }}</strong>
@@ -42,7 +42,13 @@
                             ])
                         </td>
                     </tr>
-                @endforeach
+                @empty
+                    <tr>
+                        <td colspan="4" style="color:#64748b;font-size:14px;padding:24px;">
+                            No page banners yet. Run <code style="font-size:13px;">php artisan migrate</code> on this server, then refresh this page.
+                        </td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
     </div>

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @include('partials.seo-head', ['seoTitleSuffix' => true, 'seoTitleDefault' => 'Sign in'])
     @include('partials.head-fonts')
-    <link rel="stylesheet" href="{{ asset('css/jfa-website.css') }}?v=21">
+    <link rel="stylesheet" href="{{ asset('css/jfa-website.css') }}?v=23">
 </head>
 <body>
     @include('partials.ui-extras')

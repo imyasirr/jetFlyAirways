@@ -13,6 +13,8 @@ class PageBannerController extends Controller
 {
     public function index(): View
     {
+        PageBanner::syncCatalog();
+
         $banners = PageBanner::query()->orderBy('label')->get();
 
         return view('admin.page-banners.index', compact('banners'));
