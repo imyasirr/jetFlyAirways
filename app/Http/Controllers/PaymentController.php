@@ -6,6 +6,7 @@ use App\Contracts\GdsBookingClient;
 use App\Mail\BookingPaidMail;
 use App\Models\Booking;
 use App\Models\Coupon;
+use App\Support\PaymentGatewaySettings;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -22,9 +23,9 @@ class PaymentController extends Controller
             return redirect()->to(URL::temporarySignedRoute('booking.thanks', now()->addHour(), ['booking' => $booking->id]));
         }
 
-        $key = config('services.razorpay.key');
-        $secret = config('services.razorpay.secret');
-        if (! $key || ! $secret) {
+        $key = PaymentGatewaySettings::key();
+        $secret = PaymentGatewaySettings::secret();
+        if (! PaymentGatewaySettings::isConfigured() || ! $key || ! $secret) {
             abort(503, 'Payment gateway is not configured.');
         }
 
@@ -73,9 +74,9 @@ class PaymentController extends Controller
             return redirect()->route('home')->with('error', 'Invalid payment session.');
         }
 
-        $key = config('services.razorpay.key');
-        $secret = config('services.razorpay.secret');
-        if (! $key || ! $secret) {
+        $key = PaymentGatewaySettings::key();
+        $secret = PaymentGatewaySettings::secret();
+        if (! PaymentGatewaySettings::isConfigured() || ! $key || ! $secret) {
             return redirect()->route('home')->with('error', 'Payment gateway not configured.');
         }
 

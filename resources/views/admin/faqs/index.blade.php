@@ -20,14 +20,13 @@
                         <tr>
                             <td>{{ \Illuminate\Support\Str::limit($faq->question, 80) }}</td>
                             <td>{{ $faq->is_active ? 'Yes' : 'No' }}</td>
-                            <td class="admin-table-actions"><div class="admin-table-actions__inner">
-                                <a class="btn secondary" href="{{ route('admin.faqs.edit', $faq) }}">Edit</a>
-                                <form method="post" action="{{ route('admin.faqs.destroy', $faq) }}" onsubmit="return confirm('Delete?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="btn" type="submit">Delete</button>
-                                </form>
-                            </div></td>
+                            <td class="admin-table-actions">
+                                @include('admin.partials.table-actions', [
+                                    'edit' => route('admin.faqs.edit', $faq),
+                                    'delete' => route('admin.faqs.destroy', $faq),
+                                    'deleteConfirm' => 'Delete?',
+                                ])
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

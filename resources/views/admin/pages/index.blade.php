@@ -28,14 +28,13 @@
                             <td>{{ $pg->title }}</td>
                             <td><a href="{{ url('/p/'.$pg->slug) }}" target="_blank" rel="noopener">{{ url('/p/'.$pg->slug) }}</a></td>
                             <td>{{ $pg->is_active ? 'Yes' : 'No' }}</td>
-                            <td class="admin-table-actions"><div class="admin-table-actions__inner">
-                                <a class="btn secondary" href="{{ route('admin.pages.edit', $pg) }}">Edit</a>
-                                <form method="post" action="{{ route('admin.pages.destroy', $pg) }}" onsubmit="return confirm('Delete this page?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="btn" type="submit">Delete</button>
-                                </form>
-                            </div></td>
+                            <td class="admin-table-actions">
+                                @include('admin.partials.table-actions', [
+                                    'edit' => route('admin.pages.edit', $pg),
+                                    'delete' => route('admin.pages.destroy', $pg),
+                                    'deleteConfirm' => 'Delete this page?',
+                                ])
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

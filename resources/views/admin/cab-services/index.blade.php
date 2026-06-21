@@ -29,14 +29,12 @@
                             <td>{{ $service->from_location }} → {{ $service->to_location ?? '—' }}</td>
                             <td>Rs {{ number_format($service->base_fare, 2) }}</td>
                             <td>{{ $service->per_km_rate !== null ? number_format($service->per_km_rate, 2) : '—' }}</td>
-                            <td class="admin-table-actions"><div class="admin-table-actions__inner">
-                                <a class="btn secondary" href="{{ route('admin.cab-services.edit', $service) }}">Edit</a>
-                                <form method="post" action="{{ route('admin.cab-services.destroy', $service) }}">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="btn" type="submit">Delete</button>
-                                </form>
-                            </div></td>
+                            <td class="admin-table-actions">
+                                @include('admin.partials.table-actions', [
+                                    'edit' => route('admin.cab-services.edit', $service),
+                                    'delete' => route('admin.cab-services.destroy', $service),
+                                ])
+                            </td>
                         </tr>
                     @empty
                         <tr><td colspan="5" style="padding:10px;">No cab services yet.</td></tr>

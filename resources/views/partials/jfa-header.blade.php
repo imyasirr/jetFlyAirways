@@ -1,6 +1,6 @@
 @php
-    $phone = $siteSetting?->support_phone ?? '+91 1800-000-0000';
-    $email = $siteSetting?->support_email ?? 'support@jetflyairways.com';
+    $phone = ($siteSetting ?? null)?->primarySupportPhone() ?? '+91 1800-000-0000';
+    $email = ($siteSetting ?? null)?->primarySupportEmail() ?? 'support@jetflyairways.com';
     $topLeft = $siteSetting?->topstrip_left ?? __('jetfly.topstrip_left');
     $bName = $siteSetting?->brand_name ?? 'Jet Fly Airways';
     $bTag = $siteSetting?->brand_tagline ?? 'Book · Fly · Stay';

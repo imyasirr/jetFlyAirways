@@ -22,8 +22,15 @@ class SiteSettingController extends Controller
     {
         $data = $request->validate([
             'topstrip_left' => ['nullable', 'string', 'max:600'],
-            'support_phone' => ['nullable', 'string', 'max:80'],
-            'support_email' => ['nullable', 'string', 'max:160'],
+            'support_emails' => ['nullable', 'array'],
+            'support_emails.*.label' => ['nullable', 'string', 'max:80'],
+            'support_emails.*.email' => ['nullable', 'email', 'max:160'],
+            'support_phones' => ['nullable', 'array'],
+            'support_phones.*.label' => ['nullable', 'string', 'max:80'],
+            'support_phones.*.phone' => ['nullable', 'string', 'max:80'],
+            'office_addresses' => ['nullable', 'array'],
+            'office_addresses.*.label' => ['nullable', 'string', 'max:120'],
+            'office_addresses.*.address' => ['nullable', 'string', 'max:2000'],
             'brand_name' => ['nullable', 'string', 'max:120'],
             'brand_tagline' => ['nullable', 'string', 'max:180'],
             'logo_image_file' => ['nullable', 'image', 'mimes:jpeg,png,webp,gif', 'max:4096'],
@@ -41,6 +48,18 @@ class SiteSettingController extends Controller
         ]);
 
         unset($data['logo_image_file'], $data['clear_logo_image'], $data['hero_image_file'], $data['clear_hero_image']);
+
+        $supportEmails = $this->normalizeContactRows($data['support_emails'] ?? [], 'email', 'Support');
+        $supportPhones = $this->normalizeContactRows($data['support_phones'] ?? [], 'phone', 'Support');
+        $officeAddresses = $this->normalizeContactRows($data['office_addresses'] ?? [], 'address', 'Registered Office');
+
+        $data['support_emails'] = $supportEmails;
+        $data['support_phones'] = $supportPhones;
+        $data['office_addresses'] = $officeAddresses;
+        $data['support_email'] = $supportEmails[0]['email'] ?? null;
+        $data['support_phone'] = $supportPhones[0]['phone'] ?? null;
+        $data['office_address_label'] = $officeAddresses[0]['label'] ?? null;
+        $data['office_address'] = $officeAddresses[0]['address'] ?? null;
 
         $row = SiteSetting::query()->firstOrNew([]);
         $row->fill($data);
@@ -72,5 +91,18 @@ class SiteSettingController extends Controller
         $row->save();
 
         return redirect()->route('admin.site-settings.edit')->with('status', 'Site header & footer settings saved.');
+    }
+
+    /** @return array<int, array<string, string>> */
+    private function normalizeContactRows(array $rows, string $valueKey, string $defaultLabel): array
+    {
+        return collect($rows)
+            ->map(fn (array $row) => [
+                'label' => trim((string) ($row['label'] ?? '')) ?: $defaultLabel,
+                $valueKey => trim((string) ($row[$valueKey] ?? '')),
+            ])
+            ->filter(fn (array $row) => filled($row[$valueKey]))
+            ->values()
+            ->all();
     }
 }

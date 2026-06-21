@@ -56,7 +56,11 @@
                             <td>{{ $b->travellers_count }}</td>
                             <td>Rs {{ number_format($b->total_amount, 2) }}</td>
                             <td>{{ $b->payment_status }}</td>
-                            <td class="admin-table-actions"><div class="admin-table-actions__inner"><a class="btn secondary" href="{{ route('admin.bookings.show', $b) }}">View</a></div></td>
+                            <td class="admin-table-actions">
+                                @include('admin.partials.table-actions', [
+                                    'view' => route('admin.bookings.show', $b),
+                                ])
+                            </td>
                         </tr>
                     @empty
                         <tr><td colspan="7" style="padding:12px;">No bookings yet.</td></tr>

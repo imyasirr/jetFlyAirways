@@ -37,14 +37,13 @@
                             <td>{{ number_format((float) $a->price, 2) }}</td>
                             <td>{{ $a->sort_order }}</td>
                             <td>{{ $a->is_active ? 'Yes' : 'No' }}</td>
-                            <td class="admin-table-actions"><div class="admin-table-actions__inner">
-                                <a class="btn secondary" href="{{ route('admin.travel-addons.edit', $a) }}">Edit</a>
-                                <form method="post" action="{{ route('admin.travel-addons.destroy', $a) }}" onsubmit="return confirm('Delete?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="btn" type="submit">Delete</button>
-                                </form>
-                            </div></td>
+                            <td class="admin-table-actions">
+                                @include('admin.partials.table-actions', [
+                                    'edit' => route('admin.travel-addons.edit', $a),
+                                    'delete' => route('admin.travel-addons.destroy', $a),
+                                    'deleteConfirm' => 'Delete?',
+                                ])
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

@@ -3,7 +3,7 @@
 @section('content')
     <div class="card">
         <h1 class="section-title">Edit testimonial</h1>
-        <form method="post" action="{{ route('admin.testimonials.update', $testimonial) }}">
+        <form method="post" action="{{ route('admin.testimonials.update', $testimonial) }}" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             @include('admin.testimonials._form', ['testimonial' => $testimonial])

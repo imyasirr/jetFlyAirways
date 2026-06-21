@@ -30,14 +30,13 @@
                             <td>{{ $banner->title ?: '—' }}</td>
                             <td>{{ $banner->sort_order }}</td>
                             <td>{{ $banner->is_active ? 'Yes' : 'No' }}</td>
-                            <td class="admin-table-actions"><div class="admin-table-actions__inner">
-                                <a class="btn secondary" href="{{ route('admin.banners.edit', $banner) }}">Edit</a>
-                                <form method="post" action="{{ route('admin.banners.destroy', $banner) }}" onsubmit="return confirm('Delete this banner?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="btn" type="submit">Delete</button>
-                                </form>
-                            </div></td>
+                            <td class="admin-table-actions">
+                                @include('admin.partials.table-actions', [
+                                    'edit' => route('admin.banners.edit', $banner),
+                                    'delete' => route('admin.banners.destroy', $banner),
+                                    'deleteConfirm' => 'Delete this banner?',
+                                ])
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

@@ -142,18 +142,13 @@
                                     {{ $flight->is_active ? 'Active' : 'Inactive' }}
                                 </span>
                             </td>
-                            <td class="admin-table-actions"><div class="admin-table-actions__inner flx-actions">
-                                <a class="flx-iconbtn" href="{{ route('admin.flights.edit', $flight) }}" title="Edit flight">
-                                    <span class="material-symbols-outlined" aria-hidden="true">edit</span>
-                                </a>
-                                <form method="post" action="{{ route('admin.flights.destroy', $flight) }}" onsubmit="return confirm('Delete this flight?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="flx-iconbtn flx-iconbtn--danger" type="submit" title="Delete flight">
-                                        <span class="material-symbols-outlined" aria-hidden="true">delete</span>
-                                    </button>
-                                </form>
-                            </div></td>
+                            <td class="admin-table-actions">
+                                @include('admin.partials.table-actions', [
+                                    'edit' => route('admin.flights.edit', $flight),
+                                    'delete' => route('admin.flights.destroy', $flight),
+                                    'deleteConfirm' => 'Delete this flight?',
+                                ])
+                            </td>
                         </tr>
                     @empty
                         <tr>

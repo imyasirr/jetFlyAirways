@@ -1,30 +1,35 @@
 @if($welcomePopup)
-    @php $popupImg = \App\Support\PublicImageStorage::url($welcomePopup->image); @endphp
-    <div id="jetfly-welcome-popup" class="jetfly-popup-root" role="dialog" aria-modal="true" @if($welcomePopup->title) aria-labelledby="jetfly-popup-title" @else aria-label="Announcement" @endif>
-        <div class="jetfly-popup-backdrop" data-jetfly-popup-close></div>
-        <div class="jetfly-popup-card">
-            <button type="button" class="jetfly-popup-close" id="jetfly-popup-close" aria-label="Close">&times;</button>
-            <div class="jetfly-popup-visual">
+    @php
+        $popupImg = \App\Support\PublicImageStorage::url($welcomePopup->image);
+        $redirectUrl = filled($welcomePopup->redirect_link) ? $welcomePopup->redirect_link : null;
+    @endphp
+    <div id="jetfly-welcome-popup" class="jetfly-popup-root" role="dialog" aria-modal="true" @if($welcomePopup->title) aria-labelledby="jetfly-popup-title" @else aria-label="Promotion" @endif>
+        <div class="jetfly-popup-backdrop"></div>
+        <div class="jetfly-popup-card {{ $redirectUrl ? 'jetfly-popup-card--clickable' : '' }}" @if($redirectUrl) data-popup-href="{{ $redirectUrl }}" @endif>
+            <button type="button" class="jetfly-popup-close" id="jetfly-popup-close" aria-label="Close">
+                <span class="material-symbols-outlined" aria-hidden="true">close</span>
+            </button>
+
+            <div class="jetfly-popup-stage {{ (filled($welcomePopup->title) || filled($welcomePopup->message)) ? 'jetfly-popup-stage--has-copy' : '' }}" id="jetfly-popup-stage">
                 @if($popupImg)
                     <img src="{{ $popupImg }}" alt="" class="jetfly-popup-img">
                 @else
                     <div class="jetfly-popup-img jetfly-popup-img--fallback" aria-hidden="true"></div>
                 @endif
-                <div class="jetfly-popup-overlay">
-                    @if($welcomePopup->title)
-                        <h2 id="jetfly-popup-title" class="jetfly-popup-title">{{ $welcomePopup->title }}</h2>
-                    @endif
-                    @if($welcomePopup->message)
-                        <p class="jetfly-popup-message">{!! nl2br(e($welcomePopup->message)) !!}</p>
-                    @endif
-                    <div class="jetfly-popup-actions">
-                        @if($welcomePopup->redirect_link)
-                            <a href="{{ $welcomePopup->redirect_link }}" class="jetfly-popup-btn jetfly-popup-btn--primary">{{ $welcomePopup->button_text ?: 'Continue' }}</a>
+
+                @if(filled($welcomePopup->title) || filled($welcomePopup->message))
+                    <div class="jetfly-popup-copy">
+                        @if($welcomePopup->title)
+                            <h2 id="jetfly-popup-title" class="jetfly-popup-title">{{ $welcomePopup->title }}</h2>
                         @endif
-                        <button type="button" class="jetfly-popup-btn jetfly-popup-btn--ghost" id="jetfly-popup-dismiss">{{ $welcomePopup->redirect_link ? 'Not now' : 'Close' }}</button>
+                        @if($welcomePopup->message)
+                            <p class="jetfly-popup-message">{!! nl2br(e($welcomePopup->message)) !!}</p>
+                        @endif
                     </div>
-                </div>
+                @endif
             </div>
+
+            <button type="button" class="jetfly-popup-dismiss" id="jetfly-popup-dismiss">Not now</button>
         </div>
     </div>
     @push('scripts')
@@ -37,15 +42,26 @@
             if (sessionStorage.getItem(key)) return;
         } catch (e) {}
         root.classList.add('is-open');
+        document.body.classList.add('jetfly-popup-open');
+
         function close() {
             root.classList.remove('is-open');
+            document.body.classList.remove('jetfly-popup-open');
             try { sessionStorage.setItem(key, '1'); } catch (e) {}
         }
+
         document.getElementById('jetfly-popup-close').addEventListener('click', close);
         document.getElementById('jetfly-popup-dismiss').addEventListener('click', close);
-        root.querySelectorAll('[data-jetfly-popup-close]').forEach(function (el) {
-            el.addEventListener('click', close);
-        });
+
+        var card = root.querySelector('.jetfly-popup-card');
+        var href = card && card.getAttribute('data-popup-href');
+        if (card && href) {
+            card.addEventListener('click', function (event) {
+                if (event.target.closest('.jetfly-popup-close, .jetfly-popup-dismiss')) return;
+                close();
+                window.location.href = href;
+            });
+        }
     })();
     </script>
     @endpush

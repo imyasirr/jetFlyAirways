@@ -7,19 +7,23 @@
 @section('meta_description', $page->meta_description ?? \Illuminate\Support\Str::limit(strip_tags($page->body), 160))
 
 @section('full')
-    <div class="jfa-cms-hero">
-        <div class="jfa-container">
-            <nav class="jfa-breadcrumb jfa-breadcrumb--light" aria-label="Breadcrumb">
-                <a href="{{ route('home') }}">Home</a>
-                <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
-                <span aria-current="page">{{ $page->title }}</span>
-            </nav>
-            <h1>{{ $page->title }}</h1>
-            @if(filled($page->meta_description))
-                <p class="jfa-cms-hero__desc">{{ $page->meta_description }}</p>
-            @endif
-        </div>
-    </div>
+    @php
+        $cmsHeroImage = ($page->hero_image ?? null)
+            ? \App\Support\PublicImageStorage::url($page->hero_image)
+            : null;
+    @endphp
+
+    @include('partials.jfa-page-hero', [
+        'title' => $page->title,
+        'description' => $page->meta_description,
+        'accentColor' => '#003B95',
+        'bannerImage' => $cmsHeroImage,
+        'heroClass' => 'jfa-cms-hero',
+        'breadcrumbs' => [
+            ['label' => 'Home', 'url' => route('home')],
+            ['label' => $page->title],
+        ],
+    ])
 @endsection
 
 @section('content')

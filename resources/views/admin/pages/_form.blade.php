@@ -13,6 +13,15 @@
         <label>Meta description (SEO)</label>
         <input type="text" name="meta_description" value="{{ old('meta_description', $p?->meta_description) }}" maxlength="500" placeholder="Optional — shown in search snippets">
     </div>
+    <div class="admin-field-full">
+        @include('admin.partials.image-upload', [
+            'label' => 'Page hero banner (optional)',
+            'name' => 'hero_image_file',
+            'currentPath' => $p?->hero_image ?? null,
+            'required' => false,
+            'hint' => 'Background image behind the page title on /p/your-slug. Wide image around 1800×600 works best.',
+        ])
+    </div>
     <div class="cms-editor-wrap">
         <label for="cms_page_body">Page content</label>
         <textarea id="cms_page_body" name="body" rows="18" required>{{ old('body', $p?->body) }}</textarea>

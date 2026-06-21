@@ -11,7 +11,13 @@
                     <div class="jfa-testimonial__stars">{{ str_repeat('★', min(5, (int) $t->rating)) }}</div>
                     <p class="jfa-testimonial__text">"{{ $t->review }}"</p>
                     <div class="jfa-testimonial__author">
-                        <span class="jfa-testimonial__avatar">{{ mb_substr($t->name, 0, 1) }}</span>
+                        @if($t->photoUrl())
+                            <span class="jfa-testimonial__avatar jfa-testimonial__avatar--photo">
+                                <img src="{{ $t->photoUrl() }}" alt="{{ $t->name }}" loading="lazy" decoding="async">
+                            </span>
+                        @else
+                            <span class="jfa-testimonial__avatar">{{ mb_substr($t->name, 0, 1) }}</span>
+                        @endif
                         <span>
                             <strong style="display:block;font-size:14px;">{{ $t->name }}</strong>
                             @if($t->designation)<small style="color:var(--jfa-muted);">{{ $t->designation }}</small>@endif

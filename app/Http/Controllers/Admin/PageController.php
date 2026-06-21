@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Page;
+use App\Support\PublicImageStorage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -66,10 +67,20 @@ class PageController extends Controller
             'title' => ['required', 'string', 'max:200'],
             'body' => ['required', 'string', 'max:500000'],
             'meta_description' => ['nullable', 'string', 'max:500'],
+            'hero_image_file' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,gif', 'max:10240'],
             'is_active' => ['boolean'],
         ]);
 
+        if ($request->hasFile('hero_image_file')) {
+            $data['hero_image'] = PublicImageStorage::storeUpload(
+                $request->file('hero_image_file'),
+                'page-banners',
+                $page?->hero_image
+            );
+        }
+
         $data['is_active'] = $request->boolean('is_active');
+        unset($data['hero_image_file']);
 
         return $data;
     }

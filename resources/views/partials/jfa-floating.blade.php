@@ -17,7 +17,7 @@
             <span class="material-symbols-outlined" style="color:#fff;font-size:26px;">chat</span>
         </a>
     @else
-        <a class="jfa-float-btn jfa-float-btn--chat" href="tel:{{ preg_replace('/\s+/', '', $siteSetting?->support_phone ?? '+911800000000') }}" aria-label="Call support">
+        <a class="jfa-float-btn jfa-float-btn--chat" href="tel:{{ preg_replace('/\s+/', '', ($siteSetting ?? null)?->primarySupportPhone() ?? '+911800000000') }}" aria-label="Call support">
             <span class="material-symbols-outlined" style="color:#fff;font-size:26px;">support_agent</span>
         </a>
     @endif

@@ -31,14 +31,12 @@
                             <td>{{ $package->destination }}</td>
                             <td>{{ $package->duration_days }}</td>
                             <td>Rs {{ number_format($package->price, 2) }}</td>
-                            <td class="admin-table-actions"><div class="admin-table-actions__inner">
-                                <a class="btn secondary" href="{{ route('admin.travel-packages.edit', $package) }}">Edit</a>
-                                <form method="post" action="{{ route('admin.travel-packages.destroy', $package) }}">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="btn" type="submit">Delete</button>
-                                </form>
-                            </div></td>
+                            <td class="admin-table-actions">
+                                @include('admin.partials.table-actions', [
+                                    'edit' => route('admin.travel-packages.edit', $package),
+                                    'delete' => route('admin.travel-packages.destroy', $package),
+                                ])
+                            </td>
                         </tr>
                     @empty
                         <tr><td colspan="6" style="padding:10px;">No packages yet.</td></tr>

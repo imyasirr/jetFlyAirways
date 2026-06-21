@@ -22,14 +22,13 @@
                             <td>{{ $p->title ?: '—' }}</td>
                             <td>{{ $p->start_date?->format('Y-m-d') ?? '—' }} → {{ $p->end_date?->format('Y-m-d') ?? '—' }}</td>
                             <td>{{ $p->is_active ? 'Yes' : 'No' }}</td>
-                            <td class="admin-table-actions"><div class="admin-table-actions__inner">
-                                <a class="btn secondary" href="{{ route('admin.popup-messages.edit', $p) }}">Edit</a>
-                                <form method="post" action="{{ route('admin.popup-messages.destroy', $p) }}" onsubmit="return confirm('Delete?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="btn" type="submit">Delete</button>
-                                </form>
-                            </div></td>
+                            <td class="admin-table-actions">
+                                @include('admin.partials.table-actions', [
+                                    'edit' => route('admin.popup-messages.edit', $p),
+                                    'delete' => route('admin.popup-messages.destroy', $p),
+                                    'deleteConfirm' => 'Delete?',
+                                ])
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

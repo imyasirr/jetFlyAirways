@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\PublicImageStorage;
 use Illuminate\Database\Eloquent\Model;
 
 class Testimonial extends Model
@@ -9,6 +10,7 @@ class Testimonial extends Model
     protected $fillable = [
         'name',
         'designation',
+        'photo',
         'review',
         'rating',
         'is_active',
@@ -19,5 +21,10 @@ class Testimonial extends Model
         return [
             'is_active' => 'boolean',
         ];
+    }
+
+    public function photoUrl(): ?string
+    {
+        return PublicImageStorage::url($this->photo);
     }
 }

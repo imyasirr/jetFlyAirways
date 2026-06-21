@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UpdateApiIntegrationsRequest;
 use App\Models\ApiIntegration;
+use App\Support\PaymentGatewaySettings;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\View\View;
+use Razorpay\Api\Api;
 
 class ApiIntegrationController extends Controller
 {
@@ -18,7 +20,7 @@ class ApiIntegrationController extends Controller
         'hotel_api' => 'Hotel Booking API',
         'bus_api' => 'Bus Booking API',
         'cab_api' => 'Cab Booking API',
-        'payment_gateway' => 'Payment Gateway API',
+        'payment_gateway' => 'Payment Gateway (Razorpay)',
         'sms_api' => 'SMS API',
         'email_api' => 'Email API',
         'google_maps' => 'Google Maps API',
@@ -44,7 +46,12 @@ class ApiIntegrationController extends Controller
             return $row;
         });
 
-        return view('admin.integrations.index', compact('integrations', 'endpointTemplates', 'samplePayloads'));
+        return view('admin.integrations.index', [
+            'integrations' => $integrations,
+            'endpointTemplates' => $endpointTemplates,
+            'samplePayloads' => $samplePayloads,
+            'paymentGatewayStatus' => PaymentGatewaySettings::statusSummary(),
+        ]);
     }
 
     public function update(UpdateApiIntegrationsRequest $request): RedirectResponse
@@ -73,16 +80,34 @@ class ApiIntegrationController extends Controller
     public function test(Request $request, ApiIntegration $integration): RedirectResponse
     {
         $status = 'Not configured';
-        $baseUrl = trim((string) $integration->base_url);
 
-        if ($baseUrl !== '') {
-            try {
-                $response = Http::timeout(6)->acceptJson()->get($baseUrl);
-                $status = $response->successful()
-                    ? 'Reachable (HTTP '.$response->status().')'
-                    : 'Unreachable (HTTP '.$response->status().')';
-            } catch (\Throwable $e) {
-                $status = 'Connection failed: '.$e->getMessage();
+        if ($integration->service === 'payment_gateway') {
+            $key = trim((string) $integration->api_key);
+            $secret = trim((string) $integration->api_secret);
+
+            if ($key === '' || $secret === '') {
+                $status = 'Missing Razorpay Key ID or Secret';
+            } else {
+                try {
+                    $api = new Api($key, $secret);
+                    $api->order->all(['count' => 1]);
+                    $status = 'Razorpay credentials valid';
+                } catch (\Throwable $e) {
+                    $status = 'Razorpay test failed: '.$e->getMessage();
+                }
+            }
+        } else {
+            $baseUrl = trim((string) $integration->base_url);
+
+            if ($baseUrl !== '') {
+                try {
+                    $response = Http::timeout(6)->acceptJson()->get($baseUrl);
+                    $status = $response->successful()
+                        ? 'Reachable (HTTP '.$response->status().')'
+                        : 'Unreachable (HTTP '.$response->status().')';
+                } catch (\Throwable $e) {
+                    $status = 'Connection failed: '.$e->getMessage();
+                }
             }
         }
 

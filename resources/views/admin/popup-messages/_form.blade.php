@@ -4,10 +4,11 @@
         <input type="text" name="title" value="{{ old('title', $p?->title) }}">
     </label>
     <label>Button text
-        <input type="text" name="button_text" value="{{ old('button_text', $p?->button_text) }}">
+        <input type="text" name="button_text" value="{{ old('button_text', $p?->button_text) }}" placeholder="Explore now">
+        <span style="display:block;margin-top:6px;font-size:12px;color:#64748b;font-weight:400;">Label on the main button — not the URL. Leave blank for “Explore now”.</span>
     </label>
     <label>Redirect link
-        <input type="text" name="redirect_link" value="{{ old('redirect_link', $p?->redirect_link) }}">
+        <input type="text" name="redirect_link" value="{{ old('redirect_link', $p?->redirect_link) }}" placeholder="/flights or https://…">
     </label>
     <label>Start date
         <input type="date" name="start_date" value="{{ old('start_date', $p?->start_date?->format('Y-m-d')) }}">

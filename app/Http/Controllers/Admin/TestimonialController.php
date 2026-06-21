@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Testimonial;
+use App\Support\PublicImageStorage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -24,7 +25,12 @@ class TestimonialController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        Testimonial::create($this->validated($request));
+        $data = $this->validated($request);
+        $path = PublicImageStorage::storeUpload($request->file('photo_file'), 'testimonials');
+        if ($path !== null) {
+            $data['photo'] = $path;
+        }
+        Testimonial::create($data);
 
         return redirect()->route('admin.testimonials.index')->with('status', 'Testimonial created.');
     }
@@ -36,13 +42,27 @@ class TestimonialController extends Controller
 
     public function update(Request $request, Testimonial $testimonial): RedirectResponse
     {
-        $testimonial->update($this->validated($request));
+        $data = $this->validated($request);
+
+        if ($request->boolean('clear_photo')) {
+            PublicImageStorage::deleteIfExists($testimonial->photo);
+            $data['photo'] = null;
+        } elseif ($request->hasFile('photo_file')) {
+            $path = PublicImageStorage::storeUpload($request->file('photo_file'), 'testimonials', $testimonial->photo);
+            if ($path !== null) {
+                $data['photo'] = $path;
+            }
+        }
+
+        unset($data['clear_photo']);
+        $testimonial->update($data);
 
         return redirect()->route('admin.testimonials.index')->with('status', 'Testimonial updated.');
     }
 
     public function destroy(Testimonial $testimonial): RedirectResponse
     {
+        PublicImageStorage::deleteIfExists($testimonial->photo);
         $testimonial->delete();
 
         return redirect()->route('admin.testimonials.index')->with('status', 'Testimonial deleted.');
@@ -56,11 +76,14 @@ class TestimonialController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120'],
             'designation' => ['nullable', 'string', 'max:120'],
+            'photo_file' => ['nullable', 'image', 'mimes:jpeg,png,webp,gif', 'max:4096'],
+            'clear_photo' => ['nullable', 'boolean'],
             'review' => ['required', 'string', 'max:2000'],
             'rating' => ['required', 'integer', 'min:1', 'max:5'],
             'is_active' => ['boolean'],
         ]);
         $data['is_active'] = $request->boolean('is_active');
+        unset($data['photo_file']);
 
         return $data;
     }

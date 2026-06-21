@@ -13,6 +13,7 @@ class Page extends Model
         'title',
         'body',
         'meta_description',
+        'hero_image',
         'is_active',
     ];
 

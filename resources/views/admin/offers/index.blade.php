@@ -22,14 +22,13 @@
                             <td><strong>{{ $o->title }}</strong></td>
                             <td>{{ $o->start_date?->format('Y-m-d') ?? '—' }} → {{ $o->end_date?->format('Y-m-d') ?? '—' }}</td>
                             <td>{{ $o->is_active ? 'Yes' : 'No' }}</td>
-                            <td class="admin-table-actions"><div class="admin-table-actions__inner">
-                                <a class="btn secondary" href="{{ route('admin.offers.edit', $o) }}">Edit</a>
-                                <form method="post" action="{{ route('admin.offers.destroy', $o) }}" onsubmit="return confirm('Delete?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="btn" type="submit">Delete</button>
-                                </form>
-                            </div></td>
+                            <td class="admin-table-actions">
+                                @include('admin.partials.table-actions', [
+                                    'edit' => route('admin.offers.edit', $o),
+                                    'delete' => route('admin.offers.destroy', $o),
+                                    'deleteConfirm' => 'Delete?',
+                                ])
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

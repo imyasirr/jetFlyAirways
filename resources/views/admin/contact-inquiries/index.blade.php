@@ -22,7 +22,12 @@
                             <td>{{ $i->name }}<br><small style="color:#64748b;">{{ $i->email }}</small></td>
                             <td>{{ \Illuminate\Support\Str::limit($i->subject ?? '—', 40) }}</td>
                             <td>{{ $i->status }}</td>
-                            <td><a class="btn secondary" href="{{ route('admin.contact-inquiries.show', $i) }}">Open</a></td>
+                            <td class="admin-table-actions">
+                                @include('admin.partials.table-actions', [
+                                    'view' => route('admin.contact-inquiries.show', $i),
+                                    'viewLabel' => 'Open',
+                                ])
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

@@ -3,7 +3,7 @@
 @section('content')
     <div class="card">
         <h1 class="section-title">Edit page</h1>
-        <form method="post" action="{{ route('admin.pages.update', $page) }}">
+        <form method="post" action="{{ route('admin.pages.update', $page) }}" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             @include('admin.pages._form', ['page' => $page])

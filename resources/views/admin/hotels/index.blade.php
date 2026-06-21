@@ -29,14 +29,12 @@
                             <td>{{ $hotel->city }} - {{ $hotel->location }}</td>
                             <td>Active: {{ $hotel->is_active ? 'Yes' : 'No' }}</td>
                             <td>Rs {{ number_format($hotel->price_per_night, 2) }}</td>
-                            <td class="admin-table-actions"><div class="admin-table-actions__inner">
-                                <a class="btn secondary" href="{{ route('admin.hotels.edit', $hotel) }}">Edit</a>
-                                <form method="post" action="{{ route('admin.hotels.destroy', $hotel) }}">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="btn" type="submit">Delete</button>
-                                </form>
-                            </div></td>
+                            <td class="admin-table-actions">
+                                @include('admin.partials.table-actions', [
+                                    'edit' => route('admin.hotels.edit', $hotel),
+                                    'delete' => route('admin.hotels.destroy', $hotel),
+                                ])
+                            </td>
                         </tr>
                     @empty
                         <tr><td colspan="5" style="padding:10px;">No hotels added yet.</td></tr>

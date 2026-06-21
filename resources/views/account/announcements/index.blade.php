@@ -4,36 +4,50 @@
 @section('heading', 'Notifications')
 
 @section('content')
-    <div class="acct-card">
+    <div class="acct-card jfa-notif-page">
         <h2>Updates from Jet Fly</h2>
+        <p class="jfa-notif-page__intro">Official announcements and alerts for your account.</p>
+
         @if($announcements->isEmpty())
-            <p style="color:var(--acct-muted);margin:0;">No announcements right now.</p>
+            <div class="jfa-notif-empty">
+                <span class="material-symbols-outlined" aria-hidden="true">notifications_off</span>
+                <p>No announcements right now. Check back later for offers, policy updates, and travel alerts.</p>
+            </div>
         @else
-            <ul style="list-style:none;margin:0;padding:0;">
+            <ul class="jfa-notif-list">
                 @foreach($announcements as $a)
                     @php $isRead = $readIds->contains($a->id); @endphp
-                    <li style="border-bottom:1px solid var(--acct-border);padding:14px 0;">
-                        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
-                            <div>
+                    <li class="jfa-notif-item {{ $isRead ? 'is-read' : 'is-unread' }}">
+                        <div class="jfa-notif-item__icon" aria-hidden="true">
+                            <span class="material-symbols-outlined">{{ $isRead ? 'mark_email_read' : 'campaign' }}</span>
+                        </div>
+                        <div class="jfa-notif-item__body">
+                            <div class="jfa-notif-item__head">
                                 @if(!$isRead)
-                                    <span class="badge" style="background:#fef3c7;color:#92400e;margin-right:8px;">New</span>
+                                    <span class="jfa-notif-badge">New</span>
                                 @endif
-                                <strong style="color:var(--acct-primary);">{{ $a->title }}</strong>
-                                @if($a->published_at)
-                                    <div style="font-size:12px;color:var(--acct-muted);margin-top:4px;">{{ $a->published_at->timezone(config('app.timezone'))->format('M j, Y g:i A') }}</div>
-                                @endif
-                                @if($a->body)
-                                    <p style="margin:8px 0 0;font-size:14px;line-height:1.5;">{{ $a->body }}</p>
-                                @endif
+                                <h3>{{ $a->title }}</h3>
                             </div>
-                            <div>
-                                <form method="post" action="{{ route('account.announcements.read', $a) }}" style="margin:0;">
-                                    @csrf
-                                    <button type="submit" class="btn" style="white-space:nowrap;">
-                                        @if($a->link) Open link @else Mark read @endif
-                                    </button>
-                                </form>
-                            </div>
+                            @if($a->published_at)
+                                <time class="jfa-notif-item__time" datetime="{{ $a->published_at->toIso8601String() }}">
+                                    {{ $a->published_at->timezone(config('app.timezone'))->format('M j, Y · g:i A') }}
+                                </time>
+                            @endif
+                            @if($a->body)
+                                <p class="jfa-notif-item__text">{{ $a->body }}</p>
+                            @endif
+                        </div>
+                        <div class="jfa-notif-item__action">
+                            <form method="post" action="{{ route('account.announcements.read', $a) }}">
+                                @csrf
+                                <button type="submit" class="btn {{ $a->link ? '' : 'outline' }}">
+                                    @if($a->link)
+                                        Open link
+                                    @else
+                                        Mark read
+                                    @endif
+                                </button>
+                            </form>
                         </div>
                     </li>
                 @endforeach

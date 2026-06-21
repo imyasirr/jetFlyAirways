@@ -11,8 +11,10 @@ use App\Models\BusRoute;
 use App\Models\CabService;
 use App\Models\Flight;
 use App\Models\HomeSection;
+use App\Models\HomeTrustCard;
 use App\Models\Hotel;
 use App\Models\Offer;
+use App\Models\PageBanner;
 use App\Models\SavedTraveller;
 use App\Models\Testimonial;
 use App\Models\WishlistItem;
@@ -20,6 +22,7 @@ use App\Models\TrainRoute;
 use App\Models\TravelAddon;
 use App\Models\TravelPackage;
 use App\Services\Bookings\CouponDiscountCalculator;
+use App\Support\PaymentGatewaySettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
@@ -100,6 +103,11 @@ class SiteController extends Controller
             $homeSections = HomeSection::query()->activeOrdered()->get();
         }
 
+        $trustCards = collect();
+        if (Schema::hasTable('home_trust_cards')) {
+            $trustCards = HomeTrustCard::query()->activeOrdered()->get();
+        }
+
         return [
             'modules' => $this->modules,
             'featuredFlights' => Flight::query()->where('is_active', true)->orderBy('departure_at')->limit(4)->get(),
@@ -110,6 +118,7 @@ class SiteController extends Controller
             'testimonials' => $testimonials,
             'banners' => $banners,
             'homeSections' => $homeSections,
+            'trustCards' => $trustCards,
             'stats' => [
                 'flights' => Flight::query()->where('is_active', true)->count(),
                 'hotels' => Hotel::query()->where('is_active', true)->count(),
@@ -144,6 +153,7 @@ class SiteController extends Controller
                     'items' => null,
                     'staticModule' => true,
                     'addonCatalog' => false,
+                    'pageBanner' => PageBanner::forKey($slug),
                 ]);
             }
 
@@ -170,6 +180,7 @@ class SiteController extends Controller
                 'items' => $items,
                 'staticModule' => false,
                 'addonCatalog' => true,
+                'pageBanner' => PageBanner::forKey($slug),
             ]);
         }
 
@@ -180,6 +191,7 @@ class SiteController extends Controller
                 'items' => null,
                 'staticModule' => true,
                 'addonCatalog' => false,
+                'pageBanner' => PageBanner::forKey($slug),
             ]);
         }
 
@@ -201,6 +213,7 @@ class SiteController extends Controller
             'staticModule' => false,
             'addonCatalog' => false,
             'trainPnrResult' => $trainPnrResult,
+            'pageBanner' => PageBanner::forKey($slug),
         ]);
     }
 
@@ -361,7 +374,7 @@ class SiteController extends Controller
         }
 
         $paymentCheckoutUrl = null;
-        if (config('services.razorpay.key') && config('services.razorpay.secret')) {
+        if (PaymentGatewaySettings::isConfigured()) {
             $paymentCheckoutUrl = URL::temporarySignedRoute('payments.checkout', now()->addDays(7), ['booking' => $booking->id]);
         }
 

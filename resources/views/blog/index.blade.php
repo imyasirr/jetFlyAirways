@@ -1,25 +1,42 @@
 @extends('layouts.app')
 
+@section('body_class', 'page-blog')
+
 @section('title', 'Travel blog — Jet Fly Airways')
 
+@section('full')
+    @include('partials.jfa-page-hero', [
+        'title' => 'Travel blog',
+        'description' => $pageBanner?->subtitle ?: 'Stories, tips and inspiration for your next trip with Jet Fly Airways.',
+        'icon' => 'article',
+        'accentColor' => '#003B95',
+        'bannerImage' => $pageBanner?->imageUrl(),
+        'breadcrumbs' => [
+            ['label' => 'Home', 'url' => route('home')],
+            ['label' => 'Travel blog'],
+        ],
+    ])
+@endsection
+
 @section('content')
-    <h1 class="section-title">Travel blog</h1>
-    <div class="grid">
+    <div class="jfa-grid jfa-grid--3" style="margin-top:8px;">
         @forelse($blogs as $blog)
-            <article class="card">
+            <article class="jfa-listing-card">
                 @if($blog->cover_url)
-                    <div class="blog-card-cover">
+                    <div class="jfa-listing-card__img">
                         <img src="{{ $blog->cover_url }}" alt="" loading="lazy" decoding="async">
                     </div>
                 @endif
-                <p style="font-size:12px;color:#64748b;margin:0 0 6px;">{{ $blog->publish_at?->format('d M Y') }} @if($blog->category) · {{ $blog->category }} @endif</p>
-                <h2 class="card-title"><a href="{{ route('blog.show', $blog) }}">{{ $blog->title }}</a></h2>
-                <p class="card-meta">{{ $blog->excerpt }}</p>
-                <a class="btn secondary btn-block" href="{{ route('blog.show', $blog) }}">Read</a>
+                <div class="jfa-listing-card__body">
+                    <p class="jfa-listing-card__sub" style="margin-bottom:8px;">{{ $blog->publish_at?->format('d M Y') }}@if($blog->category) · {{ $blog->category }}@endif</p>
+                    <h3 class="jfa-listing-card__title"><a href="{{ route('blog.show', $blog) }}">{{ $blog->title }}</a></h3>
+                    <p class="jfa-listing-card__sub">{{ $blog->excerpt }}</p>
+                    <a class="btn secondary" href="{{ route('blog.show', $blog) }}" style="margin-top:12px;display:inline-flex;">Read article</a>
+                </div>
             </article>
         @empty
-            <p class="card empty-hint" style="grid-column:1/-1;">No posts yet — add from Admin → Blogs.</p>
+            <p style="grid-column:1/-1;color:var(--jfa-muted);">No posts yet — add from Admin → Blogs.</p>
         @endforelse
     </div>
-    <div style="margin-top:16px;">{{ $blogs->links() }}</div>
+    <div style="margin-top:24px;">{{ $blogs->links() }}</div>
 @endsection

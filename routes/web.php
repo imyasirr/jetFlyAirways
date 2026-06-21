@@ -7,6 +7,7 @@ use App\Http\Controllers\Account\OffersController;
 use App\Http\Controllers\Account\ProfileController;
 use App\Http\Controllers\Account\WishlistController as AccountWishlistController;
 use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\AdminSearchController;
 use App\Http\Controllers\Admin\AnnouncementController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\BlogController as AdminBlogController;
@@ -22,9 +23,11 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\FaqController as AdminFaqController;
 use App\Http\Controllers\Admin\FlightController;
 use App\Http\Controllers\Admin\HomeSectionController;
+use App\Http\Controllers\Admin\HomeTrustCardController;
 use App\Http\Controllers\Admin\HotelController;
 use App\Http\Controllers\Admin\MenuItemController;
 use App\Http\Controllers\Admin\OfferController;
+use App\Http\Controllers\Admin\PageBannerController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Admin\PopupMessageController;
 use App\Http\Controllers\Admin\PaymentReportController;
@@ -168,6 +171,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('search', AdminSearchController::class)->name('search');
     Route::post('logout', [AdminAuthController::class, 'destroy'])->name('logout');
 
     Route::get('destination-guide', [AdminDestinationGuideController::class, 'edit'])->name('destination-guide.edit');
@@ -213,8 +217,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('site-settings', [SiteSettingController::class, 'edit'])->name('site-settings.edit');
     Route::put('site-settings', [SiteSettingController::class, 'update'])->name('site-settings.update');
     Route::resource('banners', BannerController::class)->except(['show']);
+    Route::get('page-banners', [PageBannerController::class, 'index'])->name('page-banners.index');
+    Route::get('page-banners/{pageBanner}/edit', [PageBannerController::class, 'edit'])->name('page-banners.edit');
+    Route::put('page-banners/{pageBanner}', [PageBannerController::class, 'update'])->name('page-banners.update');
     Route::get('home-sections', [HomeSectionController::class, 'index'])->name('home-sections.index');
     Route::put('home-sections', [HomeSectionController::class, 'update'])->name('home-sections.update');
+    Route::resource('home-trust-cards', HomeTrustCardController::class)->except(['show']);
     Route::resource('announcements', AnnouncementController::class)->except(['show']);
     Route::resource('travel-addons', TravelAddonController::class)->except(['show']);
     Route::get('users', [UserController::class, 'index'])->name('users.index');

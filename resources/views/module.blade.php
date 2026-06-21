@@ -19,28 +19,31 @@
 @endphp
 
 @section('full')
-    <div class="jfa-module-hero" style="--jfa-module-color: {{ $meta['color'] }};">
-        <div class="jfa-container">
-            <nav class="jfa-breadcrumb jfa-breadcrumb--light" aria-label="Breadcrumb">
-                <a href="{{ route('home') }}">Home</a>
-                <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
-                <span aria-current="page">{{ $module['title'] }}</span>
-            </nav>
-            <div class="jfa-module-hero__head">
-                <span class="material-symbols-outlined filled jfa-module-hero__icon">{{ $meta['icon'] }}</span>
-                <h1>{{ $module['title'] }}</h1>
-            </div>
-            <p class="jfa-module-hero__desc">
-                @if(!empty($addonCatalog))
-                    {{ __('jetfly.module_addon_intro') }}
-                @elseif(!empty($staticModule))
-                    {{ __('jetfly.module_static_addon') }}
-                @else
-                    {{ $meta['desc'] }}
-                @endif
-            </p>
-        </div>
-    </div>
+    @php
+        $heroDescription = $pageBanner?->subtitle;
+        if (! filled($heroDescription)) {
+            if (! empty($addonCatalog)) {
+                $heroDescription = __('jetfly.module_addon_intro');
+            } elseif (! empty($staticModule)) {
+                $heroDescription = __('jetfly.module_static_addon');
+            } else {
+                $heroDescription = $meta['desc'];
+            }
+        }
+    @endphp
+
+    @include('partials.jfa-page-hero', [
+        'title' => $module['title'],
+        'description' => $heroDescription,
+        'icon' => $meta['icon'],
+        'accentColor' => $meta['color'],
+        'bannerImage' => $pageBanner?->imageUrl(),
+        'heroClass' => 'jfa-module-hero',
+        'breadcrumbs' => [
+            ['label' => 'Home', 'url' => route('home')],
+            ['label' => $module['title']],
+        ],
+    ])
 
     @if(empty($staticModule) && empty($addonCatalog))
         <div class="jfa-container jfa-module-search-wrap">

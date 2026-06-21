@@ -26,7 +26,11 @@
                             <td>{{ $u->phone ?? '—' }}</td>
                             <td>{{ $u->is_admin ? 'Yes' : 'No' }}</td>
                             <td>{{ $u->bookings_count }}</td>
-                            <td><a class="btn secondary" href="{{ route('admin.users.show', $u) }}">View</a></td>
+                            <td class="admin-table-actions">
+                                @include('admin.partials.table-actions', [
+                                    'view' => route('admin.users.show', $u),
+                                ])
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

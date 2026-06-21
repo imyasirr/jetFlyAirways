@@ -74,6 +74,14 @@ class DatabaseSeeder extends Seeder
             $this->call(HomeSectionSeeder::class);
         }
 
+        if (Schema::hasTable('home_trust_cards')) {
+            $this->call(HomeTrustCardSeeder::class);
+        }
+
+        if (Schema::hasTable('page_banners')) {
+            $this->call(PageBannerSeeder::class);
+        }
+
         if (Schema::hasTable('destination_guide_settings')) {
             $this->call(DestinationGuideSeeder::class);
         }

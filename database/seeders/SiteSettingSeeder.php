@@ -21,7 +21,22 @@ class SiteSettingSeeder extends Seeder
         SiteSetting::query()->create([
             'topstrip_left' => 'Upto 25% off* on domestic flights — book now · Easy cancellations on select fares',
             'support_phone' => '+91 1800-000-0000',
-            'support_email' => 'support@jetflyairways.com',
+            'support_phones' => [
+                ['label' => 'Toll Free', 'phone' => '+91 1800-000-0000'],
+                ['label' => 'Sales', 'phone' => '+91 98765 43210'],
+            ],
+            'support_emails' => [
+                ['label' => 'Support', 'email' => 'support@jetflyairways.com'],
+                ['label' => 'Bookings', 'email' => 'bookings@jetflyairways.com'],
+            ],
+            'office_address_label' => 'Registered Office',
+            'office_address' => "Jet Fly Airways Pvt. Ltd.\n123 Aviation Park, Sector 18\nGurugram, Haryana 122015\nIndia",
+            'office_addresses' => [
+                [
+                    'label' => 'Registered Office',
+                    'address' => "Jet Fly Airways Pvt. Ltd.\n123 Aviation Park, Sector 18\nGurugram, Haryana 122015\nIndia",
+                ],
+            ],
             'brand_name' => 'Jet Fly',
             'brand_tagline' => 'Flights · Hotels · Holidays · More',
             'footer_about' => 'Book flights, hotels, buses, trains, cabs and holiday packages in one place. Best deals, simple search, and secure checkout — your travel, simplified.',

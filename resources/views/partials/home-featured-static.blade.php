@@ -91,7 +91,13 @@
     <div class="home-deals-grid">
         @foreach($testimonials as $t)
             <article class="home-deal-card">
-                <div class="home-deal-card__media home-deal-card__media--review" aria-hidden="true">RV</div>
+                @if($t->photoUrl())
+                    <div class="home-deal-card__media home-deal-card__media--review home-deal-card__media--photo">
+                        <img src="{{ $t->photoUrl() }}" alt="{{ $t->name }}" loading="lazy" decoding="async">
+                    </div>
+                @else
+                    <div class="home-deal-card__media home-deal-card__media--review" aria-hidden="true">RV</div>
+                @endif
                 <div class="home-deal-card__body">
                     <p class="card-meta" style="margin-bottom:8px;">Rating {{ (int) $t->rating }}/5</p>
                     <p class="card-meta" style="font-style:italic;">"{{ $t->review }}"</p>
@@ -104,9 +110,16 @@
 @endif
 
 <div class="feature-row feature-row-spaced home-trust-cards">
-    <div class="card"><h3>Secure payments</h3><p>Checkout flow ready for gateway integration, UPI and cards.</p></div>
-    <div class="card"><h3>Best-value fares</h3><p>Admin-managed inventory with live listing on the website.</p></div>
-    <div class="card"><h3>Full admin control</h3><p>Flights, hotels, packages, routes, cabs and bookings from one dashboard.</p></div>
+    @forelse($trustCards ?? [] as $card)
+        <div class="card">
+            <h3>{{ $card->title }}</h3>
+            <p>{{ $card->description }}</p>
+        </div>
+    @empty
+        <div class="card"><h3>Secure payments</h3><p>Checkout flow ready for gateway integration, UPI and cards.</p></div>
+        <div class="card"><h3>Best-value fares</h3><p>Admin-managed inventory with live listing on the website.</p></div>
+        <div class="card"><h3>Full admin control</h3><p>Flights, hotels, packages, routes, cabs and bookings from one dashboard.</p></div>
+    @endforelse
 </div>
 
 <section class="home-cta" aria-label="Travel deals">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Blog;
+use App\Models\PageBanner;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Str;
@@ -17,7 +18,10 @@ class BlogController extends Controller
             ->paginate(12)
             ->withQueryString();
 
-        return view('blog.index', compact('blogs'));
+        return view('blog.index', [
+            'blogs' => $blogs,
+            'pageBanner' => PageBanner::forKey('blog'),
+        ]);
     }
 
     public function show(Blog $blog): View

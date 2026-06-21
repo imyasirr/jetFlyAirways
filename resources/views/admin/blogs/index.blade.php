@@ -24,15 +24,15 @@
                             <td><code style="font-size:12px;">{{ $b->slug }}</code></td>
                             <td>{{ $b->publish_at?->format('Y-m-d H:i') ?? '—' }}</td>
                             <td>{{ $b->is_featured ? 'Yes' : 'No' }}</td>
-                            <td class="admin-table-actions"><div class="admin-table-actions__inner">
-                                <a class="btn secondary" href="{{ route('admin.blogs.show', $b) }}">Show</a>
-                                <a class="btn secondary" href="{{ route('admin.blogs.edit', $b) }}">Edit</a>
-                                <form method="post" action="{{ route('admin.blogs.destroy', $b) }}" onsubmit="return confirm('Delete?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="btn" type="submit">Delete</button>
-                                </form>
-                            </div></td>
+                            <td class="admin-table-actions">
+                                @include('admin.partials.table-actions', [
+                                    'view' => route('admin.blogs.show', $b),
+                                    'viewLabel' => 'Show',
+                                    'edit' => route('admin.blogs.edit', $b),
+                                    'delete' => route('admin.blogs.destroy', $b),
+                                    'deleteConfirm' => 'Delete?',
+                                ])
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>
