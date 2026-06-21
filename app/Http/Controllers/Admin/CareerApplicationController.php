@@ -15,7 +15,7 @@ class CareerApplicationController extends Controller
         $applications = CareerApplication::query()
             ->with('career')
             ->orderByDesc('id')
-            ->paginate(25);
+            ->get();
 
         return view('admin.career-applications.index', compact('applications'));
     }

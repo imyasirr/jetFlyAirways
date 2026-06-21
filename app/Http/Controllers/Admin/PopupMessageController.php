@@ -13,7 +13,7 @@ class PopupMessageController extends Controller
 {
     public function index(): View
     {
-        $popups = PopupMessage::query()->orderByDesc('id')->paginate(20);
+        $popups = PopupMessage::query()->orderByDesc('id')->get();
 
         return view('admin.popup-messages.index', compact('popups'));
     }

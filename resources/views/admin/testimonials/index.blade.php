@@ -42,7 +42,6 @@
                 </tbody>
             </table>
         </div>
-        <div style="margin-top:12px;">{{ $testimonials->links() }}</div>
-    </div>
+</div>
 @endsection
 

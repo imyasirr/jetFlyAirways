@@ -44,6 +44,5 @@
                 </tbody>
             </table>
         </div>
-        <div style="margin-top:10px;">{{ $packages->links() }}</div>
-    </div>
+</div>
 @endsection

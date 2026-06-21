@@ -3,7 +3,17 @@
 @section('content')
     <div class="card">
         <h1 class="section-title">Edit page banner</h1>
-        <p style="margin:0 0 16px;color:#64748b;">{{ $pageBanner->label }}</p>
+        <p style="margin:0 0 8px;color:#64748b;">{{ $pageBanner->label }}</p>
+        @if($cmsPage = $pageBanner->linkedCmsPage())
+            <p style="margin:0 0 16px;font-size:13px;color:#64748b;">
+                Page content:
+                <a href="{{ route('admin.pages.edit', $cmsPage) }}" style="color:var(--admin-accent);font-weight:600;">Edit in CMS pages</a>
+                · Public:
+                <a href="{{ route('pages.show', $cmsPage->slug) }}" target="_blank" rel="noopener" style="color:var(--admin-accent);">/p/{{ $cmsPage->slug }}</a>
+            </p>
+        @else
+            <p style="margin:0 0 16px;color:#64748b;">Built-in module page — banner only (no CMS content).</p>
+        @endif
 
         <form method="post" action="{{ route('admin.page-banners.update', $pageBanner) }}" enctype="multipart/form-data" class="admin-form-grid">
             @csrf

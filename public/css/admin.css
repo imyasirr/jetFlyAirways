@@ -1956,3 +1956,87 @@ a.admin-dash-kpi:hover {
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+
+/* DataTables — admin panel */
+.admin-table-scroll--dt {
+    overflow: visible;
+}
+.admin-content .dt-container {
+    margin-top: 8px;
+}
+.admin-content .dt-layout-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+.admin-content .dt-layout-row.dt-layout-table {
+    display: block;
+    margin-bottom: 0;
+}
+.admin-content .dt-length label,
+.admin-content .dt-search label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--admin-muted);
+    margin: 0;
+}
+.admin-content .dt-length select,
+.admin-content .dt-search input {
+    width: auto;
+    min-width: 72px;
+    padding: 8px 10px;
+    border: 1px solid var(--admin-border, #c9d5ef);
+    border-radius: 10px;
+    font-size: 14px;
+    background: #fff;
+}
+.admin-content .dt-search input {
+    min-width: min(280px, 100%);
+}
+.admin-content .dt-info {
+    font-size: 13px;
+    color: var(--admin-muted);
+    padding: 8px 0;
+}
+.admin-content .dt-paging .dt-paging-button {
+    border: 1px solid var(--admin-border, #c9d5ef);
+    background: #fff;
+    color: var(--admin-primary);
+    border-radius: 8px;
+    padding: 6px 12px;
+    margin: 0 2px;
+    font-size: 13px;
+    cursor: pointer;
+}
+.admin-content .dt-paging .dt-paging-button.current,
+.admin-content .dt-paging .dt-paging-button:hover:not(.disabled) {
+    background: var(--admin-accent, #f97316);
+    border-color: var(--admin-accent, #f97316);
+    color: #fff;
+}
+.admin-content .dt-paging .dt-paging-button.disabled {
+    opacity: .45;
+    cursor: default;
+}
+.admin-content table.dataTable {
+    width: 100% !important;
+    border-collapse: collapse;
+}
+.admin-content table.dataTable thead th {
+    cursor: pointer;
+    white-space: nowrap;
+}
+.admin-content table.dataTable thead th.dt-orderable-asc span.dt-column-order::before,
+.admin-content table.dataTable thead th.dt-orderable-desc span.dt-column-order::before {
+    opacity: .45;
+}
+.admin-content .dt-empty-footer {
+    font-size: 14px;
+    color: var(--admin-muted);
+}

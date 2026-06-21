@@ -42,6 +42,5 @@
                 </tbody>
             </table>
         </div>
-        <div style="margin-top:10px;">{{ $routes->links() }}</div>
-    </div>
+</div>
 @endsection

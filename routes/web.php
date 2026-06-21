@@ -218,8 +218,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::put('site-settings', [SiteSettingController::class, 'update'])->name('site-settings.update');
     Route::resource('banners', BannerController::class)->except(['show']);
     Route::get('page-banners', [PageBannerController::class, 'index'])->name('page-banners.index');
+    Route::get('page-banners/create', [PageBannerController::class, 'create'])->name('page-banners.create');
+    Route::post('page-banners', [PageBannerController::class, 'store'])->name('page-banners.store');
     Route::get('page-banners/{pageBanner}/edit', [PageBannerController::class, 'edit'])->name('page-banners.edit');
     Route::put('page-banners/{pageBanner}', [PageBannerController::class, 'update'])->name('page-banners.update');
+    Route::delete('page-banners/{pageBanner}', [PageBannerController::class, 'destroy'])->name('page-banners.destroy');
     Route::get('home-sections', [HomeSectionController::class, 'index'])->name('home-sections.index');
     Route::put('home-sections', [HomeSectionController::class, 'update'])->name('home-sections.update');
     Route::resource('home-trust-cards', HomeTrustCardController::class)->except(['show']);

@@ -1,74 +1,105 @@
 @extends('layouts.app')
 
-@section('body_class', 'page-home')
-
-@push('styles')
-<link rel="stylesheet" href="{{ asset('css/home.css') }}?v=1">
-<link rel="stylesheet" href="{{ asset('css/welcome.css') }}?v=1">
-@endpush
+@section('body_class', 'page-discover')
 
 @section('title', $siteSeo?->meta_title ?? 'Discover — Jet Fly Airways')
 
-@section('meta_description', $siteSeo?->meta_description ?? 'Jet Fly Airways enterprise travel platform — flights, hotels, packages, buses, trains and cabs with live inventory.')
+@section('meta_description', $siteSeo?->meta_description ?? 'Explore Jet Fly Airways — flights, hotels, packages and ground transport with live inventory and secure booking.')
 
 @section('full')
-@php
-    $heroImgUrl = ($siteSetting ?? null)?->hero_image
-        ? \App\Support\PublicImageStorage::url($siteSetting->hero_image)
-        : null;
-@endphp
-<section class="home-ota home-ota--hero home-ota--enterprise {{ $heroImgUrl ? 'home-ota--has-photo' : '' }}" aria-label="Platform overview">
-    <div
-        class="home-ota-bg {{ $heroImgUrl ? 'home-ota-bg--photo' : '' }}"
-        aria-hidden="true"
-        @if($heroImgUrl) style="background-image:url('{{ e($heroImgUrl) }}')" @endif
-    ></div>
-    @if($heroImgUrl)
-        <div class="home-ota-scrim" aria-hidden="true"></div>
-    @endif
-    <div class="container home-ota-inner">
-        <header class="home-ota-headline">
-            <p class="home-ota-kicker">Enterprise travel stack · Live inventory</p>
-            <h1 class="home-ota-title">Where every journey meets reliability</h1>
-            <p class="home-ota-sub">Flights, hotels, packages, and ground transport — backed by admin tools, secure booking, and real-time listings.</p>
-        </header>
+    @php
+        $heroSetting = $siteSetting ?? \App\Models\SiteSetting::query()->first();
+        $heroImage = $heroSetting?->hero_image
+            ? \App\Support\PublicImageStorage::url($heroSetting->hero_image)
+            : 'https://images.unsplash.com/photo-1436491865332-7a61a1092e56?auto=format&fit=crop&q=80&w=2000';
+        $discoverLinks = [
+            ['icon' => 'info', 'label' => 'About us', 'href' => route('pages.show', 'about'), 'desc' => 'Our mission and platform'],
+            ['icon' => 'work', 'label' => 'Open roles', 'href' => route('jobs.index'), 'desc' => 'Apply for current vacancies'],
+            ['icon' => 'groups', 'label' => 'Careers', 'href' => route('pages.show', 'careers'), 'desc' => 'Life at Jet Fly'],
+            ['icon' => 'article', 'label' => 'Travel blog', 'href' => route('blog.index'), 'desc' => 'Tips and inspiration'],
+        ];
+    @endphp
+
+    @include('partials.jfa-page-hero', [
+        'title' => 'Discover Jet Fly',
+        'description' => 'Enterprise travel stack with live inventory — search flights, stays, packages and ground transport in one place.',
+        'icon' => 'travel_explore',
+        'accentColor' => '#003B95',
+        'bannerImage' => $heroImage,
+        'heroClass' => 'jfa-cms-hero jfa-discover-hero',
+        'breadcrumbs' => [
+            ['label' => 'Home', 'url' => route('home')],
+            ['label' => 'Discover'],
+        ],
+    ])
+
+    <div class="jfa-container jfa-discover-search-wrap" id="search">
         @include('partials.home-search-panel')
     </div>
-</section>
-
-<section class="hero hero-welcome">
-    <div class="container">
-        <span class="pill">Enterprise-grade travel platform · Live inventory</span>
-        <h1>Where every journey meets reliability</h1>
-        <p class="lead">Jet Fly Airways connects travellers with verified flights, hotels, packages, and ground transport — backed by a full admin stack, secure booking flow, and real-time listings from your database.</p>
-        <div class="stats-strip" aria-label="Live platform statistics">
-            <div class="stat-item"><strong>{{ number_format($stats['flights']) }}</strong><span>Active flights</span></div>
-            <div class="stat-item"><strong>{{ number_format($stats['hotels']) }}</strong><span>Hotels</span></div>
-            <div class="stat-item"><strong>{{ number_format($stats['packages']) }}</strong><span>Packages</span></div>
-            <div class="stat-item"><strong>{{ number_format($stats['bookings']) }}</strong><span>Bookings</span></div>
-            <div class="stat-item"><strong>{{ number_format($stats['buses'] + $stats['trains'] + $stats['cabs']) }}</strong><span>Ground routes</span></div>
-        </div>
-    </div>
-</section>
-
-@include('partials.home-banner-slider')
 @endsection
 
 @section('content')
-<div class="why-grid">
-    <div class="card why-card">
-        <h3>Unified operations</h3>
-        <p>Flights, hotels, holiday packages, buses, trains, and cabs are managed from one admin panel with role-based access.</p>
-    </div>
-    <div class="card why-card">
-        <h3>Data-driven storefront</h3>
-        <p>Featured sections and destination links update from your catalogue — no static placeholder content on this page.</p>
-    </div>
-    <div class="card why-card">
-        <h3>Built to scale</h3>
-        <p>Structured for payment gateways, GST-compliant invoicing, and future B2B or corporate travel modules.</p>
-    </div>
-</div>
+    <section class="jfa-discover-stats" aria-label="Platform statistics">
+        <div class="jfa-discover-stats__grid">
+            <div class="jfa-discover-stat">
+                <strong>{{ number_format($stats['flights']) }}</strong>
+                <span>Active flights</span>
+            </div>
+            <div class="jfa-discover-stat">
+                <strong>{{ number_format($stats['hotels']) }}</strong>
+                <span>Hotels</span>
+            </div>
+            <div class="jfa-discover-stat">
+                <strong>{{ number_format($stats['packages']) }}</strong>
+                <span>Packages</span>
+            </div>
+            <div class="jfa-discover-stat">
+                <strong>{{ number_format($stats['bookings']) }}</strong>
+                <span>Bookings</span>
+            </div>
+            <div class="jfa-discover-stat">
+                <strong>{{ number_format($stats['buses'] + $stats['trains'] + $stats['cabs']) }}</strong>
+                <span>Ground routes</span>
+            </div>
+        </div>
+    </section>
 
-@include('partials.home-featured-sections')
+    <section class="jfa-discover-links" aria-label="Explore more">
+        <h2 class="jfa-section-title">Explore more</h2>
+        <div class="jfa-discover-links__grid">
+            @foreach($discoverLinks as $link)
+                <a href="{{ $link['href'] }}" class="jfa-discover-link-card">
+                    <span class="jfa-discover-link-card__icon"><span class="material-symbols-outlined filled">{{ $link['icon'] }}</span></span>
+                    <span class="jfa-discover-link-card__body">
+                        <strong>{{ $link['label'] }}</strong>
+                        <span>{{ $link['desc'] }}</span>
+                    </span>
+                    <span class="material-symbols-outlined jfa-discover-link-card__arrow">arrow_forward</span>
+                </a>
+            @endforeach
+        </div>
+    </section>
+
+    <section class="jfa-discover-benefits">
+        <h2 class="jfa-section-title">Why travellers choose us</h2>
+        <div class="jfa-grid jfa-grid--3">
+            <div class="jfa-discover-benefit">
+                <span class="material-symbols-outlined filled">hub</span>
+                <h3>Unified operations</h3>
+                <p>Flights, hotels, packages, buses, trains and cabs — managed from one platform with role-based admin access.</p>
+            </div>
+            <div class="jfa-discover-benefit">
+                <span class="material-symbols-outlined filled">database</span>
+                <h3>Live inventory</h3>
+                <p>Featured sections and listings update from your catalogue — real data, not static placeholders.</p>
+            </div>
+            <div class="jfa-discover-benefit">
+                <span class="material-symbols-outlined filled">trending_up</span>
+                <h3>Built to scale</h3>
+                <p>Structured for payments, GST-compliant invoicing, and future B2B or corporate travel modules.</p>
+            </div>
+        </div>
+    </section>
+
+    @include('partials.home-featured-sections')
 @endsection

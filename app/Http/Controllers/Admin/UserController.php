@@ -13,7 +13,7 @@ class UserController extends Controller
         $users = User::query()
             ->withCount('bookings')
             ->orderByDesc('id')
-            ->paginate(20);
+            ->get();
 
         return view('admin.users.index', compact('users'));
     }

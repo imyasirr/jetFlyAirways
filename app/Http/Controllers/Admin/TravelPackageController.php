@@ -11,7 +11,7 @@ class TravelPackageController extends Controller
 {
     public function index()
     {
-        $packages = TravelPackage::latest()->paginate(15);
+        $packages = TravelPackage::latest()->get();
 
         return view('admin.travel-packages.index', compact('packages'));
     }

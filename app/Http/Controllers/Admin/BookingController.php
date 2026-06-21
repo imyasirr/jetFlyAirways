@@ -31,7 +31,7 @@ class BookingController extends Controller
             $query->where('payment_status', $request->string('payment_status'));
         }
 
-        $bookings = $query->paginate(25)->withQueryString();
+        $bookings = $query->get();
 
         return view('admin.bookings.index', compact('bookings'));
     }

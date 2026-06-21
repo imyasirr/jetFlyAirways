@@ -12,7 +12,7 @@ class PageBannerSeeder extends Seeder
         foreach (PageBanner::catalog() as $pageKey => $label) {
             PageBanner::query()->updateOrCreate(
                 ['page_key' => $pageKey],
-                ['label' => $label, 'is_active' => true]
+                ['label' => $label, 'is_active' => true, 'is_system' => true]
             );
         }
     }

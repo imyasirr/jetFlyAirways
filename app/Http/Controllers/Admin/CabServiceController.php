@@ -11,7 +11,7 @@ class CabServiceController extends Controller
 {
     public function index()
     {
-        $services = CabService::latest()->paginate(15);
+        $services = CabService::latest()->get();
 
         return view('admin.cab-services.index', compact('services'));
     }

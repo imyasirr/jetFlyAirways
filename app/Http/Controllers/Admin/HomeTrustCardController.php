@@ -12,7 +12,7 @@ class HomeTrustCardController extends Controller
 {
     public function index(): View
     {
-        $cards = HomeTrustCard::query()->orderBy('sort_order')->orderBy('id')->paginate(20);
+        $cards = HomeTrustCard::query()->orderBy('sort_order')->orderBy('id')->get();
 
         return view('admin.home-trust-cards.index', compact('cards'));
     }

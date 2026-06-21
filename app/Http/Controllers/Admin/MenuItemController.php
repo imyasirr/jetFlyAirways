@@ -17,7 +17,7 @@ class MenuItemController extends Controller
             ->orderBy('location')
             ->orderBy('parent_id')
             ->orderBy('sort_order')
-            ->paginate(40);
+            ->get();
 
         return view('admin.menu-items.index', compact('items'));
     }

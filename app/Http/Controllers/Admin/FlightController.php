@@ -29,7 +29,7 @@ class FlightController extends Controller
             $query->where('is_active', false);
         }
 
-        $flights = $query->latest()->paginate(15)->withQueryString();
+        $flights = $query->latest()->get();
 
         $stats = [
             'total' => Flight::count(),

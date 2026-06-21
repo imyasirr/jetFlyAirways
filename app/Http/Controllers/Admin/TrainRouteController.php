@@ -11,7 +11,7 @@ class TrainRouteController extends Controller
 {
     public function index()
     {
-        $routes = TrainRoute::latest()->paginate(15);
+        $routes = TrainRoute::latest()->get();
 
         return view('admin.train-routes.index', compact('routes'));
     }

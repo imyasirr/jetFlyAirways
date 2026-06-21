@@ -49,7 +49,6 @@
                 </tbody>
             </table>
         </div>
-        <div style="margin-top:12px;">{{ $addons->links() }}</div>
-    </div>
+</div>
 @endsection
 

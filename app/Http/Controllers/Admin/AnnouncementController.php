@@ -14,7 +14,7 @@ class AnnouncementController extends Controller
 {
     public function index(): View
     {
-        $announcements = Announcement::query()->orderByDesc('id')->paginate(20);
+        $announcements = Announcement::query()->orderByDesc('id')->get();
 
         return view('admin.announcements.index', compact('announcements'));
     }

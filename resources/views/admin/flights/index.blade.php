@@ -43,7 +43,7 @@
         <div class="flx-toolbar">
             <div class="flx-toolbar-left">
                 <h2 class="section-title flx-title">All flights</h2>
-                <span class="flx-count">{{ $flights->total() }} result{{ $flights->total() === 1 ? '' : 's' }}</span>
+                <span class="flx-count">{{ $flights->count() }} result{{ $flights->count() === 1 ? '' : 's' }}</span>
             </div>
             <form method="get" action="{{ route('admin.flights.index') }}" class="flx-filters" data-no-loader>
                 <label class="flx-search">
@@ -169,6 +169,5 @@
                 </tbody>
             </table>
         </div>
-        <div style="margin-top:14px;">{{ $flights->links() }}</div>
-    </div>
+</div>
 @endsection

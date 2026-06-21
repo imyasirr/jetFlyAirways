@@ -44,7 +44,6 @@
                 </tbody>
             </table>
         </div>
-        <div style="margin-top:12px;">{{ $items->links() }}</div>
-    </div>
+</div>
 @endsection
 

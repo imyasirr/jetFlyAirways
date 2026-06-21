@@ -12,7 +12,7 @@ class CareerController extends Controller
 {
     public function index(): View
     {
-        $careers = Career::query()->orderByDesc('id')->paginate(20);
+        $careers = Career::query()->orderByDesc('id')->get();
 
         return view('admin.careers.index', compact('careers'));
     }

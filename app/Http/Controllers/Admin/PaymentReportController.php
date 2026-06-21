@@ -22,7 +22,7 @@ class PaymentReportController extends Controller
             $query->whereDate('created_at', '<=', $to);
         }
 
-        $rows = $query->paginate(20)->withQueryString();
+        $rows = $query->get();
 
         $totals = [
             'paid' => (clone $query)->where('payment_status', 'paid')->sum('total_amount'),

@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('content')
     <div class="card">
@@ -23,7 +23,7 @@
                             <td>{{ $u->id }}</td>
                             <td>{{ $u->name }}</td>
                             <td>{{ $u->email }}</td>
-                            <td>{{ $u->phone ?? '—' }}</td>
+                            <td>{{ $u->phone ?? '�' }}</td>
                             <td>{{ $u->is_admin ? 'Yes' : 'No' }}</td>
                             <td>{{ $u->bookings_count }}</td>
                             <td class="admin-table-actions">
@@ -36,7 +36,6 @@
                 </tbody>
             </table>
         </div>
-        <div style="margin-top:12px;">{{ $users->links() }}</div>
-    </div>
+</div>
 @endsection
 

@@ -72,8 +72,5 @@
                 </tbody>
             </table>
         </div>
-        @if($announcements->hasPages())
-            <div style="margin-top:12px;">{{ $announcements->links() }}</div>
-        @endif
     </div>
 @endsection

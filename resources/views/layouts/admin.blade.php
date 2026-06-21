@@ -67,8 +67,9 @@
         use App\Support\AdminNavigation;
         $adminActiveGroup = AdminNavigation::activeGroup();
     @endphp
-    <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v=13">
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v=14">
     <link rel="stylesheet" href="{{ asset('css/admin-skybound.css') }}?v=12">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
     @stack('styles')
 </head>
@@ -197,6 +198,8 @@
         </div>
     </div>
     @stack('scripts')
+    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.min.js"></script>
+    <script src="{{ asset('js/admin-datatables.js') }}?v=1"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {

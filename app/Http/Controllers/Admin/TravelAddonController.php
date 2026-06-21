@@ -16,7 +16,7 @@ class TravelAddonController extends Controller
         if ($request->filled('category') && in_array($request->string('category'), TravelAddon::categories(), true)) {
             $query->where('category', $request->string('category'));
         }
-        $addons = $query->paginate(24)->withQueryString();
+        $addons = $query->get();
 
         return view('admin.travel-addons.index', compact('addons'));
     }

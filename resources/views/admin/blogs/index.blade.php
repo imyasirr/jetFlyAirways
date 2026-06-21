@@ -38,7 +38,6 @@
                 </tbody>
             </table>
         </div>
-        <div style="margin-top:12px;">{{ $blogs->links() }}</div>
-    </div>
+</div>
 @endsection
 

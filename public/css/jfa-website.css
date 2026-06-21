@@ -2159,7 +2159,8 @@ textarea.is-invalid {
 
 .jfa-module-hero {
     background: var(--jfa-module-color, var(--jfa-booking-blue));
-    padding: 40px 0 48px;
+    min-height: clamp(280px, 34vh, 400px);
+    padding: clamp(36px, 4vw, 52px) 0 clamp(96px, 11vw, 136px);
 }
 
 /* Shared page / module / CMS hero with optional admin banner image */
@@ -2168,6 +2169,9 @@ textarea.is-invalid {
     overflow: hidden;
     padding: 40px 0 48px;
     background: var(--jfa-page-accent, var(--jfa-booking-blue));
+}
+.jfa-page-hero.jfa-module-hero.jfa-page-hero--has-image {
+    min-height: clamp(300px, 38vh, 440px);
 }
 .jfa-page-hero.jfa-cms-hero {
     padding: 44px 0 72px;
@@ -2240,8 +2244,8 @@ textarea.is-invalid {
 .jfa-module-search-wrap {
     position: relative;
     z-index: 5;
-    margin-top: -24px;
-    margin-bottom: 24px;
+    margin-top: -48px;
+    margin-bottom: 32px;
 }
 .jfa-search--compact {
     padding: 20px;
@@ -2963,6 +2967,12 @@ textarea.is-invalid {
     }
     .jfa-hero__search-wrap { margin-top: -80px; }
 
+    .jfa-page-hero.jfa-module-hero {
+        min-height: clamp(240px, 42vh, 320px);
+        padding: 28px 0 88px;
+    }
+    .jfa-module-search-wrap { margin-top: -36px; }
+
     .jfa-search { padding: 16px; border-radius: 16px; }
     .jfa-search__tab { padding: 8px 12px; font-size: 12px; }
     .jfa-search__foot {
@@ -3562,4 +3572,426 @@ body.jetfly-popup-open {
         align-items: stretch;
     }
     .jfa-contact-submit { width: 100%; }
+}
+
+/* Discover page */
+.page-discover main {
+    background: linear-gradient(180deg, #eef4fc 0%, #f8fafc 280px, #fff 520px);
+}
+.page-discover main > .jfa-container {
+    padding-top: 0;
+    padding-bottom: 64px;
+    margin-top: -24px;
+    position: relative;
+    z-index: 2;
+}
+.page-discover .jfa-discover-search-wrap {
+    position: relative;
+    z-index: 5;
+    margin-top: -48px;
+    margin-bottom: 8px;
+}
+.page-discover .jfa-discover-hero {
+    padding-bottom: 88px;
+}
+.jfa-discover-stats {
+    margin-bottom: 40px;
+}
+.jfa-discover-stats__grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+}
+.jfa-discover-stat {
+    background: #fff;
+    border: 1px solid var(--jfa-outline);
+    border-radius: 16px;
+    padding: 18px 16px;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(0, 59, 149, .06);
+}
+.jfa-discover-stat strong {
+    display: block;
+    font-family: "Montserrat", sans-serif;
+    font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+    color: var(--jfa-booking-blue);
+    line-height: 1.1;
+}
+.jfa-discover-stat span {
+    display: block;
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--jfa-muted);
+}
+.jfa-discover-links {
+    margin-bottom: 48px;
+}
+.jfa-discover-links__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 16px;
+}
+.jfa-discover-link-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 20px;
+    background: #fff;
+    border: 1px solid var(--jfa-outline);
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 59, 149, .06);
+    transition: transform .15s, box-shadow .15s, border-color .15s;
+}
+.jfa-discover-link-card:hover {
+    transform: translateY(-2px);
+    border-color: #93c5fd;
+    box-shadow: 0 14px 32px rgba(0, 59, 149, .12);
+}
+.jfa-discover-link-card__icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--jfa-secondary-container);
+    color: var(--jfa-booking-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.jfa-discover-link-card__body {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+    flex: 1;
+}
+.jfa-discover-link-card__body strong {
+    font-family: "Montserrat", sans-serif;
+    font-size: 15px;
+    color: var(--jfa-on-surface);
+}
+.jfa-discover-link-card__body span {
+    font-size: 13px;
+    color: var(--jfa-muted);
+}
+.jfa-discover-link-card__arrow {
+    color: var(--jfa-booking-blue);
+    flex-shrink: 0;
+}
+.jfa-discover-benefits {
+    margin-bottom: 48px;
+}
+.jfa-discover-benefit {
+    background: #fff;
+    border: 1px solid var(--jfa-outline);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 8px 24px rgba(0, 59, 149, .05);
+}
+.jfa-discover-benefit > .material-symbols-outlined {
+    font-size: 28px;
+    color: var(--jfa-booking-blue);
+    margin-bottom: 12px;
+}
+.jfa-discover-benefit h3 {
+    margin: 0 0 8px;
+    font-size: 1.05rem;
+}
+.jfa-discover-benefit p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--jfa-muted);
+    line-height: 1.6;
+}
+
+/* Jobs / careers listing */
+.page-jobs main > .jfa-container {
+    padding-top: 0;
+    padding-bottom: 64px;
+    margin-top: -36px;
+    position: relative;
+    z-index: 2;
+}
+.page-jobs .jfa-jobs-hero {
+    padding-bottom: 72px;
+}
+.jfa-jobs-intro {
+    margin-bottom: 20px;
+    padding: 14px 18px;
+    background: #f8fafc;
+    border: 1px solid var(--jfa-outline);
+    border-radius: 14px;
+    font-size: 14px;
+    color: var(--jfa-muted);
+}
+.jfa-jobs-intro a {
+    color: var(--jfa-booking-blue);
+    font-weight: 600;
+}
+.jfa-jobs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+    gap: 16px;
+}
+.jfa-job-card {
+    background: #fff;
+    border: 1px solid var(--jfa-outline);
+    border-radius: 18px;
+    padding: 22px;
+    box-shadow: 0 12px 32px rgba(0, 59, 149, .08);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.jfa-job-card__head {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+}
+.jfa-job-card__icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--jfa-secondary-container);
+    color: var(--jfa-booking-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.jfa-job-card__title {
+    margin: 0 0 6px;
+    font-size: 1.125rem;
+    line-height: 1.3;
+}
+.jfa-job-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    margin: 0;
+    font-size: 13px;
+    color: var(--jfa-muted);
+}
+.jfa-job-card__meta span:not(:last-child)::after {
+    content: "·";
+    margin-left: 10px;
+    color: #cbd5e1;
+}
+.jfa-job-card__deadline {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    font-size: 13px;
+    color: #b45309;
+    font-weight: 600;
+}
+.jfa-job-card__deadline .material-symbols-outlined { font-size: 18px; }
+.jfa-job-card__salary {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--jfa-booking-blue);
+}
+.jfa-job-card__btn {
+    margin-top: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+}
+.jfa-job-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 48px 24px;
+    background: #fff;
+    border: 1px dashed var(--jfa-outline);
+    border-radius: 18px;
+}
+.jfa-job-empty .material-symbols-outlined {
+    font-size: 40px;
+    color: var(--jfa-muted);
+    margin-bottom: 12px;
+}
+.jfa-job-empty h2 {
+    margin: 0 0 8px;
+    font-size: 1.25rem;
+}
+.jfa-job-empty p {
+    margin: 0 auto 20px;
+    max-width: 42ch;
+    color: var(--jfa-muted);
+    font-size: 14px;
+}
+.jfa-job-empty__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+.jfa-flash {
+    padding: 12px 16px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    font-weight: 600;
+}
+.jfa-flash--success {
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+}
+
+/* Job detail + apply */
+.jfa-job-detail {
+    display: grid;
+    grid-template-columns: minmax(240px, 280px) minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+}
+.jfa-job-detail__aside {
+    position: sticky;
+    top: 88px;
+}
+.jfa-job-detail__facts {
+    background: #fff;
+    border: 1px solid var(--jfa-outline);
+    border-radius: 16px;
+    padding: 8px;
+    box-shadow: 0 12px 32px rgba(0, 59, 149, .08);
+    margin-bottom: 12px;
+}
+.jfa-job-fact {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 12px;
+    border-radius: 10px;
+}
+.jfa-job-fact .material-symbols-outlined {
+    color: var(--jfa-booking-blue);
+    margin-top: 2px;
+}
+.jfa-job-fact small {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--jfa-muted);
+    margin-bottom: 2px;
+}
+.jfa-job-fact strong {
+    font-size: 14px;
+    color: var(--jfa-on-surface);
+}
+.jfa-job-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--jfa-booking-blue);
+}
+.jfa-job-back:hover { text-decoration: underline; }
+.jfa-job-detail__main {
+    display: grid;
+    gap: 20px;
+}
+.jfa-job-block,
+.jfa-job-apply {
+    background: #fff;
+    border: 1px solid var(--jfa-outline);
+    border-radius: 18px;
+    padding: clamp(22px, 3vw, 28px);
+    box-shadow: 0 12px 32px rgba(0, 59, 149, .08);
+}
+.jfa-job-block h2,
+.jfa-job-apply h2 {
+    margin: 0 0 12px;
+    font-size: 1.125rem;
+    color: var(--jfa-booking-blue);
+}
+.jfa-job-apply > p {
+    margin: 0 0 18px;
+    font-size: 14px;
+    color: var(--jfa-muted);
+}
+.jfa-job-prose {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--jfa-on-surface);
+}
+.jfa-form-grid {
+    display: grid;
+    gap: 14px;
+}
+.jfa-form-grid--2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.jfa-form-grid label,
+.jfa-field-full {
+    display: grid;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--jfa-on-surface);
+}
+.jfa-form-grid input,
+.jfa-form-grid textarea,
+.jfa-field-full textarea {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid var(--jfa-outline);
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 400;
+}
+.jfa-job-apply__form .jfa-field-full { margin-top: 14px; }
+
+.cms-page-prose > p:first-of-type {
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--jfa-muted);
+}
+.jfa-cms-discover-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--jfa-outline);
+}
+.jfa-cms-discover-nav a {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--jfa-outline);
+    background: #f8fafc;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--jfa-booking-blue);
+    text-decoration: none;
+}
+.jfa-cms-discover-nav a:hover {
+    background: var(--jfa-secondary-container);
+    border-color: #93c5fd;
+}
+.jfa-cms-discover-nav a.is-active {
+    background: var(--jfa-booking-blue);
+    border-color: var(--jfa-booking-blue);
+    color: #fff;
+}
+
+@media (max-width: 960px) {
+    .jfa-discover-stats__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .jfa-discover-links__grid { grid-template-columns: 1fr; }
+    .page-discover .jfa-discover-search-wrap { margin-top: -32px; }
+    .jfa-job-detail { grid-template-columns: 1fr; }
+    .jfa-job-detail__aside { position: static; }
+    .jfa-form-grid--2 { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+    .jfa-discover-stats__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

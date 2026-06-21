@@ -35,7 +35,6 @@
                 </tbody>
             </table>
         </div>
-        <div style="margin-top:12px;">{{ $careers->links() }}</div>
-    </div>
+</div>
 @endsection
 

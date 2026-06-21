@@ -32,7 +32,6 @@
                 </tbody>
             </table>
         </div>
-        <div style="margin-top:12px;">{{ $faqs->links() }}</div>
-    </div>
+</div>
 @endsection
 

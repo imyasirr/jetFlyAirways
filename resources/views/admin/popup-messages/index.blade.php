@@ -34,7 +34,6 @@
                 </tbody>
             </table>
         </div>
-        <div style="margin-top:12px;">{{ $popups->links() }}</div>
-    </div>
+</div>
 @endsection
 

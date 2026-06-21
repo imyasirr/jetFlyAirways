@@ -42,6 +42,5 @@
                 </tbody>
             </table>
         </div>
-        <div style="margin-top:10px;">{{ $hotels->links() }}</div>
-    </div>
+</div>
 @endsection

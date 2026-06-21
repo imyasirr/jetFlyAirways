@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('content')
     <div class="card">
@@ -20,7 +20,7 @@
                         <tr>
                             <td>{{ $i->created_at->format('Y-m-d H:i') }}</td>
                             <td>{{ $i->name }}<br><small style="color:#64748b;">{{ $i->email }}</small></td>
-                            <td>{{ \Illuminate\Support\Str::limit($i->subject ?? '—', 40) }}</td>
+                            <td>{{ \Illuminate\Support\Str::limit($i->subject ?? '�', 40) }}</td>
                             <td>{{ $i->status }}</td>
                             <td class="admin-table-actions">
                                 @include('admin.partials.table-actions', [
@@ -33,7 +33,6 @@
                 </tbody>
             </table>
         </div>
-        <div style="margin-top:12px;">{{ $inquiries->links() }}</div>
-    </div>
+</div>
 @endsection
 

@@ -12,7 +12,7 @@ class ContactInquiryController extends Controller
 {
     public function index(): View
     {
-        $inquiries = ContactInquiry::query()->orderByDesc('id')->paginate(25);
+        $inquiries = ContactInquiry::query()->orderByDesc('id')->get();
 
         return view('admin.contact-inquiries.index', compact('inquiries'));
     }

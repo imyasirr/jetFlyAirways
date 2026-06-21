@@ -12,7 +12,7 @@ class OfferController extends Controller
 {
     public function index(): View
     {
-        $offers = Offer::query()->orderByDesc('id')->paginate(20);
+        $offers = Offer::query()->orderByDesc('id')->get();
 
         return view('admin.offers.index', compact('offers'));
     }

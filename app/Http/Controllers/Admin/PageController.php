@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Page;
+use App\Models\PageBanner;
 use App\Support\PublicImageStorage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,7 +15,7 @@ class PageController extends Controller
 {
     public function index(): View
     {
-        $pages = Page::query()->orderBy('title')->paginate(25);
+        $pages = Page::query()->orderBy('title')->get();
 
         return view('admin.pages.index', compact('pages'));
     }
@@ -28,6 +29,7 @@ class PageController extends Controller
     {
         $data = $this->validated($request, null);
         Page::create($data);
+        PageBanner::syncForCmsPage(Page::query()->where('slug', $data['slug'])->firstOrFail());
 
         return redirect()->route('admin.pages.index')->with('status', 'Page created.');
     }
@@ -40,12 +42,14 @@ class PageController extends Controller
     public function update(Request $request, Page $page): RedirectResponse
     {
         $page->update($this->validated($request, $page));
+        PageBanner::syncForCmsPage($page->fresh());
 
         return redirect()->route('admin.pages.index')->with('status', 'Page updated.');
     }
 
     public function destroy(Page $page): RedirectResponse
     {
+        PageBanner::deleteForCmsPage($page);
         $page->delete();
 
         return redirect()->route('admin.pages.index')->with('status', 'Page deleted.');
