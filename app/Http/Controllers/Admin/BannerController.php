@@ -28,15 +28,18 @@ class BannerController extends Controller
         $data = $request->validate([
             'title' => ['nullable', 'string', 'max:200'],
             'description' => ['nullable', 'string', 'max:2000'],
+            'tags' => ['nullable', 'array'],
+            'tags.*' => ['nullable', 'string', 'max:120'],
+            'show_tags' => ['boolean'],
             'image_files' => ['required', 'array', 'min:1'],
             'image_files.*' => ['required', 'image', 'mimes:jpeg,png,webp,gif', 'max:10240'],
             'link' => ['nullable', 'string', 'max:500'],
             'button_text' => ['nullable', 'string', 'max:120'],
+            'show_button' => ['boolean'],
             'sort_order' => ['nullable', 'integer', 'min:0', 'max:99999'],
             'is_active' => ['boolean'],
         ]);
-        $data['is_active'] = $request->boolean('is_active');
-        $data['sort_order'] = $data['sort_order'] ?? 0;
+        $data = $this->normalizeBannerFields($request, $data);
 
         $files = $request->file('image_files', []);
         unset($data['image_files']);
@@ -64,14 +67,17 @@ class BannerController extends Controller
         $data = $request->validate([
             'title' => ['nullable', 'string', 'max:200'],
             'description' => ['nullable', 'string', 'max:2000'],
+            'tags' => ['nullable', 'array'],
+            'tags.*' => ['nullable', 'string', 'max:120'],
+            'show_tags' => ['boolean'],
             'image_file' => ['nullable', 'image', 'mimes:jpeg,png,webp,gif', 'max:10240'],
             'link' => ['nullable', 'string', 'max:500'],
             'button_text' => ['nullable', 'string', 'max:120'],
+            'show_button' => ['boolean'],
             'sort_order' => ['nullable', 'integer', 'min:0', 'max:99999'],
             'is_active' => ['boolean'],
         ]);
-        $data['is_active'] = $request->boolean('is_active');
-        $data['sort_order'] = $data['sort_order'] ?? 0;
+        $data = $this->normalizeBannerFields($request, $data);
 
         unset($data['image_file']);
         if ($request->hasFile('image_file')) {
@@ -92,5 +98,21 @@ class BannerController extends Controller
         $banner->delete();
 
         return redirect()->route('admin.banners.index')->with('status', 'Banner deleted.');
+    }
+
+    /** @param  array<string, mixed>  $data */
+    private function normalizeBannerFields(Request $request, array $data): array
+    {
+        $data['tags'] = collect($data['tags'] ?? [])
+            ->map(fn ($tag) => is_string($tag) ? trim($tag) : '')
+            ->filter()
+            ->values()
+            ->all();
+        $data['show_tags'] = $request->boolean('show_tags');
+        $data['show_button'] = $request->boolean('show_button');
+        $data['is_active'] = $request->boolean('is_active');
+        $data['sort_order'] = $data['sort_order'] ?? 0;
+
+        return $data;
     }
 }

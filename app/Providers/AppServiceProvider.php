@@ -75,15 +75,24 @@ class AppServiceProvider extends ServiceProvider
             $view->with('siteSetting', $siteSetting);
 
             $unreadAnnouncements = 0;
+            $unreadAnnouncementList = collect();
             if (Auth::check() && Schema::hasTable('announcements') && Schema::hasTable('announcement_reads')) {
-                $publishedIds = Announcement::query()->published()->pluck('id');
                 $readIds = AnnouncementRead::query()
                     ->where('user_id', Auth::id())
-                    ->whereIn('announcement_id', $publishedIds)
                     ->pluck('announcement_id');
-                $unreadAnnouncements = $publishedIds->diff($readIds)->count();
+                $unreadAnnouncementList = Announcement::query()
+                    ->published()
+                    ->whereNotIn('id', $readIds)
+                    ->orderByDesc('published_at')
+                    ->limit(12)
+                    ->get();
+                $unreadAnnouncements = Announcement::query()
+                    ->published()
+                    ->whereNotIn('id', $readIds)
+                    ->count();
             }
             $view->with('unreadAnnouncements', $unreadAnnouncements);
+            $view->with('unreadAnnouncementList', $unreadAnnouncementList);
         });
     }
 }

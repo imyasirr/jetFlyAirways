@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Support\PublicImageStorage;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,6 +27,10 @@ class User extends Authenticatable
         'email',
         'password',
         'phone',
+        'avatar',
+        'date_of_birth',
+        'gender',
+        'nationality',
         'is_admin',
         'google_id',
         'referred_by_user_id',
@@ -50,6 +55,7 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'date_of_birth' => 'date',
             'password' => 'hashed',
             'is_admin' => 'boolean',
         ];
@@ -86,6 +92,20 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return (bool) $this->is_admin;
+    }
+
+    public function avatarUrl(): ?string
+    {
+        return PublicImageStorage::url($this->avatar);
+    }
+
+    public function initials(): string
+    {
+        return collect(explode(' ', (string) $this->name))
+            ->filter()
+            ->map(fn ($word) => mb_strtoupper(mb_substr($word, 0, 1)))
+            ->take(2)
+            ->implode('') ?: 'U';
     }
 
     public function bookings(): HasMany

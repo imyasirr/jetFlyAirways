@@ -10,7 +10,7 @@
         'defaultRobots' => 'noindex, nofollow',
     ])
     @include('partials.head-fonts')
-    <link rel="stylesheet" href="{{ asset('css/jfa-website.css') }}?v=25">
+    <link rel="stylesheet" href="{{ asset('css/jfa-website.css') }}?v=35">
     @stack('styles')
 </head>
 <body class="jfa-page">
@@ -20,7 +20,8 @@
 
     @php
         $user = auth()->user();
-        $initials = collect(explode(' ', (string) $user->name))->filter()->map(fn ($w) => mb_strtoupper(mb_substr($w, 0, 1)))->take(2)->implode('') ?: 'U';
+        $initials = $user->initials();
+        $avatarUrl = $user->avatarUrl();
         $accountRoute = \Illuminate\Support\Facades\Route::currentRouteName() ?? '';
         $navItems = [
             ['group' => 'Overview', 'items' => [
@@ -50,7 +51,11 @@
             <aside class="jfa-account-sidebar">
                 <div class="jfa-account-user">
                     <div class="jfa-account-user__row">
-                        <span class="jfa-account-user__avatar">{{ $initials }}</span>
+                        @if($avatarUrl)
+                            <img src="{{ $avatarUrl }}" alt="" class="jfa-account-user__avatar jfa-account-user__avatar--photo">
+                        @else
+                            <span class="jfa-account-user__avatar">{{ $initials }}</span>
+                        @endif
                         <span>
                             <strong style="display:block;font-size:14px;">{{ $user->name }}</strong>
                             <small style="font-size:12px;color:var(--jfa-muted);">{{ $user->email }}</small>
@@ -112,6 +117,7 @@
     </div>
 
     @include('partials.jfa-footer')
+    @include('partials.tawk-to')
     @include('partials.jfa-floating')
     @stack('scripts')
     <script>

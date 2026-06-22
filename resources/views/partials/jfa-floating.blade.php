@@ -3,6 +3,7 @@
     $waDigits = $waRaw ? preg_replace('/\D+/', '', $waRaw) : '';
     $waText = rawurlencode((string) config('jetfly.whatsapp.message'));
     $chatUrl = $siteSetting?->live_chat_url;
+    $tawkEnabled = ($siteSetting ?? null)?->tawkEnabled();
 @endphp
 <div class="jfa-float-wrap">
     @if($waDigits !== '')
@@ -12,13 +13,20 @@
             </svg>
         </a>
     @endif
-    @if(!empty($chatUrl))
+    @if($tawkEnabled)
+        <a class="jfa-float-btn jfa-float-btn--call" href="tel:{{ preg_replace('/\s+/', '', ($siteSetting ?? null)?->primarySupportPhone() ?? '+911800000000') }}" aria-label="Call support">
+            <span class="material-symbols-outlined" style="color:#fff;font-size:26px;">call</span>
+        </a>
+        <button type="button" class="jfa-float-btn jfa-float-btn--chat" data-open-tawk aria-label="Live chat" onclick="return window.jfaOpenTawkChat && window.jfaOpenTawkChat(event);">
+            <span class="material-symbols-outlined" style="color:#fff;font-size:26px;">chat</span>
+        </button>
+    @elseif(!empty($chatUrl))
         <a class="jfa-float-btn jfa-float-btn--chat" href="{{ $chatUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Live chat">
             <span class="material-symbols-outlined" style="color:#fff;font-size:26px;">chat</span>
         </a>
     @else
-        <a class="jfa-float-btn jfa-float-btn--chat" href="tel:{{ preg_replace('/\s+/', '', ($siteSetting ?? null)?->primarySupportPhone() ?? '+911800000000') }}" aria-label="Call support">
-            <span class="material-symbols-outlined" style="color:#fff;font-size:26px;">support_agent</span>
+        <a class="jfa-float-btn jfa-float-btn--call" href="tel:{{ preg_replace('/\s+/', '', ($siteSetting ?? null)?->primarySupportPhone() ?? '+911800000000') }}" aria-label="Call support">
+            <span class="material-symbols-outlined" style="color:#fff;font-size:26px;">call</span>
         </a>
     @endif
 </div>

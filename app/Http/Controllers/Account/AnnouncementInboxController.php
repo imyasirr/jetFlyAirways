@@ -48,4 +48,32 @@ class AnnouncementInboxController extends Controller
 
         return back();
     }
+
+    public function markAllRead(Request $request): RedirectResponse
+    {
+        abort_unless(Schema::hasTable('announcement_reads'), 503);
+
+        $userId = $request->user()->id;
+        $readIds = AnnouncementRead::query()
+            ->where('user_id', $userId)
+            ->pluck('announcement_id');
+
+        $unreadIds = Announcement::query()
+            ->published()
+            ->whereNotIn('id', $readIds)
+            ->pluck('id');
+
+        $now = now();
+        foreach ($unreadIds as $announcementId) {
+            AnnouncementRead::query()->firstOrCreate(
+                [
+                    'user_id' => $userId,
+                    'announcement_id' => $announcementId,
+                ],
+                ['read_at' => $now]
+            );
+        }
+
+        return back();
+    }
 }

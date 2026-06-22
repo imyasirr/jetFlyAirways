@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @include('partials.seo-head')
     @include('partials.head-fonts')
-    <link rel="stylesheet" href="{{ asset('css/jfa-website.css') }}?v=25">
+    <link rel="stylesheet" href="{{ asset('css/jfa-website.css') }}?v=35">
     @stack('styles')
 </head>
 <body class="jfa-page @yield('body_class')">
@@ -19,6 +19,7 @@
         </div>
     </main>
     @include('partials.jfa-footer')
+    @include('partials.tawk-to')
     @include('partials.jfa-floating')
     @include('partials.flash-swal', ['swalConfirmColor' => '#003B95'])
     @stack('scripts')

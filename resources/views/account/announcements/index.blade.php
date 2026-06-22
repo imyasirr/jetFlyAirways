@@ -5,8 +5,18 @@
 
 @section('content')
     <div class="acct-card jfa-notif-page">
-        <h2>Updates from Jet Fly</h2>
-        <p class="jfa-notif-page__intro">Official announcements and alerts for your account.</p>
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px;">
+            <div>
+                <h2 style="margin:0;">Updates from Jet Fly</h2>
+                <p class="jfa-notif-page__intro" style="margin-top:6px;">Official announcements and alerts for your account.</p>
+            </div>
+            @if($readIds->count() < $announcements->count())
+                <form method="post" action="{{ route('account.announcements.read-all') }}">
+                    @csrf
+                    <button type="submit" class="btn outline" style="white-space:nowrap;">Mark all read</button>
+                </form>
+            @endif
+        </div>
 
         @if($announcements->isEmpty())
             <div class="jfa-notif-empty">

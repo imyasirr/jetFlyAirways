@@ -27,6 +27,8 @@ class SiteSetting extends Model
         'social_twitter_url',
         'hero_image',
         'live_chat_url',
+        'tawk_property_id',
+        'tawk_widget_id',
     ];
 
     protected function casts(): array
@@ -112,6 +114,21 @@ class SiteSetting extends Model
     public function primarySupportPhone(): string
     {
         return $this->supportPhoneList()[0]['phone'] ?? '+91 1800-000-0000';
+    }
+
+    public function tawkEnabled(): bool
+    {
+        return filled($this->tawk_property_id) && filled($this->tawk_widget_id);
+    }
+
+    public function tawkPropertyId(): ?string
+    {
+        return filled($this->tawk_property_id) ? trim($this->tawk_property_id) : null;
+    }
+
+    public function tawkWidgetId(): ?string
+    {
+        return filled($this->tawk_widget_id) ? trim($this->tawk_widget_id) : null;
     }
 
     /** @return array<int, array{label: string, email?: string, phone?: string, address?: string}> */

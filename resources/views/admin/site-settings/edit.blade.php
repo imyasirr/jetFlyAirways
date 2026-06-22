@@ -186,7 +186,7 @@
             <section class="admin-form-section">
                 <div class="admin-form-section__head">
                     <h3>Social &amp; chat</h3>
-                    <p>Optional profile URLs and live chat link.</p>
+                    <p>Optional profile URLs, Tawk.to live chat widget, and fallback chat link.</p>
                 </div>
                 <div class="admin-form-section__body">
                     <label>Facebook
@@ -201,9 +201,20 @@
                     <label>X (Twitter)
                         <input type="url" name="social_twitter_url" value="{{ old('social_twitter_url', $setting->social_twitter_url) }}" placeholder="https://…">
                     </label>
-                    <label class="admin-field-full">Live chat URL
+                    <label class="admin-field-full">Tawk.to Property ID
+                        <input type="text" name="tawk_property_id" value="{{ old('tawk_property_id', $setting->tawk_property_id) }}" placeholder="6a3905d824f3ef1d47878c79" maxlength="64">
+                    </label>
+                    <label class="admin-field-full">Tawk.to Widget ID
+                        <input type="text" name="tawk_widget_id" value="{{ old('tawk_widget_id', $setting->tawk_widget_id) }}" placeholder="1jrnbtmeb" maxlength="64">
+                    </label>
+                    <label class="admin-field-full">Or paste Tawk embed URL
+                        <input type="text" name="tawk_embed_url" value="{{ old('tawk_embed_url') }}" placeholder="https://embed.tawk.to/PROPERTY_ID/WIDGET_ID">
+                    </label>
+                    <p class="admin-field-full" style="margin:-6px 0 0;font-size:12px;color:#64748b;line-height:1.5;">From your Tawk.to dashboard: Administration → Chat Widget → copy the embed link. When set, the chat widget loads on every public page and opens from the floating chat button.</p>
+                    <label class="admin-field-full">Fallback live chat URL (optional)
                         <input type="url" name="live_chat_url" value="{{ old('live_chat_url', $setting->live_chat_url) }}" placeholder="https://tawk.to/…">
                     </label>
+                    <p class="admin-field-full" style="margin:-6px 0 0;font-size:12px;color:#64748b;">Used only if Tawk.to IDs above are empty — opens in a new tab.</p>
                 </div>
             </section>
 

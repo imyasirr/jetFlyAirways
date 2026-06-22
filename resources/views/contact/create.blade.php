@@ -28,6 +28,7 @@
         $emails = $settings?->supportEmailList() ?? [['label' => 'Support', 'email' => 'support@jetflyairways.com']];
         $addresses = $settings?->officeAddressList() ?? [];
         $chatUrl = $settings?->live_chat_url;
+        $tawkEnabled = $settings?->tawkEnabled();
         $defaultName = old('name', auth()->user()?->name);
         $defaultEmail = old('email', auth()->user()?->email);
         $defaultPhone = old('phone', auth()->user()?->phone ?? '');
@@ -75,7 +76,16 @@
                         </div>
                     @endforeach
 
-                    @if(filled($chatUrl))
+                    @if($tawkEnabled)
+                        <button type="button" class="jfa-contact-method jfa-contact-method--accent" data-open-tawk style="width:100%;text-align:left;" onclick="return window.jfaOpenTawkChat && window.jfaOpenTawkChat(event);">
+                            <span class="jfa-contact-method__icon jfa-contact-method__icon--chat"><span class="material-symbols-outlined filled">chat</span></span>
+                            <span class="jfa-contact-method__body">
+                                <strong>Live chat</strong>
+                                <span>Chat with support online</span>
+                            </span>
+                            <span class="jfa-contact-method__action">Open</span>
+                        </button>
+                    @elseif(filled($chatUrl))
                         <a class="jfa-contact-method jfa-contact-method--accent" href="{{ $chatUrl }}" target="_blank" rel="noopener noreferrer">
                             <span class="jfa-contact-method__icon jfa-contact-method__icon--chat"><span class="material-symbols-outlined filled">chat</span></span>
                             <span class="jfa-contact-method__body">

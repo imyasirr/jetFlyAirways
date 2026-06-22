@@ -8,9 +8,8 @@
         ? \App\Support\PublicImageStorage::url($siteSetting->logo_image)
         : null;
     $user = auth()->user();
-    $initials = $user
-        ? collect(explode(' ', (string) $user->name))->filter()->map(fn ($w) => mb_strtoupper(mb_substr($w, 0, 1)))->take(2)->implode('') ?: 'U'
-        : '';
+    $initials = $user ? $user->initials() : '';
+    $avatarUrl = $user?->avatarUrl();
 @endphp
 
 <div class="jfa-promo" id="jfa-promo" role="note">
@@ -80,15 +79,60 @@
 
         <div class="jfa-header__actions">
             @auth
-                @if(($unreadAnnouncements ?? 0) > 0)
-                    <a href="{{ route('account.announcements.index') }}" class="jfa-notif-btn" aria-label="Notifications">
+                <div class="jfa-dropdown jfa-dropdown--notif" data-jfa-dropdown>
+                    <button type="button" class="jfa-notif-btn" aria-haspopup="true" aria-expanded="false" aria-label="Notifications">
                         <span class="material-symbols-outlined">notifications</span>
-                        <span class="jfa-notif-dot"></span>
-                    </a>
-                @endif
+                        @if(($unreadAnnouncements ?? 0) > 0)
+                            <span class="jfa-notif-dot" aria-hidden="true"></span>
+                        @endif
+                    </button>
+                    <div class="jfa-dropdown__panel jfa-dropdown__panel--right jfa-notif-dropdown">
+                        <div class="jfa-notif-dropdown__head">
+                            <strong>Notifications</strong>
+                            @if(($unreadAnnouncements ?? 0) > 0)
+                                <form method="post" action="{{ route('account.announcements.read-all') }}">
+                                    @csrf
+                                    <button type="submit" class="jfa-notif-dropdown__mark-all">Mark all read</button>
+                                </form>
+                            @endif
+                        </div>
+                        @if(($unreadAnnouncementList ?? collect())->isEmpty())
+                            <div class="jfa-notif-dropdown__empty">
+                                <span class="material-symbols-outlined" aria-hidden="true">notifications_off</span>
+                                <p>No new notifications</p>
+                            </div>
+                        @else
+                            <ul class="jfa-notif-dropdown__list">
+                                @foreach($unreadAnnouncementList as $announcement)
+                                    <li>
+                                        <form method="post" action="{{ route('account.announcements.read', $announcement) }}">
+                                            @csrf
+                                            <button type="submit" class="jfa-notif-dropdown__item">
+                                                <span class="jfa-notif-dropdown__item-title">{{ $announcement->title }}</span>
+                                                @if(filled($announcement->body))
+                                                    <span class="jfa-notif-dropdown__item-body">{{ \Illuminate\Support\Str::limit($announcement->body, 90) }}</span>
+                                                @endif
+                                                @if($announcement->published_at)
+                                                    <time class="jfa-notif-dropdown__item-time" datetime="{{ $announcement->published_at->toIso8601String() }}">
+                                                        {{ $announcement->published_at->timezone(config('app.timezone'))->diffForHumans() }}
+                                                    </time>
+                                                @endif
+                                            </button>
+                                        </form>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @endif
+                        <a href="{{ route('account.announcements.index') }}" class="jfa-notif-dropdown__footer">View all notifications</a>
+                    </div>
+                </div>
                 <div class="jfa-dropdown jfa-dropdown--account" data-jfa-dropdown>
                     <button type="button" class="jfa-account-btn" aria-haspopup="true">
-                        <span class="jfa-avatar">{{ $initials }}</span>
+                        @if($avatarUrl)
+                            <img src="{{ $avatarUrl }}" alt="" class="jfa-avatar jfa-avatar--photo">
+                        @else
+                            <span class="jfa-avatar">{{ $initials }}</span>
+                        @endif
                         {{ \Illuminate\Support\Str::limit($user->name, 16) }}
                         <span class="material-symbols-outlined" style="font-size:18px;">expand_more</span>
                     </button>
@@ -167,6 +211,10 @@
         @endforelse
         <div class="jfa-mobile-nav__cta">
             @auth
+                <a href="{{ route('account.announcements.index') }}" style="border:1px solid rgba(255,255,255,.35);color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;">
+                    <span class="material-symbols-outlined" style="font-size:18px;">notifications</span>
+                    Notifications{{ ($unreadAnnouncements ?? 0) > 0 ? ' ('.$unreadAnnouncements.')' : '' }}
+                </a>
                 <a href="{{ route('account.dashboard') }}" style="background:var(--jfa-promo-yellow);color:var(--jfa-on-yellow);font-weight:700;">My Account</a>
             @else
                 <a href="{{ route('login') }}" style="border:1px solid rgba(255,255,255,.35);color:#fff;">Sign In</a>
@@ -198,11 +246,24 @@
             e.stopPropagation();
             var open = wrap.classList.contains('is-open');
             document.querySelectorAll('[data-jfa-dropdown].is-open').forEach(function (el) { el.classList.remove('is-open'); });
-            if (!open) wrap.classList.add('is-open');
+            if (!open) {
+                wrap.classList.add('is-open');
+                btn.setAttribute('aria-expanded', 'true');
+            } else {
+                btn.setAttribute('aria-expanded', 'false');
+            }
         });
+        var panel = wrap.querySelector('.jfa-dropdown__panel');
+        if (panel) {
+            panel.addEventListener('click', function (e) { e.stopPropagation(); });
+        }
     });
     document.addEventListener('click', function () {
-        document.querySelectorAll('[data-jfa-dropdown].is-open').forEach(function (el) { el.classList.remove('is-open'); });
+        document.querySelectorAll('[data-jfa-dropdown].is-open').forEach(function (el) {
+            el.classList.remove('is-open');
+            var b = el.querySelector('button[aria-expanded]');
+            if (b) b.setAttribute('aria-expanded', 'false');
+        });
     });
 
     var ham = document.getElementById('jfa-hamburger');

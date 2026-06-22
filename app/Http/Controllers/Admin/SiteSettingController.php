@@ -43,11 +43,28 @@ class SiteSettingController extends Controller
             'social_linkedin_url' => ['nullable', 'string', 'max:500'],
             'social_twitter_url' => ['nullable', 'string', 'max:500'],
             'live_chat_url' => ['nullable', 'string', 'max:500'],
+            'tawk_property_id' => ['nullable', 'string', 'max:64'],
+            'tawk_widget_id' => ['nullable', 'string', 'max:64'],
+            'tawk_embed_url' => ['nullable', 'string', 'max:500'],
             'hero_image_file' => ['nullable', 'image', 'mimes:jpeg,png,webp,gif', 'max:10240'],
             'clear_hero_image' => ['nullable', 'boolean'],
         ]);
 
-        unset($data['logo_image_file'], $data['clear_logo_image'], $data['hero_image_file'], $data['clear_hero_image']);
+        unset($data['logo_image_file'], $data['clear_logo_image'], $data['hero_image_file'], $data['clear_hero_image'], $data['tawk_embed_url']);
+
+        if (filled($request->input('tawk_embed_url'))) {
+            if (preg_match('#embed\.tawk\.to/([A-Za-z0-9]+)/([A-Za-z0-9]+)#', (string) $request->input('tawk_embed_url'), $matches)) {
+                $data['tawk_property_id'] = $matches[1];
+                $data['tawk_widget_id'] = $matches[2];
+            }
+        }
+
+        if (! filled($data['tawk_property_id'] ?? null)) {
+            $data['tawk_property_id'] = null;
+        }
+        if (! filled($data['tawk_widget_id'] ?? null)) {
+            $data['tawk_widget_id'] = null;
+        }
 
         $supportEmails = $this->normalizeContactRows($data['support_emails'] ?? [], 'email', 'Support');
         $supportPhones = $this->normalizeContactRows($data['support_phones'] ?? [], 'phone', 'Support');

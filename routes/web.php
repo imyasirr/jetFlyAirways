@@ -132,6 +132,7 @@ Route::middleware('auth')->prefix('account')->name('account.')->group(function (
     Route::get('bookings/{booking}', [AccountBookingController::class, 'show'])->name('bookings.show');
     Route::get('wishlist', [AccountWishlistController::class, 'index'])->name('wishlist.index');
     Route::get('notifications', [AnnouncementInboxController::class, 'index'])->name('announcements.index');
+    Route::post('notifications/read-all', [AnnouncementInboxController::class, 'markAllRead'])->name('announcements.read-all');
     Route::post('notifications/{announcement}/read', [AnnouncementInboxController::class, 'markRead'])->name('announcements.read');
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('profile', [ProfileController::class, 'update'])->name('profile.update');

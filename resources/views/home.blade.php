@@ -21,7 +21,9 @@
                 'description' => $banner->description ?: 'Discover India and the world with unbeatable fares on 500+ routes.',
                 'link' => $banner->link ?: route('module.index', 'flights'),
                 'button_text' => $banner->button_text ?: 'Search Flights',
-                'tag' => '✈ Flights from ₹999',
+                'show_button' => $banner->show_button ?? true,
+                'tags' => $banner->tagList(),
+                'show_tags' => $banner->show_tags ?? true,
             ])
             ->filter(fn ($slide) => filled($slide['image']))
             ->values();
@@ -32,7 +34,9 @@
                 'description' => 'Discover India and the world with unbeatable fares on 500+ routes.',
                 'link' => route('module.index', 'flights'),
                 'button_text' => 'Search Flights',
-                'tag' => '✈ Flights from ₹999',
+                'show_button' => true,
+                'tags' => ['✈ Flights from ₹999'],
+                'show_tags' => true,
             ]]);
         }
         $services = [
@@ -56,20 +60,28 @@
     <section class="jfa-hero" data-home-hero-carousel aria-label="Book travel">
         <div class="jfa-hero__bg" aria-hidden="true">
             @foreach($heroSlides as $slide)
-                <img src="{{ e($slide['image']) }}" alt="" class="{{ $loop->first ? 'is-active' : '' }}" data-hero-slide style="{{ $loop->first ? '' : 'position:absolute;inset:0;opacity:0;' }}">
+                <img src="{{ e($slide['image']) }}" alt="" class="{{ $loop->first ? 'is-active' : '' }}" data-hero-slide @if(!$loop->first) style="opacity:0;" @endif>
             @endforeach
         </div>
         <div class="jfa-hero__overlay" aria-hidden="true"></div>
         <div class="jfa-container jfa-hero__content">
             @foreach($heroSlides as $slide)
                 <div class="jfa-hero__copy {{ $loop->first ? 'is-active' : '' }}" data-hero-copy @if(!$loop->first) hidden @endif>
-                    <span class="jfa-hero__tag">{{ $slide['tag'] }}</span>
+                    @if(($slide['show_tags'] ?? true) && ! empty($slide['tags']))
+                        <div class="jfa-hero__tags">
+                            @foreach($slide['tags'] as $tag)
+                                <span class="jfa-hero__tag">{{ $tag }}</span>
+                            @endforeach
+                        </div>
+                    @endif
                     <h1>{{ $slide['title'] }}</h1>
                     <p class="jfa-hero__sub">{{ $slide['description'] }}</p>
-                    <a href="{{ $slide['link'] ?: '#search' }}" class="jfa-hero__cta">
-                        {{ $slide['button_text'] ?: 'Explore now' }}
-                        <span class="material-symbols-outlined">arrow_forward</span>
-                    </a>
+                    @if($slide['show_button'] ?? true)
+                        <a href="{{ $slide['link'] ?: '#search' }}" class="jfa-hero__cta">
+                            {{ $slide['button_text'] ?: 'Explore now' }}
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                        </a>
+                    @endif
                 </div>
             @endforeach
             @if($heroSlides->count() > 1)
@@ -159,14 +171,33 @@
     var slides = root.querySelectorAll('[data-hero-slide]');
     var copies = root.querySelectorAll('[data-hero-copy]');
     var dots = root.querySelectorAll('[data-hero-dot]');
-    if (slides.length < 2) return;
-    var current = 0, timer = null;
+    var current = 0;
+    var timer = null;
+
+    function layoutSlides(activeIndex) {
+        slides.forEach(function (el, idx) {
+            var active = idx === activeIndex;
+            el.classList.toggle('is-active', active);
+            el.style.opacity = active ? '1' : '0';
+            if (active) {
+                el.style.position = 'relative';
+                el.style.width = '100%';
+                el.style.height = 'auto';
+                el.style.objectFit = '';
+            } else {
+                el.style.position = 'absolute';
+                el.style.top = '0';
+                el.style.left = '0';
+                el.style.width = '100%';
+                el.style.height = '100%';
+                el.style.objectFit = 'contain';
+            }
+        });
+    }
+
     function show(i) {
         current = (i + slides.length) % slides.length;
-        slides.forEach(function (el, idx) {
-            el.style.opacity = idx === current ? '1' : '0';
-            if (idx === current) { el.style.position = 'relative'; } else { el.style.position = 'absolute'; el.style.inset = '0'; }
-        });
+        layoutSlides(current);
         copies.forEach(function (el, idx) {
             el.hidden = idx !== current;
             el.classList.toggle('is-active', idx === current);
@@ -176,6 +207,10 @@
             dot.style.width = idx === current ? '32px' : '8px';
         });
     }
+
+    layoutSlides(0);
+
+    if (slides.length < 2) return;
     function start() { timer = setInterval(function () { show(current + 1); }, 5000); }
     function stop() { if (timer) clearInterval(timer); timer = null; }
     dots.forEach(function (dot) {
