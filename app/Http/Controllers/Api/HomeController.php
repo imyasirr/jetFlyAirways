@@ -16,6 +16,7 @@ use App\Models\Testimonial;
 use App\Models\TrainRoute;
 use App\Models\TravelPackage;
 use App\Services\Travel\TravelCatalogService;
+use App\Support\PublicImageStorage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Schema;
 
@@ -55,8 +56,11 @@ class HomeController extends Controller
                     'id' => $b->id,
                     'title' => $b->title,
                     'subtitle' => $b->description,
-                    'image_url' => $b->image ? url('/uploads/'.$b->image) : null,
+                    'image_url' => PublicImageStorage::url($b->image),
                     'link_url' => $b->link,
+                    'button_text' => $b->button_text,
+                    'show_button' => $b->show_button ?? true,
+                    'tags' => $b->tagList(),
                 ]);
         }
 

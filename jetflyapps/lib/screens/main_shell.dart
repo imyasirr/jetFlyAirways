@@ -92,7 +92,7 @@ class _MainShellState extends State<MainShell> {
     final screens = [
       HomeScreen(homeData: _homeData!, onRefresh: _refreshHome),
       const ExploreScreen(),
-      const BookingsScreen(),
+      BookingsScreen(active: _index == 2),
       const WishlistScreen(),
       const AccountScreen(),
     ];

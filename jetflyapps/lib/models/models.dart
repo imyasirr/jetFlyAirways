@@ -90,6 +90,7 @@ class BookingModel {
   final String bookingCode;
   final String module;
   final int moduleItemId;
+  final String? itemTitle;
   final String travelDate;
   final int travellersCount;
   final double totalAmount;
@@ -107,6 +108,7 @@ class BookingModel {
     required this.bookingCode,
     required this.module,
     required this.moduleItemId,
+    this.itemTitle,
     required this.travelDate,
     required this.travellersCount,
     required this.totalAmount,
@@ -126,6 +128,7 @@ class BookingModel {
       bookingCode: json['booking_code'] as String,
       module: json['module'] as String,
       moduleItemId: json['module_item_id'] as int,
+      itemTitle: json['item_title'] as String?,
       travelDate: json['travel_date'] as String,
       travellersCount: json['travellers_count'] as int,
       totalAmount: (json['total_amount'] as num).toDouble(),
@@ -134,9 +137,9 @@ class BookingModel {
       couponCode: json['coupon_code'] as String?,
       status: json['status'] as String,
       paymentStatus: json['payment_status'] as String,
-      contactName: json['contact_name'] as String,
-      contactEmail: json['contact_email'] as String,
-      contactPhone: json['contact_phone'] as String,
+      contactName: json['contact_name'] as String? ?? '',
+      contactEmail: json['contact_email'] as String? ?? '',
+      contactPhone: json['contact_phone'] as String? ?? '',
     );
   }
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Contracts\GdsBookingClient;
+use App\Http\Controllers\Api\Concerns\ResolvesApiUser;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreBookingRequest;
 use App\Mail\BookingPlacedMail;
@@ -17,6 +18,8 @@ use Illuminate\Support\Str;
 
 class BookingController extends Controller
 {
+    use ResolvesApiUser;
+
     public function __construct(private TravelCatalogService $catalog) {}
 
     public function store(StoreBookingRequest $request, string $module, string $item, GdsBookingClient $gds, CouponDiscountCalculator $coupons): JsonResponse
@@ -52,7 +55,7 @@ class BookingController extends Controller
         } while (Booking::where('booking_code', $bookingCode)->exists());
 
         $bookingAttrs = [
-            'user_id' => $request->user()?->id,
+            'user_id' => $this->apiUser($request)?->id,
             'booking_code' => $bookingCode,
             'module' => $module,
             'module_item_id' => $model->id,
@@ -80,10 +83,10 @@ class BookingController extends Controller
 
         $booking = Booking::create($bookingAttrs);
 
-        if ($request->user() && (bool) ($validated['save_traveller'] ?? false)) {
+        if ($this->apiUser($request) && (bool) ($validated['save_traveller'] ?? false)) {
             SavedTraveller::query()->updateOrCreate(
                 [
-                    'user_id' => $request->user()->id,
+                    'user_id' => $this->apiUser($request)->id,
                     'email' => $validated['email'],
                 ],
                 [
@@ -141,11 +144,22 @@ class BookingController extends Controller
      */
     public function bookingPayload(Booking $booking): array
     {
+        $itemTitle = null;
+        try {
+            $model = $this->catalog->resolveItemById($booking->module, $booking->module_item_id);
+            if ($model !== null) {
+                $itemTitle = $this->catalog->mapListingRow($booking->module, $model)['title'];
+            }
+        } catch (\Throwable) {
+            //
+        }
+
         return [
             'id' => $booking->id,
             'booking_code' => $booking->booking_code,
             'module' => $booking->module,
             'module_item_id' => $booking->module_item_id,
+            'item_title' => $itemTitle,
             'travel_date' => $booking->travel_date->format('Y-m-d'),
             'return_date' => $booking->return_date?->format('Y-m-d'),
             'travellers_count' => $booking->travellers_count,

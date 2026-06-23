@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Contracts\GdsBookingClient;
+use App\Http\Controllers\Api\Concerns\ResolvesApiUser;
 use App\Http\Controllers\Controller;
 use App\Mail\BookingPaidMail;
 use App\Models\Booking;
@@ -16,13 +17,16 @@ use Razorpay\Api\Errors\SignatureVerificationError;
 
 class PaymentController extends Controller
 {
+    use ResolvesApiUser;
+
     public function createOrder(Request $request, Booking $booking): JsonResponse
     {
         if ($booking->payment_status === 'paid') {
             return response()->json(['message' => 'Booking is already paid.'], 422);
         }
 
-        if ($request->user() && $booking->user_id && $booking->user_id !== $request->user()->id) {
+        $user = $this->apiUser($request);
+        if ($user && ! $this->userCanAccessBooking($user, $booking)) {
             return response()->json(['message' => 'Unauthorized.'], 403);
         }
 
@@ -72,7 +76,8 @@ class PaymentController extends Controller
 
         $booking = Booking::query()->findOrFail($data['booking_id']);
 
-        if ($request->user() && $booking->user_id && $booking->user_id !== $request->user()->id) {
+        $user = $this->apiUser($request);
+        if ($user && ! $this->userCanAccessBooking($user, $booking)) {
             return response()->json(['message' => 'Unauthorized.'], 403);
         }
 
@@ -133,5 +138,20 @@ class PaymentController extends Controller
             'message' => 'Payment successful. Your booking is confirmed.',
             'booking' => app(BookingController::class)->bookingPayload($booking->fresh()),
         ]);
+    }
+
+    private function userCanAccessBooking(\App\Models\User $user, Booking $booking): bool
+    {
+        if ($booking->user_id === $user->id) {
+            return true;
+        }
+
+        if ($booking->user_id === null && strcasecmp((string) $booking->contact_email, $user->email) === 0) {
+            $booking->update(['user_id' => $user->id]);
+
+            return true;
+        }
+
+        return false;
     }
 }

@@ -45,6 +45,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/account/bookings/{booking}', [AccountController::class, 'showBooking']);
         Route::post('/account/bookings/{booking}/cancel', [AccountController::class, 'cancelBooking']);
         Route::put('/account/profile', [AccountController::class, 'updateProfile']);
+        Route::post('/account/profile/avatar', [AccountController::class, 'updateAvatar']);
         Route::put('/account/password', [AccountController::class, 'updatePassword']);
 
         Route::get('/account/wishlist', [AccountController::class, 'wishlist']);

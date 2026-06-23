@@ -16,6 +16,7 @@ use App\Models\TravelAddon;
 use App\Models\TravelPackage;
 use App\Models\User;
 use App\Models\WishlistItem;
+use App\Support\PublicImageStorage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -28,8 +29,17 @@ class AccountController extends Controller
 
     public function bookings(Request $request): JsonResponse
     {
-        $paginator = $request->user()
-            ->bookings()
+        $user = $request->user();
+        $this->claimOrphanBookings($user);
+
+        $paginator = Booking::query()
+            ->where(function ($query) use ($user) {
+                $query->where('user_id', $user->id)
+                    ->orWhere(function ($inner) use ($user) {
+                        $inner->whereNull('user_id')
+                            ->where('contact_email', $user->email);
+                    });
+            })
             ->orderByDesc('travel_date')
             ->paginate(12);
 
@@ -48,7 +58,7 @@ class AccountController extends Controller
 
     public function showBooking(Request $request, Booking $booking): JsonResponse
     {
-        abort_unless($booking->user_id === $request->user()->id, 403);
+        abort_unless($this->userOwnsBooking($request->user(), $booking), 403);
 
         return response()->json([
             'booking' => app(BookingController::class)->bookingPayload($booking),
@@ -57,7 +67,7 @@ class AccountController extends Controller
 
     public function cancelBooking(Request $request, Booking $booking): JsonResponse
     {
-        abort_unless($booking->user_id === $request->user()->id, 403);
+        abort_unless($this->userOwnsBooking($request->user(), $booking), 403);
 
         if ($booking->status === 'cancelled') {
             return response()->json(['message' => 'This booking is already cancelled.']);
@@ -95,6 +105,36 @@ class AccountController extends Controller
 
         return response()->json([
             'message' => 'Profile updated successfully.',
+            'user' => app(AuthController::class)->userPayload($user->fresh()),
+        ]);
+    }
+
+    public function updateAvatar(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        if ($request->boolean('clear_avatar')) {
+            PublicImageStorage::deleteIfExists($user->avatar);
+            $user->update(['avatar' => null]);
+
+            return response()->json([
+                'message' => 'Profile photo removed.',
+                'user' => app(AuthController::class)->userPayload($user->fresh()),
+            ]);
+        }
+
+        $request->validate([
+            'avatar' => ['required_without:clear_avatar', 'image', 'mimes:jpeg,png,webp,gif', 'max:4096'],
+            'clear_avatar' => ['sometimes', 'boolean'],
+        ]);
+
+        $path = PublicImageStorage::storeUpload($request->file('avatar'), 'avatars', $user->avatar);
+        abort_if($path === null, 500, 'Profile photo upload failed.');
+
+        $user->update(['avatar' => $path]);
+
+        return response()->json([
+            'message' => 'Profile photo updated.',
             'user' => app(AuthController::class)->userPayload($user->fresh()),
         ]);
     }
@@ -297,5 +337,23 @@ class AccountController extends Controller
             'title' => $title,
             'slug' => $slug,
         ];
+    }
+
+    private function claimOrphanBookings(User $user): void
+    {
+        Booking::query()
+            ->whereNull('user_id')
+            ->where('contact_email', $user->email)
+            ->update(['user_id' => $user->id]);
+    }
+
+    private function userOwnsBooking(User $user, Booking $booking): bool
+    {
+        if ($booking->user_id === $user->id) {
+            return true;
+        }
+
+        return $booking->user_id === null
+            && strcasecmp((string) $booking->contact_email, $user->email) === 0;
     }
 }

@@ -11,7 +11,9 @@ import 'profile_screen.dart';
 import 'support_screens.dart';
 
 class BookingsScreen extends StatefulWidget {
-  const BookingsScreen({super.key});
+  const BookingsScreen({super.key, this.active = false});
+
+  final bool active;
 
   @override
   State<BookingsScreen> createState() => _BookingsScreenState();
@@ -20,6 +22,7 @@ class BookingsScreen extends StatefulWidget {
 class _BookingsScreenState extends State<BookingsScreen> {
   List<BookingModel> _bookings = [];
   bool _loading = true;
+  AuthProvider? _auth;
 
   @override
   void initState() {
@@ -27,18 +30,55 @@ class _BookingsScreenState extends State<BookingsScreen> {
     _load();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final auth = context.read<AuthProvider>();
+    if (_auth != auth) {
+      _auth?.removeListener(_onAuthChanged);
+      _auth = auth;
+      _auth!.addListener(_onAuthChanged);
+    }
+  }
+
+  @override
+  void didUpdateWidget(BookingsScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.active && !oldWidget.active && context.read<AuthProvider>().isLoggedIn) {
+      _load();
+    }
+  }
+
+  @override
+  void dispose() {
+    _auth?.removeListener(_onAuthChanged);
+    super.dispose();
+  }
+
+  void _onAuthChanged() {
+    if (_auth?.isLoggedIn == true) {
+      _load();
+    } else if (mounted) {
+      setState(() {
+        _bookings = [];
+        _loading = false;
+      });
+    }
+  }
+
   Future<void> _load() async {
     if (!context.read<AuthProvider>().isLoggedIn) {
-      setState(() => _loading = false);
+      if (mounted) setState(() => _loading = false);
       return;
     }
+    if (mounted) setState(() => _loading = true);
     try {
       final bookings = await TravelRepository(context.read<ApiService>()).getBookings();
-      setState(() => _bookings = bookings);
+      if (mounted) setState(() => _bookings = bookings);
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
     } finally {
-      setState(() => _loading = false);
+      if (mounted) setState(() => _loading = false);
     }
   }
 
@@ -99,6 +139,10 @@ class _BookingsScreenState extends State<BookingsScreen> {
                                   ),
                                   const SizedBox(height: 12),
                                   Text(b.bookingCode, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                  if (b.itemTitle != null && b.itemTitle!.isNotEmpty) ...[
+                                    const SizedBox(height: 4),
+                                    Text(b.itemTitle!, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                                  ],
                                   const SizedBox(height: 4),
                                   Text('${b.module.toUpperCase()} · ${b.travelDate} · ${b.travellersCount} traveller(s)', style: const TextStyle(color: AppColors.muted, fontSize: 13)),
                                   if (!b.isCancelled && b.paymentStatus == 'pending') ...[
@@ -276,7 +320,12 @@ class AccountScreen extends StatelessWidget {
                   CircleAvatar(
                     radius: 36,
                     backgroundColor: AppColors.secondaryContainer,
-                    child: Text(user.name.isNotEmpty ? user.name[0].toUpperCase() : 'U', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: AppColors.primary)),
+                    backgroundImage: user.avatarUrl != null && user.avatarUrl!.isNotEmpty
+                        ? NetworkImage(user.avatarUrl!)
+                        : null,
+                    child: user.avatarUrl == null || user.avatarUrl!.isEmpty
+                        ? Text(user.name.isNotEmpty ? user.name[0].toUpperCase() : 'U', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: AppColors.primary))
+                        : null,
                   ),
                   const SizedBox(width: 16),
                   Expanded(

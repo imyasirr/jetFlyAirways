@@ -151,6 +151,20 @@ class TravelRepository {
     return UserModel.fromJson(data['user'] as Map<String, dynamic>);
   }
 
+  Future<UserModel> uploadAvatar(String filePath) async {
+    final data = await _api.postMultipart(
+      '/account/profile/avatar',
+      fileField: 'avatar',
+      filePath: filePath,
+    );
+    return UserModel.fromJson(data['user'] as Map<String, dynamic>);
+  }
+
+  Future<UserModel> removeAvatar() async {
+    final data = await _api.post('/account/profile/avatar', body: {'clear_avatar': true});
+    return UserModel.fromJson(data['user'] as Map<String, dynamic>);
+  }
+
   Future<List<Map<String, dynamic>>> getAnnouncements() async {
     final data = await _api.get('/account/announcements');
     return (data['announcements'] as List? ?? []).cast<Map<String, dynamic>>();

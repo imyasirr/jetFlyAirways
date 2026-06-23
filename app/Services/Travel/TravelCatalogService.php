@@ -107,6 +107,23 @@ class TravelCatalogService
         return null;
     }
 
+    public function resolveItemById(string $slug, int $id): Flight|Hotel|TravelPackage|BusRoute|TrainRoute|CabService|TravelAddon|null
+    {
+        if (in_array($slug, self::ADDON_MODULES, true) && Schema::hasTable('travel_addons')) {
+            return TravelAddon::query()->where('category', $slug)->find($id);
+        }
+
+        return match ($slug) {
+            'flights' => Flight::query()->find($id),
+            'hotels' => Hotel::query()->find($id),
+            'packages' => TravelPackage::query()->find($id),
+            'buses' => BusRoute::query()->find($id),
+            'trains' => TrainRoute::query()->find($id),
+            'cabs' => CabService::query()->find($id),
+            default => null,
+        };
+    }
+
     /**
      * @return array{id:int, title:string, subtitle:string, price:float, slug?:string}
      */

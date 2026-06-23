@@ -25,13 +25,12 @@ class ContentController extends Controller
 
         $faqs = Faq::query()
             ->where('is_active', true)
-            ->orderBy('sort_order')
+            ->orderBy('id')
             ->get()
             ->map(fn ($f) => [
                 'id' => $f->id,
                 'question' => $f->question,
                 'answer' => $f->answer,
-                'category' => $f->category,
             ]);
 
         return response()->json(['faqs' => $faqs]);

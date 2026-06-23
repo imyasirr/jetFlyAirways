@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/models.dart';
 import '../theme/app_theme.dart';
+import '../widgets/banner_carousel.dart';
 import '../widgets/listing_card.dart';
 import '../widgets/module_tile.dart';
 import '../widgets/section_title.dart';
@@ -20,7 +21,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late final List<ModuleInfo> _modules;
-  final _bannerController = PageController();
 
   @override
   void initState() {
@@ -113,46 +113,18 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  if (banners.isNotEmpty) ...[
-                    const SizedBox(height: 16),
-                    SizedBox(
-                      height: 150,
-                      child: PageView.builder(
-                        controller: _bannerController,
-                        itemCount: banners.length,
-                        itemBuilder: (context, i) {
-                          final b = banners[i];
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Card(
-                              clipBehavior: Clip.antiAlias,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [AppColors.primary, AppColors.primaryContainer],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                                ),
-                                padding: const EdgeInsets.all(20),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(b['title'] as String? ?? '', style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-                                    if (b['subtitle'] != null) ...[
-                                      const SizedBox(height: 6),
-                                      Text(b['subtitle'] as String, style: const TextStyle(color: Colors.white70, fontSize: 13), maxLines: 2, overflow: TextOverflow.ellipsis),
-                                    ],
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
+                  const SizedBox(height: 16),
+                  BannerCarousel(
+                    banners: banners.isNotEmpty
+                        ? banners
+                        : const [
+                            {
+                              'title': 'Fly Beyond Horizons',
+                              'subtitle': 'Discover flights, hotels and packages at great prices.',
+                              'image_url': null,
+                            },
+                          ],
+                  ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
                     child: SingleChildScrollView(

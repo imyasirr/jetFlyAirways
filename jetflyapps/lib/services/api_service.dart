@@ -77,6 +77,49 @@ class ApiService {
     }
   }
 
+  Future<Map<String, dynamic>> postMultipart(
+    String path, {
+    required String fileField,
+    required String filePath,
+    Map<String, String>? fields,
+  }) async {
+    final uri = Uri.parse('${ApiConfig.apiUrl}$path');
+    final request = http.MultipartRequest('POST', uri);
+    request.headers['Accept'] = 'application/json';
+    if (_token != null) request.headers['Authorization'] = 'Bearer $_token';
+    if (fields != null) request.fields.addAll(fields);
+    request.files.add(await http.MultipartFile.fromPath(fileField, filePath));
+
+    try {
+      final streamed = await request.send().timeout(_timeout);
+      final response = await http.Response.fromStream(streamed);
+      return _handleResponse(response);
+    } on SocketException {
+      throw ApiException('No internet connection. Check your network and try again.');
+    } on http.ClientException {
+      throw ApiException('Cannot reach server. Please try again later.');
+    }
+  }
+
+  Future<Map<String, dynamic>> postForm(String path, Map<String, String> fields) async {
+    final uri = Uri.parse('${ApiConfig.apiUrl}$path');
+    try {
+      final response = await http.post(
+        uri,
+        headers: {
+          'Accept': 'application/json',
+          if (_token != null) 'Authorization': 'Bearer $_token',
+        },
+        body: fields,
+      ).timeout(_timeout);
+      return _handleResponse(response);
+    } on SocketException {
+      throw ApiException('No internet connection. Check your network and try again.');
+    } on http.ClientException {
+      throw ApiException('Cannot reach server. Please try again later.');
+    }
+  }
+
   Map<String, dynamic> _handleResponse(http.Response response) {
     Map<String, dynamic> data = {};
     if (response.body.isNotEmpty) {
