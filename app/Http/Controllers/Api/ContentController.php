@@ -3,10 +3,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\NewContactInquiryMail;
 use App\Models\Blog;
+use App\Models\ContactInquiry;
 use App\Models\Faq;
+use App\Models\Offer;
 use App\Models\Page;
+use App\Models\SiteSetting;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
 
 class ContentController extends Controller
@@ -88,5 +94,63 @@ class ContentController extends Controller
                 'content' => $page->body,
             ],
         ]);
+    }
+
+    public function offers(): JsonResponse
+    {
+        if (! Schema::hasTable('offers')) {
+            return response()->json(['offers' => []]);
+        }
+
+        $offers = Offer::query()->activeWindow()->orderByDesc('id')->get()
+            ->map(fn ($o) => [
+                'id' => $o->id,
+                'title' => $o->title,
+                'description' => $o->description,
+                'redirect_url' => $o->redirect_url,
+            ]);
+
+        return response()->json(['offers' => $offers]);
+    }
+
+    public function siteInfo(): JsonResponse
+    {
+        $setting = Schema::hasTable('site_settings') ? SiteSetting::query()->first() : null;
+
+        return response()->json([
+            'site' => [
+                'name' => $setting?->brand_name ?? 'Jet Fly Airways',
+                'email' => $setting?->primarySupportEmail(),
+                'phone' => $setting?->primarySupportPhone(),
+                'whatsapp' => config('jetfly.whatsapp_number'),
+                'address' => $setting?->officeAddressList()[0]['address'] ?? null,
+            ],
+        ]);
+    }
+
+    public function contact(Request $request): JsonResponse
+    {
+        abort_unless(Schema::hasTable('contact_inquiries'), 503);
+
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:120'],
+            'email' => ['required', 'email', 'max:120'],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'subject' => ['nullable', 'string', 'max:200'],
+            'message' => ['required', 'string', 'max:5000'],
+        ]);
+
+        $inquiry = ContactInquiry::create([...$data, 'status' => 'new']);
+
+        $to = config('jetfly.admin_notify_email');
+        if (is_string($to) && filter_var($to, FILTER_VALIDATE_EMAIL)) {
+            try {
+                Mail::to($to)->send(new NewContactInquiryMail($inquiry));
+            } catch (\Throwable) {
+                //
+            }
+        }
+
+        return response()->json(['message' => 'Thanks — we have received your message and will reply soon.']);
     }
 }

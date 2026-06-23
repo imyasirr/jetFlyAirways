@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/api_service.dart';
 import '../services/travel_repository.dart';
+import '../theme/app_theme.dart';
+import '../widgets/empty_state.dart';
 import 'account_screens.dart';
+import 'explore_screen.dart';
 import 'home_screen.dart';
 
 class MainShell extends StatefulWidget {
@@ -27,41 +30,68 @@ class _MainShellState extends State<MainShell> {
   Future<void> _loadHome() async {
     try {
       final data = await TravelRepository(context.read<ApiService>()).getHome();
-      setState(() => _homeData = data);
+      if (mounted) setState(() => _homeData = data);
     } catch (e) {
-      setState(() => _error = e.toString());
+      if (mounted) setState(() => _error = e.toString());
     } finally {
-      setState(() => _loading = false);
+      if (mounted) setState(() => _loading = false);
     }
+  }
+
+  Future<void> _refreshHome() async {
+    final data = await TravelRepository(context.read<ApiService>()).getHome();
+    setState(() => _homeData = data);
   }
 
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
-    if (_error != null) {
       return Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.wifi_off, size: 64, color: Colors.grey),
-              const SizedBox(height: 16),
-              Text('Cannot connect to server', style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 8),
-              Padding(padding: const EdgeInsets.symmetric(horizontal: 32), child: Text(_error!, textAlign: TextAlign.center)),
-              const SizedBox(height: 16),
-              ElevatedButton(onPressed: () { setState(() { _loading = true; _error = null; }); _loadHome(); }, child: const Text('Retry')),
-            ],
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [AppColors.bookingBlue, AppColors.primary],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          child: const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.flight_takeoff, color: Colors.white, size: 64),
+                SizedBox(height: 20),
+                CircularProgressIndicator(color: Colors.white),
+                SizedBox(height: 16),
+                Text('Loading your travel hub...', style: TextStyle(color: Colors.white70)),
+              ],
+            ),
           ),
         ),
       );
     }
 
+    if (_error != null) {
+      return Scaffold(
+        body: EmptyState(
+          icon: Icons.wifi_off,
+          title: 'Cannot connect to server',
+          subtitle: _error,
+          actionLabel: 'Retry',
+          onAction: () {
+            setState(() {
+              _loading = true;
+              _error = null;
+            });
+            _loadHome();
+          },
+        ),
+      );
+    }
+
     final screens = [
-      HomeScreen(homeData: _homeData!),
+      HomeScreen(homeData: _homeData!, onRefresh: _refreshHome),
+      const ExploreScreen(),
       const BookingsScreen(),
       const WishlistScreen(),
       const AccountScreen(),
@@ -69,14 +99,15 @@ class _MainShellState extends State<MainShell> {
 
     return Scaffold(
       body: IndexedStack(index: _index, children: screens),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _index,
-        onTap: (i) => setState(() => _index = i),
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.confirmation_number), label: 'Bookings'),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Wishlist'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Account'),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _index,
+        onDestinationSelected: (i) => setState(() => _index = i),
+        destinations: const [
+          NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Home'),
+          NavigationDestination(icon: Icon(Icons.explore_outlined), selectedIcon: Icon(Icons.explore), label: 'Explore'),
+          NavigationDestination(icon: Icon(Icons.confirmation_number_outlined), selectedIcon: Icon(Icons.confirmation_number), label: 'Bookings'),
+          NavigationDestination(icon: Icon(Icons.favorite_outline), selectedIcon: Icon(Icons.favorite), label: 'Wishlist'),
+          NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Account'),
         ],
       ),
     );

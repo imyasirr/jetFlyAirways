@@ -48,7 +48,10 @@ class FlightController extends Controller
 
     public function store(StoreFlightRequest $request)
     {
-        Flight::create($request->validated() + ['is_active' => $request->boolean('is_active')]);
+        $data = $request->validated();
+        $data['is_active'] = $request->boolean('is_active');
+        Flight::create($data);
+
         return redirect()->route('admin.flights.index')->with('status', 'Flight created successfully.');
     }
 
@@ -64,7 +67,10 @@ class FlightController extends Controller
 
     public function update(UpdateFlightRequest $request, Flight $flight)
     {
-        $flight->update($request->validated() + ['is_active' => $request->boolean('is_active')]);
+        $data = $request->validated();
+        $data['is_active'] = $request->boolean('is_active');
+        $flight->update($data);
+
         return redirect()->route('admin.flights.index')->with('status', 'Flight updated successfully.');
     }
 

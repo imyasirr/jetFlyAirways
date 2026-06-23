@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/models.dart';
-import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../services/travel_repository.dart';
 import '../theme/app_theme.dart';
+import '../widgets/empty_state.dart';
+import '../widgets/listing_card.dart';
 import 'module_detail_screen.dart';
 
 class ModuleListScreen extends StatefulWidget {
@@ -34,6 +35,14 @@ class _ModuleListScreenState extends State<ModuleListScreen> {
     super.initState();
     _repo = TravelRepository(context.read<ApiService>());
     _load();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _fromController.dispose();
+    _toController.dispose();
+    super.dispose();
   }
 
   Future<void> _load({bool refresh = false}) async {
@@ -66,41 +75,61 @@ class _ModuleListScreenState extends State<ModuleListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isRouteModule = ['flights', 'buses', 'trains'].contains(widget.module);
+
     return Scaffold(
       appBar: AppBar(title: Text(widget.title)),
       body: Column(
         children: [
-          if (['flights', 'buses', 'trains'].contains(widget.module))
+          Container(
+            color: Colors.white,
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+            child: isRouteModule
+                ? Row(
+                    children: [
+                      Expanded(child: TextField(controller: _fromController, decoration: const InputDecoration(hintText: 'From', isDense: true, prefixIcon: Icon(Icons.flight_takeoff, size: 20)))),
+                      const SizedBox(width: 8),
+                      Expanded(child: TextField(controller: _toController, decoration: const InputDecoration(hintText: 'To', isDense: true, prefixIcon: Icon(Icons.flight_land, size: 20)))),
+                      const SizedBox(width: 4),
+                      IconButton.filled(onPressed: () => _load(refresh: true), icon: const Icon(Icons.search, size: 20)),
+                    ],
+                  )
+                : TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Search ${widget.title.toLowerCase()}...',
+                      prefixIcon: const Icon(Icons.search),
+                      suffixIcon: IconButton(icon: const Icon(Icons.arrow_forward), onPressed: () => _load(refresh: true)),
+                    ),
+                    onSubmitted: (_) => _load(refresh: true),
+                  ),
+          ),
+          if (_meta != null && !_loading)
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-              child: Row(
-                children: [
-                  Expanded(child: TextField(controller: _fromController, decoration: const InputDecoration(hintText: 'From', isDense: true))),
-                  const SizedBox(width: 8),
-                  Expanded(child: TextField(controller: _toController, decoration: const InputDecoration(hintText: 'To', isDense: true))),
-                  IconButton(onPressed: () => _load(refresh: true), icon: const Icon(Icons.search)),
-                ],
-              ),
-            )
-          else
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-              child: TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  hintText: 'Search ${widget.title.toLowerCase()}...',
-                  prefixIcon: const Icon(Icons.search),
-                  suffixIcon: IconButton(icon: const Icon(Icons.arrow_forward), onPressed: () => _load(refresh: true)),
-                ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text('${_meta!.total} results', style: const TextStyle(color: AppColors.muted, fontSize: 12)),
               ),
             ),
           Expanded(
             child: _loading && _items.isEmpty
                 ? const Center(child: CircularProgressIndicator())
                 : _error != null
-                    ? Center(child: Text(_error!, style: const TextStyle(color: AppColors.alert)))
+                    ? EmptyState(icon: Icons.error_outline, title: 'Something went wrong', subtitle: _error, actionLabel: 'Retry', onAction: () => _load(refresh: true))
                     : _items.isEmpty
-                        ? const Center(child: Text('No results found'))
+                        ? EmptyState(
+                            icon: Icons.search_off,
+                            title: 'No ${widget.title.toLowerCase()} found',
+                            subtitle: 'Try different search terms or check back later. New listings are added regularly.',
+                            actionLabel: 'Clear filters',
+                            onAction: () {
+                              _searchController.clear();
+                              _fromController.clear();
+                              _toController.clear();
+                              _load(refresh: true);
+                            },
+                          )
                         : RefreshIndicator(
                             onRefresh: () => _load(refresh: true),
                             child: ListView.builder(
@@ -108,26 +137,23 @@ class _ModuleListScreenState extends State<ModuleListScreen> {
                               itemCount: _items.length + (_meta != null && _page < _meta!.lastPage ? 1 : 0),
                               itemBuilder: (context, index) {
                                 if (index == _items.length) {
-                                  return TextButton(
-                                    onPressed: () {
-                                      _page++;
-                                      _load();
-                                    },
-                                    child: const Text('Load more'),
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 8),
+                                    child: Center(
+                                      child: _loading
+                                          ? const CircularProgressIndicator()
+                                          : OutlinedButton(onPressed: () { _page++; _load(); }, child: const Text('Load more')),
+                                    ),
                                   );
                                 }
                                 final item = _items[index];
-                                return Card(
-                                  margin: const EdgeInsets.only(bottom: 10),
-                                  child: ListTile(
-                                    title: Text(item.title, style: const TextStyle(fontWeight: FontWeight.w600)),
-                                    subtitle: Text(item.subtitle, maxLines: 2, overflow: TextOverflow.ellipsis),
-                                    trailing: Text('₹${item.price.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary)),
-                                    onTap: () => Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => ModuleDetailScreen(module: widget.module, slug: item.slug, title: item.title),
-                                      ),
+                                return ListingCard(
+                                  item: item,
+                                  module: widget.module,
+                                  onTap: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => ModuleDetailScreen(module: widget.module, slug: item.slug, title: item.title),
                                     ),
                                   ),
                                 );

@@ -1,8 +1,6 @@
-{{-- Boolean field as switch. @include with: name, label, checked, optional hint, value, withHidden, compact --}}
+{{-- Boolean field as switch. Unchecked checkboxes are omitted; controllers use $request->boolean('name'). --}}
 @php
-    $withHidden = $withHidden ?? true;
-    $hiddenValue = $hiddenValue ?? '0';
-    $value = $value ?? '1';
+    $toggleOnValue = $onValue ?? '1';
     $compact = $compact ?? false;
     $hint = $hint ?? null;
 @endphp
@@ -13,11 +11,8 @@
             <span class="admin-toggle-field__hint">{{ $hint }}</span>
         @endif
     </div>
-    @if($withHidden)
-        <input type="hidden" name="{{ $name }}" value="{{ $hiddenValue }}">
-    @endif
     <label class="admin-toggle">
-        <input type="checkbox" name="{{ $name }}" value="{{ $value }}" class="admin-toggle-input" aria-label="{{ strip_tags($label) }}" @checked((bool) ($checked ?? false))>
+        <input type="checkbox" name="{{ $name }}" value="{{ $toggleOnValue }}" class="admin-toggle-input" aria-label="{{ strip_tags($label) }}" @checked((bool) ($checked ?? false))>
         <span class="admin-toggle-track" aria-hidden="true"><span class="admin-toggle-thumb"></span></span>
     </label>
 </div>

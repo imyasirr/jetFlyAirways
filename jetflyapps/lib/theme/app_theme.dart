@@ -56,6 +56,15 @@ class AppTheme {
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.white,
       ),
+      navigationBarTheme: NavigationBarThemeData(
+        indicatorColor: AppColors.secondaryContainer,
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.primary);
+          }
+          return const TextStyle(fontSize: 12, color: AppColors.muted);
+        }),
+      ),
     );
   }
 }

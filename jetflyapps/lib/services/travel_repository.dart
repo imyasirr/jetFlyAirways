@@ -23,10 +23,10 @@ class TravelRepository {
   }) async {
     final query = {...?filters, 'page': '$page'};
     final data = await _api.get('/modules/$module', query: query);
-    final items = (data['items'] as List)
+    final items = (data['items'] as List? ?? [])
         .map((e) => ListingItem.fromJson(e as Map<String, dynamic>))
         .toList();
-    final meta = PaginatedMeta.fromJson(data['meta'] as Map<String, dynamic>);
+    final meta = PaginatedMeta.fromJson(data['meta'] as Map<String, dynamic>? ?? {});
     return (items: items, meta: meta);
   }
 
@@ -68,7 +68,7 @@ class TravelRepository {
 
   Future<List<BookingModel>> getBookings() async {
     final data = await _api.get('/account/bookings');
-    return (data['bookings'] as List)
+    return (data['bookings'] as List? ?? [])
         .map((e) => BookingModel.fromJson(e as Map<String, dynamic>))
         .toList();
   }
@@ -106,11 +106,53 @@ class TravelRepository {
 
   Future<List<Map<String, dynamic>>> getWishlist() async {
     final data = await _api.get('/account/wishlist');
-    return (data['items'] as List).cast<Map<String, dynamic>>();
+    return (data['items'] as List? ?? []).cast<Map<String, dynamic>>();
   }
 
   Future<List<Map<String, dynamic>>> getFaqs() async {
     final data = await _api.get('/faqs');
-    return (data['faqs'] as List).cast<Map<String, dynamic>>();
+    return (data['faqs'] as List? ?? []).cast<Map<String, dynamic>>();
+  }
+
+  Future<List<Map<String, dynamic>>> getOffers() async {
+    final data = await _api.get('/offers');
+    return (data['offers'] as List? ?? []).cast<Map<String, dynamic>>();
+  }
+
+  Future<Map<String, dynamic>> getSiteInfo() async {
+    final data = await _api.get('/site');
+    return data['site'] as Map<String, dynamic>? ?? {};
+  }
+
+  Future<String> submitContact(Map<String, dynamic> payload) async {
+    final data = await _api.post('/contact', body: payload);
+    return data['message'] as String? ?? 'Message sent successfully.';
+  }
+
+  Future<({List<Map<String, dynamic>> blogs, PaginatedMeta meta})> getBlogs({int page = 1}) async {
+    final data = await _api.get('/blogs', query: {'page': '$page'});
+    final blogs = (data['blogs'] as List? ?? []).cast<Map<String, dynamic>>();
+    final meta = PaginatedMeta.fromJson(data['meta'] as Map<String, dynamic>? ?? {});
+    return (blogs: blogs, meta: meta);
+  }
+
+  Future<Map<String, dynamic>> getBlog(String slug) async {
+    final data = await _api.get('/blogs/$slug');
+    return data['blog'] as Map<String, dynamic>;
+  }
+
+  Future<UserModel> updateProfile({required String name, required String email, String? phone}) async {
+    final body = <String, dynamic>{
+      'name': name,
+      'email': email,
+    };
+    if (phone != null) body['phone'] = phone;
+    final data = await _api.put('/account/profile', body: body);
+    return UserModel.fromJson(data['user'] as Map<String, dynamic>);
+  }
+
+  Future<List<Map<String, dynamic>>> getAnnouncements() async {
+    final data = await _api.get('/account/announcements');
+    return (data['announcements'] as List? ?? []).cast<Map<String, dynamic>>();
   }
 }

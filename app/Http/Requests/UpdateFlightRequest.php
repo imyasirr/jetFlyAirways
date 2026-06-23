@@ -2,10 +2,13 @@
 
 namespace App\Http\Requests;
 
+use App\Http\Requests\Concerns\NormalizesBooleanToggles;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateFlightRequest extends FormRequest
 {
+    use NormalizesBooleanToggles;
+
     public function authorize(): bool
     {
         return true;

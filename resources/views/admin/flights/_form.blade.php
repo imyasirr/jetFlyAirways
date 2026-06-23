@@ -56,8 +56,8 @@
         <div>
             <label>Stops</label>
             <select name="stops" required>
-                @foreach([0 => 'Non-stop', 1 => '1 stop', 2 => '2 stops', 3 => '3 stops', 4 => '4 stops', 5 => '5 stops'] as $value => $label)
-                    <option value="{{ $value }}" {{ (string) old('stops', $flight->stops ?? 0) === (string) $value ? 'selected' : '' }}>{{ $label }}</option>
+                @foreach([0 => 'Non-stop', 1 => '1 stop', 2 => '2 stops', 3 => '3 stops', 4 => '4 stops', 5 => '5 stops'] as $stopCount => $label)
+                    <option value="{{ $stopCount }}" {{ (string) old('stops', $flight->stops ?? 0) === (string) $stopCount ? 'selected' : '' }}>{{ $label }}</option>
                 @endforeach
             </select>
         </div>

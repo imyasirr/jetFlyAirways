@@ -19,6 +19,9 @@ Route::prefix('v1')->group(function () {
     Route::post('/coupons/validate', [BookingController::class, 'validateCoupon']);
 
     Route::get('/faqs', [ContentController::class, 'faqs']);
+    Route::get('/offers', [ContentController::class, 'offers']);
+    Route::get('/site', [ContentController::class, 'siteInfo']);
+    Route::post('/contact', [ContentController::class, 'contact']);
     Route::get('/blogs', [ContentController::class, 'blogs']);
     Route::get('/blogs/{slug}', [ContentController::class, 'blogShow']);
     Route::get('/pages/{slug}', [ContentController::class, 'page']);
