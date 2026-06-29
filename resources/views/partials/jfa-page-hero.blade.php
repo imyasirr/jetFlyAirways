@@ -28,6 +28,10 @@
             </nav>
         @endif
 
+        @if(!empty($tagLine))
+            <p class="jfa-page-hero__badge">{{ $tagLine }}</p>
+        @endif
+
         @if(!empty($icon))
             <div class="jfa-page-hero__head">
                 <span class="material-symbols-outlined filled jfa-page-hero__icon">{{ $icon }}</span>
