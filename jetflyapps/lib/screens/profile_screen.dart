@@ -6,6 +6,7 @@ import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../services/travel_repository.dart';
 import '../theme/app_theme.dart';
+import '../widgets/jetfly_loader.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -168,7 +169,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: IconButton(
               onPressed: _uploadingPhoto ? null : _photoOptions,
               icon: _uploadingPhoto
-                  ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                  ? JetFlyLoader.button()
                   : const Icon(Icons.camera_alt, color: Colors.white, size: 18),
               tooltip: 'Change photo',
             ),
@@ -205,7 +206,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             width: double.infinity,
             child: ElevatedButton(
               onPressed: _saving ? null : _save,
-              child: _saving ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white)) : const Text('Save Changes'),
+              child: _saving ? JetFlyLoader.button() : const Text('Save Changes'),
             ),
           ),
         ],

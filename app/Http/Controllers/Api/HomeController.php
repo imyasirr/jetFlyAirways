@@ -11,7 +11,7 @@ use App\Models\Flight;
 use App\Models\HomeSection;
 use App\Models\HomeTrustCard;
 use App\Models\Hotel;
-use App\Models\Offer;
+use App\Models\PopularDestination;
 use App\Models\Testimonial;
 use App\Models\TrainRoute;
 use App\Models\TravelPackage;
@@ -46,6 +46,8 @@ class HomeController extends Controller
                     'role' => $t->designation,
                     'content' => $t->review,
                     'rating' => $t->rating,
+                    'photo' => $t->photo,
+                    'photo_url' => $t->photoUrl(),
                 ]);
         }
 
@@ -86,6 +88,12 @@ class HomeController extends Controller
                 ]);
         }
 
+        $popularDestinations = collect();
+        if (Schema::hasTable('popular_destinations')) {
+            $popularDestinations = PopularDestination::query()->activeOrdered()->limit(12)->get()
+                ->map(fn ($d) => $d->toListArray());
+        }
+
         return response()->json([
             'modules' => $this->catalog->modules,
             'featured_flights' => Flight::query()->where('is_active', true)->orderBy('departure_at')->limit(4)->get()
@@ -94,6 +102,7 @@ class HomeController extends Controller
                 ->map(fn ($h) => $this->catalog->mapListingRow('hotels', $h)),
             'featured_packages' => TravelPackage::query()->where('is_published', true)->orderBy('name')->limit(4)->get()
                 ->map(fn ($p) => $this->catalog->mapListingRow('packages', $p)),
+            'popular_destinations' => $popularDestinations,
             'top_destinations' => TravelPackage::query()->where('is_published', true)->orderByDesc('id')->pluck('destination')->unique()->take(6)->values(),
             'offers' => $offers,
             'testimonials' => $testimonials,

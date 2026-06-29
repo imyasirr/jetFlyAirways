@@ -174,30 +174,13 @@
     var current = 0;
     var timer = null;
 
-    function layoutSlides(activeIndex) {
-        slides.forEach(function (el, idx) {
-            var active = idx === activeIndex;
-            el.classList.toggle('is-active', active);
-            el.style.opacity = active ? '1' : '0';
-            if (active) {
-                el.style.position = 'relative';
-                el.style.width = '100%';
-                el.style.height = 'auto';
-                el.style.objectFit = '';
-            } else {
-                el.style.position = 'absolute';
-                el.style.top = '0';
-                el.style.left = '0';
-                el.style.width = '100%';
-                el.style.height = '100%';
-                el.style.objectFit = 'contain';
-            }
-        });
-    }
-
     function show(i) {
         current = (i + slides.length) % slides.length;
-        layoutSlides(current);
+        slides.forEach(function (el, idx) {
+            var active = idx === current;
+            el.classList.toggle('is-active', active);
+            el.style.opacity = active ? '1' : '0';
+        });
         copies.forEach(function (el, idx) {
             el.hidden = idx !== current;
             el.classList.toggle('is-active', idx === current);
@@ -207,8 +190,6 @@
             dot.style.width = idx === current ? '32px' : '8px';
         });
     }
-
-    layoutSlides(0);
 
     if (slides.length < 2) return;
     function start() { timer = setInterval(function () { show(current + 1); }, 5000); }

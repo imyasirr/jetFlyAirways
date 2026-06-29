@@ -6,6 +6,7 @@ import 'screens/main_shell.dart';
 import 'screens/register_screen.dart';
 import 'services/api_service.dart';
 import 'theme/app_theme.dart';
+import 'widgets/jetfly_loader.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,29 +47,7 @@ class _SplashGate extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
     if (auth.loading) {
-      return Scaffold(
-        body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [AppColors.bookingBlue, AppColors.primary],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-            ),
-          ),
-          child: const Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.flight_takeoff, color: Colors.white, size: 72),
-                SizedBox(height: 16),
-                Text('JetFly Airways', style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
-                SizedBox(height: 24),
-                CircularProgressIndicator(color: Colors.white),
-              ],
-            ),
-          ),
-        ),
-      );
+      return JetFlyLoader.fullscreen(message: 'Preparing your journey...');
     }
     return const MainShell();
   }

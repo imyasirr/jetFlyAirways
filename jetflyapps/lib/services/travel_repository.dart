@@ -1,12 +1,25 @@
 import '../models/models.dart';
 import 'api_service.dart';
+import 'home_cache_service.dart';
 
 class TravelRepository {
   TravelRepository(this._api);
 
   final ApiService _api;
+  final HomeCacheService _homeCache = HomeCacheService();
 
-  Future<Map<String, dynamic>> getHome() => _api.get('/home');
+  Future<bool> hasHomeCache() => _homeCache.hasCache();
+
+  Future<Map<String, dynamic>> getHome({bool forceRefresh = false}) async {
+    if (!forceRefresh) {
+      final cached = await _homeCache.load();
+      if (cached != null) return cached;
+    }
+
+    final data = await _api.get('/home');
+    await _homeCache.save(data);
+    return data;
+  }
 
   Future<List<ModuleInfo>> getModules() async {
     final data = await _api.get('/modules');
@@ -168,5 +181,15 @@ class TravelRepository {
   Future<List<Map<String, dynamic>>> getAnnouncements() async {
     final data = await _api.get('/account/announcements');
     return (data['announcements'] as List? ?? []).cast<Map<String, dynamic>>();
+  }
+
+  Future<List<Map<String, dynamic>>> getDestinations() async {
+    final data = await _api.get('/destinations');
+    return (data['destinations'] as List? ?? []).cast<Map<String, dynamic>>();
+  }
+
+  Future<Map<String, dynamic>> getDestination(String slug) async {
+    final data = await _api.get('/destinations/$slug');
+    return data['destination'] as Map<String, dynamic>;
   }
 }

@@ -27,6 +27,7 @@
             'site-seo' => $M('Site SEO', 'SEO', 'Homepage meta tags, Open Graph, and structured data for search and social.'),
             'site-settings' => $M('Site header & footer', 'setting', 'Top bar text, logo lines, support contacts, footer copy, and social URLs on the public site.'),
             'banners' => $M('Home banners', 'banner', 'Promo carousel below the hero on / and /welcome — image, copy, and CTA links (separate from the single hero background in Site header & footer).'),
+            'popular-destinations' => $M('Popular destinations', 'place', 'Homepage destination cards with banner image, photo gallery, and detail pages in the app.'),
             'page-banners' => $M('Page banners', 'page banner', 'Hero background images on module listing pages (/flights, /hotels, …) and the travel blog.'),
             'home-sections' => $M('Homepage sections', 'section', 'Turn homepage content blocks on or off and set their order.'),
             'popup-messages' => $M('Welcome popups', 'popup', 'Timed promotional popups for first-time or returning visitors.'),

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     @include('partials.seo-head')
     @include('partials.head-fonts')
-    <link rel="stylesheet" href="{{ asset('css/jfa-website.css') }}?v=35">
+    <link rel="stylesheet" href="{{ asset('css/jfa-website.css') }}?v=39">
     @stack('styles')
 </head>
 <body class="jfa-page @yield('body_class')">

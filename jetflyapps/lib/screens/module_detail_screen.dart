@@ -6,6 +6,7 @@ import '../providers/auth_provider.dart';
 import '../services/api_service.dart';
 import '../services/travel_repository.dart';
 import '../theme/app_theme.dart';
+import '../widgets/jetfly_loader.dart';
 import 'booking_success_screen.dart';
 
 class ModuleDetailScreen extends StatefulWidget {
@@ -165,7 +166,7 @@ class _ModuleDetailScreenState extends State<ModuleDetailScreen> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return Scaffold(appBar: AppBar(title: Text(widget.title)), body: const Center(child: CircularProgressIndicator()));
+      return Scaffold(appBar: AppBar(title: Text(widget.title)), body: Center(child: JetFlyLoader.center(message: 'Loading details...')));
     }
 
     final item = _item!;
@@ -261,7 +262,7 @@ class _ModuleDetailScreenState extends State<ModuleDetailScreen> {
                 child: ElevatedButton(
                   onPressed: _booking ? null : _book,
                   child: _booking
-                      ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      ? JetFlyLoader.button()
                       : const Text('Confirm & Pay'),
                 ),
               ),

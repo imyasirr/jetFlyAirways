@@ -9,6 +9,7 @@ use App\Models\ContactInquiry;
 use App\Models\Faq;
 use App\Models\Offer;
 use App\Models\Page;
+use App\Models\PopularDestination;
 use App\Models\SiteSetting;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -151,5 +152,28 @@ class ContentController extends Controller
         }
 
         return response()->json(['message' => 'Thanks — we have received your message and will reply soon.']);
+    }
+
+    public function destinations(): JsonResponse
+    {
+        if (! Schema::hasTable('popular_destinations')) {
+            return response()->json(['destinations' => []]);
+        }
+
+        $destinations = PopularDestination::query()->activeOrdered()->get()
+            ->map(fn ($d) => $d->toListArray());
+
+        return response()->json(['destinations' => $destinations]);
+    }
+
+    public function destinationShow(string $slug): JsonResponse
+    {
+        $destination = PopularDestination::query()
+            ->where('slug', $slug)
+            ->where('is_active', true)
+            ->with('gallery')
+            ->firstOrFail();
+
+        return response()->json(['destination' => $destination->toDetailArray()]);
     }
 }

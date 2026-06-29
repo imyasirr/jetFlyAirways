@@ -6,6 +6,7 @@ import '../services/api_service.dart';
 import '../services/travel_repository.dart';
 import '../theme/app_theme.dart';
 import '../widgets/empty_state.dart';
+import '../widgets/jetfly_loader.dart';
 import 'module_detail_screen.dart';
 import 'profile_screen.dart';
 import 'support_screens.dart';
@@ -103,7 +104,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
               onAction: () => Navigator.pushNamed(context, '/login'),
             )
           : _loading
-              ? const Center(child: CircularProgressIndicator())
+              ? Center(child: JetFlyLoader.center(message: 'Loading bookings...'))
               : _bookings.isEmpty
                   ? const EmptyState(icon: Icons.confirmation_number_outlined, title: 'No bookings yet', subtitle: 'Book a flight, hotel or package to get started.')
                   : RefreshIndicator(
@@ -236,7 +237,7 @@ class _WishlistScreenState extends State<WishlistScreen> {
               onAction: () => Navigator.pushNamed(context, '/login'),
             )
           : _loading
-              ? const Center(child: CircularProgressIndicator())
+              ? Center(child: JetFlyLoader.center(message: 'Loading bookings...'))
               : _items.isEmpty
                   ? const EmptyState(icon: Icons.favorite_outline, title: 'Wishlist is empty', subtitle: 'Tap the heart on any listing to save it here.')
                   : RefreshIndicator(

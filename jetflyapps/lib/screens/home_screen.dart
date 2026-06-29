@@ -1,10 +1,14 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../models/models.dart';
 import '../theme/app_theme.dart';
+import '../utils/media_url.dart';
+import '../utils/trust_icons.dart';
 import '../widgets/banner_carousel.dart';
 import '../widgets/listing_card.dart';
 import '../widgets/module_tile.dart';
 import '../widgets/section_title.dart';
+import 'destination_detail_screen.dart';
 import 'module_detail_screen.dart';
 import 'module_list_screen.dart';
 import 'support_screens.dart';
@@ -53,78 +57,56 @@ class _HomeScreenState extends State<HomeScreen> {
     final offers = (widget.homeData['offers'] as List? ?? []).cast<Map<String, dynamic>>();
     final testimonials = (widget.homeData['testimonials'] as List? ?? []).cast<Map<String, dynamic>>();
     final trustCards = (widget.homeData['trust_cards'] as List? ?? []).cast<Map<String, dynamic>>();
-    final destinations = (widget.homeData['top_destinations'] as List? ?? []).cast<String>();
+    final destinations = (widget.homeData['popular_destinations'] as List? ?? []).cast<Map<String, dynamic>>();
+    final legacyDestinations = (widget.homeData['top_destinations'] as List? ?? []).cast<String>();
 
     final featuredFlights = _items('featured_flights');
     final featuredHotels = _items('featured_hotels');
     final featuredPackages = _items('featured_packages');
 
+    final heroBanners = banners.isNotEmpty
+        ? banners
+        : const [
+            {
+              'title': 'Fly Beyond Horizons',
+              'subtitle': 'Discover flights, hotels and packages at great prices.',
+              'image_url': null,
+            },
+          ];
+
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Jet Fly Airways'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.local_offer_outlined),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const OffersScreen())),
+          ),
+          IconButton(
+            icon: const Icon(Icons.help_outline),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FaqScreen())),
+          ),
+        ],
+      ),
       body: RefreshIndicator(
         onRefresh: widget.onRefresh ?? () async {},
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
-            SliverAppBar(
-              expandedHeight: 200,
-              pinned: true,
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.local_offer_outlined),
-                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const OffersScreen())),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.help_outline),
-                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FaqScreen())),
-                ),
-              ],
-              flexibleSpace: FlexibleSpaceBar(
-                title: const Text('Jet Fly Airways', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                background: Container(
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [AppColors.footerDeep, AppColors.bookingBlue, AppColors.primary],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                  child: Stack(
-                    children: [
-                      Positioned(
-                        right: -20,
-                        bottom: -10,
-                        child: Icon(Icons.flight, color: Colors.white.withValues(alpha: 0.12), size: 140),
-                      ),
-                      const Positioned(
-                        left: 20,
-                        bottom: 56,
-                        right: 20,
-                        child: Text(
-                          'Your journey starts here',
-                          style: TextStyle(color: Colors.white70, fontSize: 14),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+            SliverToBoxAdapter(
+              child: BannerCarousel(
+                banners: heroBanners,
+                height: 220,
+                horizontalPadding: 0,
+                borderRadius: 0,
+                showIndicators: true,
+                overlayIndicators: true,
               ),
             ),
             SliverToBoxAdapter(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 16),
-                  BannerCarousel(
-                    banners: banners.isNotEmpty
-                        ? banners
-                        : const [
-                            {
-                              'title': 'Fly Beyond Horizons',
-                              'subtitle': 'Discover flights, hotels and packages at great prices.',
-                              'image_url': null,
-                            },
-                          ],
-                  ),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
                     child: SingleChildScrollView(
@@ -196,11 +178,77 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                         if (destinations.isNotEmpty) ...[
                           const SizedBox(height: 24),
+                          const SectionTitle(title: 'Popular Destinations', subtitle: 'Trending this season'),
+                          SizedBox(
+                            height: 210,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: destinations.length,
+                              separatorBuilder: (_, __) => const SizedBox(width: 12),
+                              itemBuilder: (context, i) {
+                                final dest = destinations[i];
+                                final name = dest['name'] as String? ?? '';
+                                final slug = dest['slug'] as String? ?? '';
+                                final tagLine = dest['tag_line'] as String?;
+                                final bannerUrl = dest['banner_url'] as String? ?? MediaUrl.resolve(dest['banner'] as String?);
+
+                                return GestureDetector(
+                                  onTap: () {
+                                    if (slug.isEmpty) return;
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => DestinationDetailScreen(slug: slug, preview: dest),
+                                      ),
+                                    );
+                                  },
+                                  child: SizedBox(
+                                    width: 170,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(16),
+                                      child: Stack(
+                                        fit: StackFit.expand,
+                                        children: [
+                                          if (bannerUrl != null && bannerUrl.isNotEmpty)
+                                            CachedNetworkImage(imageUrl: bannerUrl, fit: BoxFit.cover, errorWidget: (_, __, ___) => _destinationFallback())
+                                          else
+                                            _destinationFallback(),
+                                          Container(
+                                            decoration: BoxDecoration(
+                                              gradient: LinearGradient(
+                                                begin: Alignment.topCenter,
+                                                end: Alignment.bottomCenter,
+                                                colors: [Colors.transparent, Colors.black.withValues(alpha: 0.72)],
+                                              ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(14),
+                                            child: Column(
+                                              mainAxisAlignment: MainAxisAlignment.end,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15), maxLines: 2, overflow: TextOverflow.ellipsis),
+                                                if (tagLine != null && tagLine.isNotEmpty)
+                                                  Text(tagLine, style: const TextStyle(color: Colors.white70, fontSize: 11), maxLines: 1, overflow: TextOverflow.ellipsis),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ] else if (legacyDestinations.isNotEmpty) ...[
+                          const SizedBox(height: 24),
                           const SectionTitle(title: 'Top Destinations'),
                           Wrap(
                             spacing: 8,
                             runSpacing: 8,
-                            children: destinations.map((d) => Chip(
+                            children: legacyDestinations.map((d) => Chip(
                               label: Text(d),
                               backgroundColor: AppColors.secondaryContainer,
                               labelStyle: const TextStyle(color: AppColors.bookingBlue, fontWeight: FontWeight.w600),
@@ -212,13 +260,48 @@ class _HomeScreenState extends State<HomeScreen> {
                         _buildFeaturedSection('Travel Packages', 'packages', featuredPackages),
                         if (trustCards.isNotEmpty) ...[
                           const SizedBox(height: 24),
-                          const SectionTitle(title: 'Why Jet Fly Airways?'),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: Row(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.asset(
+                                    'assets/icon/app_icon.png',
+                                    width: 40,
+                                    height: 40,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                const Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Why Jet Fly Airways?',
+                                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.onSurface),
+                                      ),
+                                      Text(
+                                        'Trusted travel partner for every journey',
+                                        style: TextStyle(fontSize: 12, color: AppColors.muted),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                           ...trustCards.map((c) => Card(
                                 margin: const EdgeInsets.only(bottom: 10),
                                 child: ListTile(
                                   leading: CircleAvatar(
                                     backgroundColor: AppColors.secondaryContainer,
-                                    child: Text(c['icon'] as String? ?? '✓', style: const TextStyle(fontSize: 18)),
+                                    child: Icon(
+                                      trustCardIcon(c['icon'] as String?),
+                                      color: AppColors.primary,
+                                      size: 22,
+                                    ),
                                   ),
                                   title: Text(c['title'] as String? ?? '', style: const TextStyle(fontWeight: FontWeight.w600)),
                                   subtitle: Text(c['description'] as String? ?? ''),
@@ -229,13 +312,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           const SizedBox(height: 24),
                           const SectionTitle(title: 'What travellers say'),
                           SizedBox(
-                            height: 150,
+                            height: 168,
                             child: ListView.separated(
                               scrollDirection: Axis.horizontal,
                               itemCount: testimonials.length,
                               separatorBuilder: (_, __) => const SizedBox(width: 12),
                               itemBuilder: (context, i) {
                                 final t = testimonials[i];
+                                final name = t['name'] as String? ?? '';
+                                final role = t['role'] as String?;
+                                final photoUrl = _testimonialPhotoUrl(t);
+
                                 return Container(
                                   width: 280,
                                   padding: const EdgeInsets.all(16),
@@ -255,9 +342,31 @@ class _HomeScreenState extends State<HomeScreen> {
                                             )),
                                       ),
                                       const SizedBox(height: 8),
-                                      Expanded(child: Text(t['content'] as String? ?? '', style: const TextStyle(fontSize: 13, color: AppColors.muted), maxLines: 3, overflow: TextOverflow.ellipsis)),
-                                      const SizedBox(height: 8),
-                                      Text(t['name'] as String? ?? '', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                                      Expanded(
+                                        child: Text(
+                                          '"${t['content'] as String? ?? ''}"',
+                                          style: const TextStyle(fontSize: 13, color: AppColors.muted, fontStyle: FontStyle.italic),
+                                          maxLines: 3,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Row(
+                                        children: [
+                                          _TestimonialAvatar(photoUrl: photoUrl, name: name),
+                                          const SizedBox(width: 10),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                                                if (role != null && role.isNotEmpty)
+                                                  Text(role, style: const TextStyle(fontSize: 11, color: AppColors.muted), maxLines: 1, overflow: TextOverflow.ellipsis),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ],
                                   ),
                                 );
@@ -285,6 +394,21 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  String? _testimonialPhotoUrl(Map<String, dynamic> t) {
+    final direct = t['photo_url'] as String?;
+    if (direct != null && direct.isNotEmpty) return direct;
+    return MediaUrl.resolve(t['photo'] as String?);
+  }
+
+  Widget _destinationFallback() {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(colors: [AppColors.bookingBlue, AppColors.primary]),
+      ),
+      child: const Center(child: Icon(Icons.place_outlined, color: Colors.white70, size: 36)),
     );
   }
 
@@ -339,6 +463,47 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
         ],
+      ),
+    );
+  }
+}
+
+class _TestimonialAvatar extends StatelessWidget {
+  const _TestimonialAvatar({required this.photoUrl, required this.name});
+
+  final String? photoUrl;
+  final String name;
+
+  @override
+  Widget build(BuildContext context) {
+    final initial = name.isNotEmpty ? name.substring(0, 1).toUpperCase() : '?';
+
+    if (photoUrl == null || photoUrl!.isEmpty) {
+      return CircleAvatar(
+        radius: 20,
+        backgroundColor: AppColors.secondaryContainer,
+        child: Text(initial, style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary)),
+      );
+    }
+
+    return ClipOval(
+      child: CachedNetworkImage(
+        imageUrl: photoUrl!,
+        width: 40,
+        height: 40,
+        fit: BoxFit.cover,
+        memCacheWidth: 120,
+        fadeInDuration: const Duration(milliseconds: 200),
+        placeholder: (_, __) => CircleAvatar(
+          radius: 20,
+          backgroundColor: AppColors.secondaryContainer,
+          child: Text(initial, style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary, fontSize: 14)),
+        ),
+        errorWidget: (_, __, ___) => CircleAvatar(
+          radius: 20,
+          backgroundColor: AppColors.secondaryContainer,
+          child: Text(initial, style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary)),
+        ),
       ),
     );
   }

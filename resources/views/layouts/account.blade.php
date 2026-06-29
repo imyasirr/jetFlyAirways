@@ -10,7 +10,7 @@
         'defaultRobots' => 'noindex, nofollow',
     ])
     @include('partials.head-fonts')
-    <link rel="stylesheet" href="{{ asset('css/jfa-website.css') }}?v=35">
+    <link rel="stylesheet" href="{{ asset('css/jfa-website.css') }}?v=39">
     @stack('styles')
 </head>
 <body class="jfa-page">

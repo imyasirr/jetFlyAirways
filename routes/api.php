@@ -24,6 +24,8 @@ Route::prefix('v1')->group(function () {
     Route::post('/contact', [ContentController::class, 'contact']);
     Route::get('/blogs', [ContentController::class, 'blogs']);
     Route::get('/blogs/{slug}', [ContentController::class, 'blogShow']);
+    Route::get('/destinations', [ContentController::class, 'destinations']);
+    Route::get('/destinations/{slug}', [ContentController::class, 'destinationShow']);
     Route::get('/pages/{slug}', [ContentController::class, 'page']);
 
     // Auth

@@ -5,6 +5,7 @@ import '../services/api_service.dart';
 import '../services/travel_repository.dart';
 import '../theme/app_theme.dart';
 import '../widgets/empty_state.dart';
+import '../widgets/jetfly_loader.dart';
 import '../widgets/module_tile.dart';
 import 'module_list_screen.dart';
 
@@ -46,7 +47,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Explore')),
       body: _loading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: JetFlyLoader.center(message: 'Loading modules...'))
           : _error != null
               ? EmptyState(
                   icon: Icons.wifi_off,

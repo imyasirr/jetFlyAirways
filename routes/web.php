@@ -29,7 +29,7 @@ use App\Http\Controllers\Admin\MenuItemController;
 use App\Http\Controllers\Admin\OfferController;
 use App\Http\Controllers\Admin\PageBannerController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
-use App\Http\Controllers\Admin\PopupMessageController;
+use App\Http\Controllers\Admin\PopularDestinationController;
 use App\Http\Controllers\Admin\PaymentReportController;
 use App\Http\Controllers\Admin\BookingReportController;
 use App\Http\Controllers\Admin\ApiIntegrationController;
@@ -61,6 +61,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
 Route::get('/', [SiteController::class, 'home'])->name('home');
+Route::get('/destinations/{slug}', [SiteController::class, 'popularDestination'])->name('destinations.show');
 Route::get('/welcome', [SiteController::class, 'welcome'])->name('welcome');
 // Preview TravelBook demo frontend (integrated with site layout)
 Route::view('/travelbook', 'travelbook_page')->name('travelbook.demo');
@@ -227,6 +228,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::get('home-sections', [HomeSectionController::class, 'index'])->name('home-sections.index');
     Route::put('home-sections', [HomeSectionController::class, 'update'])->name('home-sections.update');
     Route::resource('home-trust-cards', HomeTrustCardController::class)->except(['show']);
+    Route::resource('popular-destinations', PopularDestinationController::class)->except(['show']);
     Route::resource('announcements', AnnouncementController::class)->except(['show']);
     Route::resource('travel-addons', TravelAddonController::class)->except(['show']);
     Route::get('users', [UserController::class, 'index'])->name('users.index');

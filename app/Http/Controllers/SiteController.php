@@ -15,6 +15,7 @@ use App\Models\HomeTrustCard;
 use App\Models\Hotel;
 use App\Models\Offer;
 use App\Models\PageBanner;
+use App\Models\PopularDestination;
 use App\Models\SavedTraveller;
 use App\Models\Testimonial;
 use App\Models\WishlistItem;
@@ -78,6 +79,17 @@ class SiteController extends Controller
         return view('currency-converter');
     }
 
+    public function popularDestination(string $slug): View
+    {
+        $destination = PopularDestination::query()
+            ->where('slug', $slug)
+            ->where('is_active', true)
+            ->with('gallery')
+            ->firstOrFail();
+
+        return view('destinations.show', compact('destination'));
+    }
+
     /**
      * @return array<string, mixed>
      */
@@ -108,11 +120,17 @@ class SiteController extends Controller
             $trustCards = HomeTrustCard::query()->activeOrdered()->get();
         }
 
+        $popularDestinations = collect();
+        if (Schema::hasTable('popular_destinations')) {
+            $popularDestinations = PopularDestination::query()->activeOrdered()->limit(12)->get();
+        }
+
         return [
             'modules' => $this->modules,
             'featuredFlights' => Flight::query()->where('is_active', true)->orderBy('departure_at')->limit(4)->get(),
             'featuredHotels' => Hotel::query()->where('is_active', true)->orderByDesc('star_rating')->limit(4)->get(),
             'featuredPackages' => TravelPackage::query()->where('is_published', true)->orderBy('name')->limit(4)->get(),
+            'popularDestinations' => $popularDestinations,
             'topDestinations' => TravelPackage::query()->where('is_published', true)->orderByDesc('id')->pluck('destination')->unique()->take(6)->values(),
             'offers' => $offers,
             'testimonials' => $testimonials,

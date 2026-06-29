@@ -12,6 +12,7 @@
     $avatarUrl = $user?->avatarUrl();
 @endphp
 
+<div class="jfa-site-chrome" id="jfa-site-chrome">
 <div class="jfa-promo" id="jfa-promo" role="note">
     <span class="material-symbols-outlined" style="font-size:16px;vertical-align:middle;margin-right:4px;">local_offer</span>
     {{ $topLeft }}
@@ -175,6 +176,7 @@
         </button>
     </div>
 </header>
+</div>
 
 <button type="button" class="jfa-drawer-backdrop" id="jfa-drawer-backdrop" aria-label="Close menu" hidden></button>
 
@@ -227,6 +229,14 @@
 
 <script>
 (function () {
+    function syncChromeOffset() {
+        var chrome = document.getElementById('jfa-site-chrome');
+        if (!chrome) return;
+        var h = Math.round(chrome.getBoundingClientRect().height);
+        document.documentElement.style.setProperty('--jfa-chrome-height', h + 'px');
+        document.documentElement.style.scrollPaddingTop = h + 'px';
+    }
+
     var promo = document.getElementById('jfa-promo');
     var promoClose = document.getElementById('jfa-promo-close');
     if (promo && promoClose) {
@@ -236,8 +246,13 @@
         promoClose.addEventListener('click', function () {
             promo.classList.add('is-hidden');
             try { sessionStorage.setItem('jfa_promo_dismissed', '1'); } catch (e) {}
+            requestAnimationFrame(syncChromeOffset);
         });
     }
+
+    syncChromeOffset();
+    window.addEventListener('resize', syncChromeOffset);
+    window.addEventListener('load', syncChromeOffset);
 
     document.querySelectorAll('[data-jfa-dropdown]').forEach(function (wrap) {
         var btn = wrap.querySelector('button');

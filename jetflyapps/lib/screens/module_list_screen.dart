@@ -5,14 +5,21 @@ import '../services/api_service.dart';
 import '../services/travel_repository.dart';
 import '../theme/app_theme.dart';
 import '../widgets/empty_state.dart';
+import '../widgets/jetfly_loader.dart';
 import '../widgets/listing_card.dart';
 import 'module_detail_screen.dart';
 
 class ModuleListScreen extends StatefulWidget {
-  const ModuleListScreen({super.key, required this.module, required this.title});
+  const ModuleListScreen({
+    super.key,
+    required this.module,
+    required this.title,
+    this.initialFilters = const {},
+  });
 
   final String module;
   final String title;
+  final Map<String, String> initialFilters;
 
   @override
   State<ModuleListScreen> createState() => _ModuleListScreenState();
@@ -34,6 +41,10 @@ class _ModuleListScreenState extends State<ModuleListScreen> {
   void initState() {
     super.initState();
     _repo = TravelRepository(context.read<ApiService>());
+    final initialDestination = widget.initialFilters['destination'];
+    if (initialDestination != null && initialDestination.isNotEmpty) {
+      _searchController.text = initialDestination;
+    }
     _load();
   }
 
@@ -53,7 +64,12 @@ class _ModuleListScreenState extends State<ModuleListScreen> {
     });
     try {
       final filters = <String, String>{};
-      if (_searchController.text.isNotEmpty) filters['q'] = _searchController.text;
+      if (widget.module == 'packages') {
+        final dest = _searchController.text.trim();
+        if (dest.isNotEmpty) filters['destination'] = dest;
+      } else if (_searchController.text.isNotEmpty) {
+        filters['q'] = _searchController.text;
+      }
       if (_fromController.text.isNotEmpty) filters['from'] = _fromController.text;
       if (_toController.text.isNotEmpty) filters['to'] = _toController.text;
 
@@ -114,7 +130,7 @@ class _ModuleListScreenState extends State<ModuleListScreen> {
             ),
           Expanded(
             child: _loading && _items.isEmpty
-                ? const Center(child: CircularProgressIndicator())
+                ? Center(child: JetFlyLoader.center(message: 'Searching...'))
                 : _error != null
                     ? EmptyState(icon: Icons.error_outline, title: 'Something went wrong', subtitle: _error, actionLabel: 'Retry', onAction: () => _load(refresh: true))
                     : _items.isEmpty
@@ -141,7 +157,7 @@ class _ModuleListScreenState extends State<ModuleListScreen> {
                                     padding: const EdgeInsets.symmetric(vertical: 8),
                                     child: Center(
                                       child: _loading
-                                          ? const CircularProgressIndicator()
+                                          ? const JetFlyLoader(size: 48)
                                           : OutlinedButton(onPressed: () { _page++; _load(); }, child: const Text('Load more')),
                                     ),
                                   );
